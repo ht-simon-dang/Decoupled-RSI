@@ -125,9 +125,10 @@ class CandidateWorkspace:
             if force:
                 args.append("--force")
             proc = _git(*args, str(checkout), cwd=self._repo_root)
+            reason = proc.stderr.strip()[:400]
             return {
                 "removed": proc.returncode == 0, "mode": "worktree", "forced": force,
-                "reason": proc.stderr.strip()[:400], "path": str(checkout),
+                "reason": reason, "note": reason, "path": str(checkout),
             }
         try:
             shutil.rmtree(checkout)

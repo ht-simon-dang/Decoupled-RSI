@@ -1,0 +1,828 @@
+{
+  "schema_version": 1,
+  "profile": "antibody",
+  "agent_dir": "agents/antibody-agent",
+  "inventory_type": "declarative",
+  "contract": "Dependency description of the current agent. Commands are documented, not executed by this manifest. No dedicated third_party installer/checker is provided. Configuration/file presence is not inference or scientific validation.",
+  "source_of_truth": [
+    "agents/antibody-agent/pyproject.toml",
+    "agents/antibody-agent/src/antibody_agent/registry.py",
+    "agents/antibody-agent/src/antibody_agent/adapters.py",
+    "agents/antibody-agent/src/antibody_agent/gateway.py",
+    "agents/antibody-agent/src/antibody_agent/config.py"
+  ],
+  "python_requires": ">=3.11,<3.13",
+  "license_note": "Scientific model license labels reproduce the agent registry. Check the deployed code, weights, data and service terms separately; no new upstream license audit is asserted.",
+  "symbolic_paths": {
+    "{agent}": "Repository root / agents/antibody-agent",
+    "{python}": "ANTIBODY_PYTHON or {agent}/.venv/bin/python",
+    "{data}": "ANTIBODY_DATA_DIR; run.sh defaults to {agent}/.antibody-agent. Direct wheel use falls back to XDG/user cache when no source checkout exists.",
+    "{runtimes}": "ANTIBODY_RUNTIMES or {data}/runtimes.json",
+    "{qwen}": "ANTIBODY_QWEN_DIR or {data}/models/qwen/2fc06364715b967f1860aea9cf38778875588b17",
+    "{llm_python}": "ANTIBODY_LLM_PYTHON or the current interpreter",
+    "{model.field}": "The corresponding model entry field in runtimes.json; a native model python field defaults to the current interpreter.",
+    "{model.python_dir}": "Directory containing the selected scientific Python executable",
+    "{model.command[0]}": "Executable at argv element zero in the configured JSON bridge command"
+  },
+  "runtime_contract": {
+    "configuration_example": "agents/antibody-agent/configs/runtimes.example.json",
+    "protocol_documentation": "agents/antibody-agent/docs/model-adapters.md",
+    "required_version_fields": [
+      "version",
+      "weights_version"
+    ],
+    "bridge_protocol": "antibody-tools-v1",
+    "bridge_command": "An operator-configured argv array. The gateway appends request.json and result.json paths. No shell expansion.",
+    "environment": "Each scientific interpreter must import agent base dependencies and its own backend packages. Absolute asset paths are recommended. The gateway sets offline/cache variables; custom bridges remain trusted operator code.",
+    "availability": "doctor reports configured_unverified/unavailable, or planner config presence; it does not load models, inspect all weight shards, or certify scientific readiness."
+  },
+  "delivery_requirements": [
+    "Complete paired VH/VL or explicit VHH with valid numbering and edit constraints; native automatic numbering uses ANARCII/IMGT.",
+    "Only the selected generation routes require their generators; library analysis does not require a generation model.",
+    "Independent ImmuneBuilder fold and corresponding TAP (VH/VL) or TNP (VHH) profiling evidence.",
+    "Independent positive-state complex/epitope evaluation; BoltzGen-origin candidates use Chai-1 instead of Boltz-2.",
+    "Required native-context checks, frozen policy and identity/provenance validation before human delivery. Missing mandatory resources withhold candidates."
+  ],
+  "components": [
+    {
+      "id": "runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/antibody-agent/pyproject.toml",
+        "agents/antibody-agent/install.sh"
+      ],
+      "python_packages": [
+        "pydantic>=2.11,<3",
+        "fastapi>=0.115,<1",
+        "uvicorn>=0.30,<1",
+        "PyYAML>=6,<7",
+        "biopython>=1.85,<2",
+        "numpy>=2,<3"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/install.sh",
+          "base"
+        ]
+      ],
+      "layout": [
+        "{agent}/.venv/bin/python",
+        "{agent}/.venv/lib/python*/site-packages/"
+      ],
+      "limitations": "Installs the agent and WebUI dependencies only; molecular tools and checkpoints are separate. Sibling agent packages are not mandatory dependencies."
+    },
+    {
+      "id": "llm-runtime",
+      "kind": "environment",
+      "role": "Optional local 0.8B planner inference",
+      "optional": true,
+      "sources": [
+        "agents/antibody-agent/pyproject.toml"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "python_packages": [
+        "torch>=2.6,<3",
+        "transformers>=5.3,<6",
+        "lm-format-enforcer>=0.11.3,<0.12",
+        "huggingface-hub>=0.30,<2"
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/install.sh",
+          "llm"
+        ]
+      ],
+      "limitations": "Python dependencies only; this stage does not download molecular weights or start the WebUI."
+    },
+    {
+      "id": "mcp-runtime",
+      "kind": "environment",
+      "role": "Optional MCP stdio transport",
+      "optional": true,
+      "sources": [
+        "agents/antibody-agent/pyproject.toml"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "python_packages": [
+        "mcp>=1.10,<2"
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/install.sh",
+          "mcp"
+        ]
+      ],
+      "limitations": "Python dependencies only; this stage does not download molecular weights or start the WebUI."
+    },
+    {
+      "id": "test-runtime",
+      "kind": "environment",
+      "role": "Optional development validation",
+      "optional": true,
+      "sources": [
+        "agents/antibody-agent/pyproject.toml"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "python_packages": [
+        "pytest>=8,<10",
+        "httpx>=0.28,<1",
+        "ruff>=0.12,<1"
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/install.sh",
+          "test"
+        ]
+      ],
+      "limitations": "Python dependencies only; this stage does not download molecular weights or start the WebUI."
+    },
+    {
+      "id": "qwen",
+      "kind": "model",
+      "role": "planner",
+      "integration": "native",
+      "sources": [
+        "https://huggingface.co/Qwen/Qwen3.5-0.8B"
+      ],
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "parameters": "0.8B",
+      "license": "Apache-2.0",
+      "requires": [
+        "llm-runtime"
+      ],
+      "environment_overrides": [
+        "ANTIBODY_QWEN_DIR",
+        "ANTIBODY_LLM_PYTHON"
+      ],
+      "required_paths": [
+        {
+          "path": "{qwen}/config.json",
+          "kind": "file"
+        },
+        {
+          "glob": "{qwen}/*.safetensors",
+          "kind": "file"
+        }
+      ],
+      "required_assets": [
+        "Complete pinned model config",
+        "Complete tokenizer and chat-template configuration",
+        "All safetensors weight shards, with index if the snapshot is sharded"
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/run.sh",
+          "download-qwen"
+        ]
+      ],
+      "limitations": "Use a complete 0.8B snapshot, not a larger planner. Existing sibling assets/environments require explicit overrides. Structured briefs can run without an LLM. Config/one weight-file presence is not a complete snapshot check."
+    },
+    {
+      "id": "rfantibody",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/RosettaCommons/RFantibody"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "CDR backbone + ProteinMPNN + RF2; variable domains",
+      "runtime_entry": "rfantibody",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "native",
+      "python_packages": [
+        "RFantibody backend and its upstream scientific dependencies"
+      ],
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "bin_dir"
+      ],
+      "optional_runtime_fields": [
+        "python"
+      ],
+      "required_paths": [
+        {
+          "path": "{rfantibody.python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{rfantibody.bin_dir}/rfdiffusion",
+          "kind": "executable"
+        },
+        {
+          "path": "{rfantibody.bin_dir}/proteinmpnn",
+          "kind": "executable"
+        },
+        {
+          "path": "{rfantibody.bin_dir}/rf2",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Antibody diffusion weights",
+        "Base ProteinMPNN weights",
+        "Antibody RF2 weights",
+        "Backend-required auxiliary assets in the locations expected by its installed CLI"
+      ],
+      "project_inputs": [
+        "One positive target sequence and matching PDB",
+        "Complete HLT-labelled reference framework",
+        "Matching reversible numbering and entire fixed-length editable CDR loops",
+        "Functional epitope hotspots"
+      ],
+      "limitations": "Uses the documented three-stage CLI. Older incompatible CLI layouts need a bridge. Internal RF2 is generator self-consistency and cannot replace independent evaluation.",
+      "manual_reason": "Install the upstream scientific environment and assets separately, then register compatible absolute paths and actual versions. The agent base/llm installer does not install this backend."
+    },
+    {
+      "id": "boltzgen",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/HannesStark/boltzgen"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Antibody/nanobody CDR sequence and structure",
+      "runtime_entry": "boltzgen",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{boltzgen.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "iggm",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/TencentAI4S/IgGM"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Epitope-conditioned variable-domain design",
+      "runtime_entry": "iggm",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{iggm.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "igdesign",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/AbSciBio/igdesign"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "CDR inverse folding; requires a trusted complex",
+      "runtime_entry": "igdesign",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{igdesign.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "antifold",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/oxpig/AntiFold"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Fixed-backbone antibody sequence redesign",
+      "runtime_entry": "antifold",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "native",
+      "python_packages": [
+        "antifold and its upstream inverse-folding dependencies"
+      ],
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "checkpoint"
+      ],
+      "optional_runtime_fields": [
+        "python"
+      ],
+      "required_paths": [
+        {
+          "path": "{antifold.python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{antifold.checkpoint}",
+          "kind": "file"
+        }
+      ],
+      "required_assets": [
+        "AntiFold checkpoint compatible with the installed CLI"
+      ],
+      "project_inputs": [
+        "Paired/VHH reference PDB with exact IMGT residue ids and sequences",
+        "Explicit numeric IMGT editable labels"
+      ],
+      "limitations": "Fixed-backbone sequence redesign; insertion-label edits need a mapping bridge. Inverse-folding likelihood is not antibody KD.",
+      "manual_reason": "Install the upstream scientific environment and assets separately, then register compatible absolute paths and actual versions. The agent base/llm installer does not install this backend."
+    },
+    {
+      "id": "p_iggen",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/OliverT1/p-IgGen"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Paired sequence prior; no native antigen conditioning",
+      "runtime_entry": "p_iggen",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{p_iggen.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "lichen",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/oxpig/LICHEN"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Light-chain and common-light-chain proposals",
+      "runtime_entry": "lichen",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{lichen.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "sapiens",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/Merck/Sapiens"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Humanization proposals; not clinical immunogenicity",
+      "runtime_entry": "sapiens",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{sapiens.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "humatch",
+      "kind": "model",
+      "role": "generator",
+      "sources": [
+        "https://github.com/oxpig/Humatch"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Paired humanization",
+      "runtime_entry": "humatch",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{humatch.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Registration alone is not runnable integration or local validation. All outputs remain subject to identity checks and independent evaluation."
+    },
+    {
+      "id": "immunebuilder",
+      "kind": "model",
+      "role": "structure_predictor",
+      "sources": [
+        "https://github.com/oxpig/ImmuneBuilder"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "ABodyBuilder2 / NanoBodyBuilder2; unbound fold",
+      "runtime_entry": "immunebuilder",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "native",
+      "python_packages": [
+        "ImmuneBuilder",
+        "torch",
+        "OpenMM",
+        "pdbfixer",
+        "Backend-compatible antibody numbering dependency"
+      ],
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "weights_dir"
+      ],
+      "optional_runtime_fields": [
+        "python"
+      ],
+      "required_paths": [
+        {
+          "path": "{immunebuilder.python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{immunebuilder.weights_dir}",
+          "kind": "directory"
+        }
+      ],
+      "required_assets": [
+        "antibody_model_1 through antibody_model_4 for VH/VL",
+        "nanobody_model_1 through nanobody_model_4 for VHH"
+      ],
+      "project_inputs": [
+        "Complete paired VH/VL or explicit VHH"
+      ],
+      "limitations": "Requires all four weights for the selected format. Native adapter checks them before constructing ABodyBuilder2/NanoBodyBuilder2. Antibody folding is not antigen binding or full-format function.",
+      "manual_reason": "Install the upstream scientific environment and assets separately, then register compatible absolute paths and actual versions. The agent base/llm installer does not install this backend.",
+      "weight_sets": {
+        "VH_VL": [
+          "{immunebuilder.weights_dir}/antibody_model_1",
+          "{immunebuilder.weights_dir}/antibody_model_2",
+          "{immunebuilder.weights_dir}/antibody_model_3",
+          "{immunebuilder.weights_dir}/antibody_model_4"
+        ],
+        "VHH": [
+          "{immunebuilder.weights_dir}/nanobody_model_1",
+          "{immunebuilder.weights_dir}/nanobody_model_2",
+          "{immunebuilder.weights_dir}/nanobody_model_3",
+          "{immunebuilder.weights_dir}/nanobody_model_4"
+        ]
+      }
+    },
+    {
+      "id": "boltz2",
+      "kind": "model",
+      "role": "structure_predictor",
+      "sources": [
+        "https://github.com/jwohlwend/boltz"
+      ],
+      "license": "MIT",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Independent complex prediction; no antibody affinity head",
+      "runtime_entry": "boltz2",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "native",
+      "python_packages": [
+        "boltz and its upstream scientific dependencies"
+      ],
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "cache",
+        "checkpoint"
+      ],
+      "optional_runtime_fields": [
+        "python",
+        "accelerator"
+      ],
+      "required_paths": [
+        {
+          "path": "{boltz2.python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{boltz2.python_dir}/boltz",
+          "kind": "executable"
+        },
+        {
+          "path": "{boltz2.cache}",
+          "kind": "directory"
+        },
+        {
+          "path": "{boltz2.checkpoint}",
+          "kind": "file"
+        }
+      ],
+      "required_assets": [
+        "Boltz-2 confidence checkpoint",
+        "Complete backend-required cache assets compatible with the installed version"
+      ],
+      "project_inputs": [
+        "Complete paired/VHH sequences",
+        "Full antigen sequence and explicit state/context identity"
+      ],
+      "limitations": "Single-sequence protein complex inference; no design template, forced contacts, remote MSA or antibody affinity prediction. Known membrane/glycan context needs additional actual geometry checks.",
+      "manual_reason": "Install the upstream scientific environment and assets separately, then register compatible absolute paths and actual versions. The agent base/llm installer does not install this backend."
+    },
+    {
+      "id": "chai1",
+      "kind": "model",
+      "role": "structure_predictor",
+      "sources": [
+        "https://github.com/chaidiscovery/chai-lab"
+      ],
+      "license": "Apache-2.0",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Complementary complex prediction",
+      "runtime_entry": "chai1",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{chai1.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Working upstream backend and compatible weights or reference assets",
+        "Operator-supplied antibody-tools-v1 bridge executable/script and any arguments it needs"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "Required independent complex bridge for BoltzGen-origin candidates. Must return actual PDB coordinates, context identity and applicable structural-confidence fields without template or forced-contact reuse."
+    },
+    {
+      "id": "tap",
+      "kind": "profiling_backend",
+      "role": "property_predictor",
+      "sources": [
+        "https://opig.stats.ox.ac.uk/webapps/sabdab-sabpred/tap"
+      ],
+      "license": "verify deployed code and service terms",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Therapeutic antibody profiling; format-specific reference",
+      "runtime_entry": "tap",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{tap.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Actual format-appropriate profiler",
+        "Versioned reference panel and fixed interpretation rules",
+        "Operator-supplied antibody-tools-v1 profiling bridge"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "The matching profile is mandatory for delivery: TAP for VH/VL, TNP for VHH. Actual metrics, applicability and severe_flags are required. Sequence motif heuristics cannot substitute for these profiles."
+    },
+    {
+      "id": "tnp",
+      "kind": "profiling_backend",
+      "role": "property_predictor",
+      "sources": [
+        "https://github.com/oxpig/TNP"
+      ],
+      "license": "verify deployed revision",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "Nanobody profiling; not an IgG benchmark",
+      "runtime_entry": "tnp",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "json_bridge",
+      "required_runtime_fields": [
+        "version",
+        "weights_version",
+        "command"
+      ],
+      "required_paths": [
+        {
+          "path": "{tnp.command[0]}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "Actual format-appropriate profiler",
+        "Versioned reference panel and fixed interpretation rules",
+        "Operator-supplied antibody-tools-v1 profiling bridge"
+      ],
+      "manual_reason": "A native adapter and automatic installer are not provided. Deploy the actual backend and a compatible JSON bridge before activation.",
+      "limitations": "The matching profile is mandatory for delivery: TAP for VH/VL, TNP for VHH. Actual metrics, applicability and severe_flags are required. Sequence motif heuristics cannot substitute for these profiles."
+    },
+    {
+      "id": "anarcii",
+      "kind": "model",
+      "role": "numbering",
+      "sources": [
+        "https://github.com/oxpig/ANARCII"
+      ],
+      "license": "BSD-3-Clause",
+      "requires": [
+        "runtime"
+      ],
+      "scope": "IMGT chain numbering with reversible mapping",
+      "runtime_entry": "anarcii",
+      "revision_policy": "Record actual deployed code commit/release and weight or reference-panel hash in version and weights_version. No automatic version pin is supplied for this backend.",
+      "install_commands": [],
+      "integration": "native",
+      "python_packages": [
+        "anarcii"
+      ],
+      "required_runtime_fields": [
+        "version",
+        "weights_version"
+      ],
+      "optional_runtime_fields": [
+        "python",
+        "cpu"
+      ],
+      "required_paths": [
+        {
+          "path": "{anarcii.python}",
+          "kind": "executable"
+        }
+      ],
+      "required_assets": [
+        "ANARCII model assets compatible with the installed release"
+      ],
+      "project_inputs": [
+        "Complete variable-domain sequences with explicit VH/VL/VHH chain roles"
+      ],
+      "limitations": "Native numbering is IMGT only. Trimming, chain-type mismatch or incomplete numbering blocks generation/evaluation.",
+      "manual_reason": "Install the upstream scientific environment and assets separately, then register compatible absolute paths and actual versions. The agent base/llm installer does not install this backend."
+    }
+  ],
+  "project_data": {
+    "source": "User/project-supplied evidence; not bundled third-party checkpoints",
+    "inputs": [
+      "Target identity, sequence, antigen states and native context",
+      "Complete paired VH/VL or explicit VHH and pairing provenance",
+      "Mapped framework/complex PDB, epitope positions and edit constraints",
+      "Condition-matched experimental measurements with raw units, batch, controls, errors and censoring",
+      "Frozen lineage-separated train/calibration/test assignments for property learning"
+    ],
+    "property_learning": "The implemented paired-chain composition Ridge/grouped conformal baseline uses NumPy and real project data. No pretrained LaMBO-2 property weights are downloaded or claimed.",
+    "private_outputs": [
+      "{data}/runs/",
+      "{data}/property_models/"
+    ],
+    "readiness": "Model-specific real inference, calibration and prospective biological validation are separate evidence layers; never generate placeholder passed flags."
+  }
+}

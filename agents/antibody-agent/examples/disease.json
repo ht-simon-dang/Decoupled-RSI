@@ -1,0 +1,11 @@
+{
+  "name": "疾病导向抗体机制探索",
+  "entry": "disease",
+  "route": "research",
+  "disease": "用户指定的自身免疫病与患者亚群（待确认）",
+  "mechanism": "评估阻断细胞外炎症配体的可行性，尚未建立因果证据",
+  "direction": "block",
+  "direction_gate": {"status": "hypothesis", "rationale": "项目治疗假设，尚未验证"},
+  "generators": ["rfantibody"],
+  "budget": {"candidates": 4, "shortlist": 4, "tool_calls": 64, "wall_seconds": 3600, "experiment_slots": 4}
+}

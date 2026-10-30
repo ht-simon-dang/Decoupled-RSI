@@ -1,0 +1,44 @@
+{
+  "anarcii": {
+    "python": "/absolute/path/to/numbering-env/bin/python",
+    "version": "REPLACE_WITH_INSTALLED_ANARCII_VERSION",
+    "weights_version": "REPLACE_WITH_WEIGHT_HASH_OR_RELEASE",
+    "cpu": true
+  },
+  "rfantibody": {
+    "python": "/absolute/path/to/rfantibody-env/bin/python",
+    "bin_dir": "/absolute/path/to/rfantibody-env/bin",
+    "version": "REPLACE_WITH_RFANTIBODY_COMMIT",
+    "weights_version": "REPLACE_WITH_DIFFUSION_MPNN_RF2_WEIGHT_MANIFEST"
+  },
+  "antifold": {
+    "python": "/absolute/path/to/antifold-env/bin/python",
+    "checkpoint": "/absolute/path/to/antifold/model.pt",
+    "version": "REPLACE_WITH_ANTIFOLD_COMMIT",
+    "weights_version": "REPLACE_WITH_CHECKPOINT_SHA256"
+  },
+  "immunebuilder": {
+    "python": "/absolute/path/to/immunebuilder-env/bin/python",
+    "weights_dir": "/absolute/path/to/immunebuilder/weights",
+    "version": "REPLACE_WITH_IMMUNEBUILDER_VERSION",
+    "weights_version": "REPLACE_WITH_WEIGHT_MANIFEST_SHA256"
+  },
+  "boltz2": {
+    "python": "/absolute/path/to/boltz-env/bin/python",
+    "cache": "/absolute/path/to/boltz-cache",
+    "checkpoint": "/absolute/path/to/boltz2_conf.ckpt",
+    "accelerator": "gpu",
+    "version": "REPLACE_WITH_BOLTZ_VERSION",
+    "weights_version": "REPLACE_WITH_CHECKPOINT_SHA256"
+  },
+  "tap": {
+    "command": ["/absolute/path/to/tap-env/bin/python", "/absolute/path/to/tap_bridge.py"],
+    "version": "REPLACE_WITH_PROFILE_CODE_VERSION",
+    "weights_version": "REPLACE_WITH_REFERENCE_PANEL_VERSION"
+  },
+  "tnp": {
+    "command": ["/absolute/path/to/tnp-env/bin/python", "/absolute/path/to/tnp_bridge.py"],
+    "version": "REPLACE_WITH_PROFILE_CODE_VERSION",
+    "weights_version": "REPLACE_WITH_REFERENCE_PANEL_VERSION"
+  }
+}

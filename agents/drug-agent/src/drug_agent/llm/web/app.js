@@ -858,6 +858,7 @@ function renderToolStats(data) {
 const TOOL_DOMAINS = {
   chem: "Chemistry",
   model: "Activity model",
+  activity: "Activity scoring",
   // Target evidence and pocket detection come BEFORE any chemistry: what is the
   // target, and where on it is the site a generator should be conditioned on.
   target: "Target evidence — association, essentiality",

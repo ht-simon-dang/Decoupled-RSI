@@ -13,7 +13,116 @@ dependencies = ["pydantic>=2.11,<3", "numpy>=1.26,<3", "biopython>=1.85", "PyYAM
 mrna-agent = "mrna_agent.cli:main"
 
 [tool.hatch.build.targets.wheel]
+# Explicit public file scope; local development resources are never packaged.
+only-include = [
+  "src/mrna_agent/__init__.py",
+  "src/mrna_agent/benchmark.py",
+  "src/mrna_agent/cli.py",
+  "src/mrna_agent/contracts.py",
+  "src/mrna_agent/decoding.py",
+  "src/mrna_agent/delivery.py",
+  "src/mrna_agent/evaluation.py",
+  "src/mrna_agent/exports.py",
+  "src/mrna_agent/feedback.py",
+  "src/mrna_agent/filtering.py",
+  "src/mrna_agent/gateway.py",
+  "src/mrna_agent/generation.py",
+  "src/mrna_agent/history.py",
+  "src/mrna_agent/llm.py",
+  "src/mrna_agent/mcp_server.py",
+  "src/mrna_agent/mrnautilus_adapter.py",
+  "src/mrna_agent/optional_evaluation.py",
+  "src/mrna_agent/optional_worker.py",
+  "src/mrna_agent/registry.py",
+  "src/mrna_agent/scientific_worker.py",
+  "src/mrna_agent/skills/design-mrna/SKILL.md",
+  "src/mrna_agent/skills/evaluate-mrna/SKILL.md",
+  "src/mrna_agent/storage.py",
+  "src/mrna_agent/structure_worker.py",
+  "src/mrna_agent/structures.py",
+  "src/mrna_agent/web.py",
+  "src/mrna_agent/web/app.js",
+  "src/mrna_agent/web/index.html",
+  "src/mrna_agent/web/structure-viewer.js",
+  "src/mrna_agent/web/styles.css",
+  "src/mrna_agent/web_worker.py",
+  "src/mrna_agent/workflow.py",
+]
 packages = ["src/mrna_agent"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"examples" = "mrna_agent/examples"
+"examples/cds_locked.json" = "mrna_agent/examples/cds_locked.json"
+"examples/diagnose.json" = "mrna_agent/examples/diagnose.json"
+"examples/hbb.json" = "mrna_agent/examples/hbb.json"
+"examples/natural_hbb.json" = "mrna_agent/examples/natural_hbb.json"
+"examples/parade.json" = "mrna_agent/examples/parade.json"
+"examples/quick.json" = "mrna_agent/examples/quick.json"
+"examples/smart5utr.json" = "mrna_agent/examples/smart5utr.json"
+"examples/stability.json" = "mrna_agent/examples/stability.json"
+
+[tool.hatch.build.targets.sdist]
+# Keep this list aligned with the reviewed public source files.
+only-include = [
+  ".gitignore",
+  "Makefile",
+  "README.md",
+  "README_zh.md",
+  "docs/architecture.md",
+  "docs/architecture_zh.md",
+  "docs/high-potential-policy.md",
+  "docs/high-potential-policy_zh.md",
+  "docs/history-preview.md",
+  "docs/history-preview_zh.md",
+  "docs/optional-models.md",
+  "docs/optional-models_zh.md",
+  "examples/cds_locked.json",
+  "examples/diagnose.json",
+  "examples/hbb.json",
+  "examples/natural_hbb.json",
+  "examples/parade.json",
+  "examples/quick.json",
+  "examples/smart5utr.json",
+  "examples/stability.json",
+  "install.sh",
+  "pyproject.toml",
+  "requirements-legacy.txt",
+  "requirements.txt",
+  "scripts/bootstrap.py",
+  "scripts/bootstrap_optional.py",
+  "scripts/fetch_assets.py",
+  "scripts/fetch_optional.py",
+  "scripts/fetch_references.py",
+  "scripts/optional-pins.json",
+  "src/mrna_agent/__init__.py",
+  "src/mrna_agent/benchmark.py",
+  "src/mrna_agent/cli.py",
+  "src/mrna_agent/contracts.py",
+  "src/mrna_agent/decoding.py",
+  "src/mrna_agent/delivery.py",
+  "src/mrna_agent/evaluation.py",
+  "src/mrna_agent/exports.py",
+  "src/mrna_agent/feedback.py",
+  "src/mrna_agent/filtering.py",
+  "src/mrna_agent/gateway.py",
+  "src/mrna_agent/generation.py",
+  "src/mrna_agent/history.py",
+  "src/mrna_agent/llm.py",
+  "src/mrna_agent/mcp_server.py",
+  "src/mrna_agent/mrnautilus_adapter.py",
+  "src/mrna_agent/optional_evaluation.py",
+  "src/mrna_agent/optional_worker.py",
+  "src/mrna_agent/registry.py",
+  "src/mrna_agent/scientific_worker.py",
+  "src/mrna_agent/skills/design-mrna/SKILL.md",
+  "src/mrna_agent/skills/evaluate-mrna/SKILL.md",
+  "src/mrna_agent/storage.py",
+  "src/mrna_agent/structure_worker.py",
+  "src/mrna_agent/structures.py",
+  "src/mrna_agent/web.py",
+  "src/mrna_agent/web/app.js",
+  "src/mrna_agent/web/index.html",
+  "src/mrna_agent/web/structure-viewer.js",
+  "src/mrna_agent/web/styles.css",
+  "src/mrna_agent/web_worker.py",
+  "src/mrna_agent/workflow.py",
+]

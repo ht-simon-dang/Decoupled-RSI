@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "antibody-agent": {
+      "command": "/absolute/path/to/Decoupled-RSI/agents/antibody-agent/run.sh",
+      "args": ["mcp"]
+    }
+  }
+}

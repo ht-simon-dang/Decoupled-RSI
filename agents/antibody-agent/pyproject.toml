@@ -1,0 +1,106 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "antibody-agent"
+version = "0.1.0"
+description = "EMA4D antibody design with independent evaluation before human review"
+requires-python = ">=3.11,<3.13"
+dependencies = ["pydantic>=2.11,<3", "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "PyYAML>=6,<7", "biopython>=1.85,<2", "numpy>=2,<3"]
+
+[project.optional-dependencies]
+llm = ["torch>=2.6,<3", "transformers>=5.3,<6", "lm-format-enforcer>=0.11.3,<0.12", "huggingface-hub>=0.30,<2"]
+mcp = ["mcp>=1.10,<2"]
+test = ["pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.12,<1"]
+
+[project.scripts]
+antibody-agent = "antibody_agent.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/antibody_agent"]
+# Explicit public resources; runtime state, models and private inputs are excluded.
+only-include = [
+  "src/antibody_agent/__init__.py",
+  "src/antibody_agent/__main__.py",
+  "src/antibody_agent/adapters.py",
+  "src/antibody_agent/benchmark.py",
+  "src/antibody_agent/cli.py",
+  "src/antibody_agent/config.py",
+  "src/antibody_agent/contracts.py",
+  "src/antibody_agent/decoding.py",
+  "src/antibody_agent/delivery.py",
+  "src/antibody_agent/evaluation.py",
+  "src/antibody_agent/exports.py",
+  "src/antibody_agent/feedback.py",
+  "src/antibody_agent/gateway.py",
+  "src/antibody_agent/learning.py",
+  "src/antibody_agent/llm.py",
+  "src/antibody_agent/mcp_server.py",
+  "src/antibody_agent/registry.py",
+  "src/antibody_agent/science_worker.py",
+  "src/antibody_agent/store.py",
+  "src/antibody_agent/structure.py",
+  "src/antibody_agent/templates.py",
+  "src/antibody_agent/web.py",
+  "src/antibody_agent/web/app.js",
+  "src/antibody_agent/web/index.html",
+  "src/antibody_agent/web/structure-viewer.js",
+  "src/antibody_agent/web/styles.css",
+  "src/antibody_agent/workflow.py",
+]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+  ".gitignore",
+  "README.md",
+  "README_zh.md",
+  "docs/architecture_zh.md",
+  "docs/model-adapters.md",
+  "install.sh",
+  "run.sh",
+  "requirements.txt",
+  "Makefile",
+  "pyproject.toml",
+  "configs/runtimes.example.json",
+  "configs/mcp.json",
+  "examples/disease.json",
+  "src/antibody_agent/__init__.py",
+  "src/antibody_agent/__main__.py",
+  "src/antibody_agent/adapters.py",
+  "src/antibody_agent/benchmark.py",
+  "src/antibody_agent/cli.py",
+  "src/antibody_agent/config.py",
+  "src/antibody_agent/contracts.py",
+  "src/antibody_agent/decoding.py",
+  "src/antibody_agent/delivery.py",
+  "src/antibody_agent/evaluation.py",
+  "src/antibody_agent/exports.py",
+  "src/antibody_agent/feedback.py",
+  "src/antibody_agent/gateway.py",
+  "src/antibody_agent/learning.py",
+  "src/antibody_agent/llm.py",
+  "src/antibody_agent/mcp_server.py",
+  "src/antibody_agent/registry.py",
+  "src/antibody_agent/science_worker.py",
+  "src/antibody_agent/store.py",
+  "src/antibody_agent/structure.py",
+  "src/antibody_agent/templates.py",
+  "src/antibody_agent/web.py",
+  "src/antibody_agent/web/app.js",
+  "src/antibody_agent/web/index.html",
+  "src/antibody_agent/web/structure-viewer.js",
+  "src/antibody_agent/web/styles.css",
+  "src/antibody_agent/workflow.py",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B"]

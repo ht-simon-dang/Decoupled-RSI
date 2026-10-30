@@ -1,0 +1,12 @@
+.venv/
+.work/
+.antibody-agent/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+*.pyc
+.ruff_cache/
+!tests/
+!tests/*.py
