@@ -1,4 +1,4 @@
-# Decoupled RSI: Give Self-Evolution Its Own Agent
+# [Updating] Decoupled RSI: Give Self-Evolution Its Own Agent
 
 [English](README.md) | [简体中文](README_zh.md)
 

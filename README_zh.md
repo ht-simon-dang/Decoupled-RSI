@@ -1,4 +1,4 @@
-# Decoupled RSI：让自进化拥有自己的 Agent
+# 【更新中】Decoupled RSI：让自进化拥有自己的 Agent
 
 [English](README.md) | [简体中文](README_zh.md)
 
