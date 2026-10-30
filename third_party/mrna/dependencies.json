@@ -1,0 +1,918 @@
+{
+  "schema_version": 1,
+  "profile": "mrna",
+  "agent_dir": "agents/mRNA-agent",
+  "contract": "Sources/weights are fetched by explicit install commands, not redistributed. check inspects paths and readiness records without loading models and never certifies scientific readiness.",
+  "status_values": [
+    "missing",
+    "present_unvalidated"
+  ],
+  "components": [
+    {
+      "id": "peptide-runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/peptide-agent/requirements.txt"
+      ],
+      "required_paths": [
+        {
+          "path": "{peptide_python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{peptide_agent}/install.sh"
+        ]
+      ],
+      "limitations": "Shared base interpreter. File presence alone does not establish installed package compatibility."
+    },
+    {
+      "id": "runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/mRNA-agent/requirements.txt"
+      ],
+      "requires": [
+        "peptide-runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "{peptide_python}",
+          "{agent}/scripts/bootstrap.py",
+          "--stage",
+          "runtime"
+        ]
+      ],
+      "layout": [
+        "{data}/venv/bin/python",
+        "{data}/venv/lib/python3.11/site-packages/"
+      ]
+    },
+    {
+      "id": "core",
+      "kind": "installation_stage",
+      "sources": [
+        "agents/mRNA-agent/scripts/bootstrap.py",
+        "agents/mRNA-agent/scripts/fetch_assets.py"
+      ],
+      "requires": [
+        "peptide-runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/LinearDesign/bin/LinearDesign_2D",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "{peptide_python}",
+          "{agent}/scripts/bootstrap.py",
+          "--stage",
+          "core"
+        ]
+      ],
+      "includes": [
+        "gemorna",
+        "lineardesign",
+        "ribonn",
+        "smart5utr",
+        "parade",
+        "optimus5",
+        "references"
+      ],
+      "limitations": "This explicit grouped stage installs all core sources/assets and their Python 3.10 compatibility environment, not only one model."
+    },
+    {
+      "id": "optional",
+      "kind": "installation_stage",
+      "sources": [
+        "agents/mRNA-agent/scripts/bootstrap_optional.py",
+        "agents/mRNA-agent/scripts/fetch_optional.py"
+      ],
+      "requires": [
+        "runtime",
+        "core"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/envs/transformers4/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "{agent}/scripts/bootstrap.py",
+          "--stage",
+          "optional"
+        ]
+      ],
+      "includes": [
+        "saluki",
+        "rnadegformer",
+        "utr_lm",
+        "codongpt",
+        "utrgan",
+        "mrnabert",
+        "mrnautilus",
+        "degscore"
+      ],
+      "limitations": "Downloads all optional assets and compatibility packages; it does not generate the required local inference-readiness records.",
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "saluki",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "rnadegformer",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "utr_lm",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "codongpt",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "utrgan",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "mrnabert",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "mrnautilus",
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "degscore",
+            "passed"
+          ],
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "qwen",
+      "kind": "backend",
+      "sources": [
+        "https://huggingface.co/Qwen/Qwen3.5-0.8B"
+      ],
+      "license": "Apache-2.0; same pinned revision as peptide-agent",
+      "role": "planner",
+      "limitations": "Planning only; no scientific scores; 8192-token application context",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{qwen}/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{qwen}/*.safetensors",
+            "{qwen}/*.bin"
+          ]
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-c",
+          "from huggingface_hub import snapshot_download; import sys; snapshot_download(sys.argv[1], revision=sys.argv[2], local_dir=sys.argv[3], ignore_patterns=[\"*.h5\",\"*.msgpack\",\"*.onnx\",\"*.ot\"])",
+          "Qwen/Qwen3.5-0.8B",
+          "2fc06364715b967f1860aea9cf38778875588b17",
+          "{qwen}"
+        ]
+      ],
+      "layout": [
+        "{qwen}/{config,tokenizer,weights}"
+      ]
+    },
+    {
+      "id": "gemorna",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/RainaBio/GEMORNA"
+      ],
+      "license": "Noncommercial research; no redistribution",
+      "role": "generator",
+      "limitations": "Region generation; canonical RNA; modification/cell response uncalibrated",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "3bba88e4c0a32377dcfac8caa492709b954f9d9e",
+      "source_checkout": "{data}/external/GEMORNA",
+      "required_paths": [
+        {
+          "path": "{data}/external/GEMORNA/src/generate.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/GEMORNA/checkpoints/gemorna_cds.pt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/GEMORNA/checkpoints/gemorna_5utr.pt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/GEMORNA/checkpoints/gemorna_3utr.pt",
+          "kind": "file"
+        },
+        {
+          "glob": "{data}/external/GEMORNA/vocab/*.pkl"
+        },
+        {
+          "glob": "{data}/external/GEMORNA/src/shared/*.so"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "lineardesign",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/LinearDesignSoftware/LinearDesign"
+      ],
+      "license": "Research terms; separate commercial/distribution permission",
+      "role": "optimizer",
+      "limitations": "Human codon table; CDS MFE/CAI reward, not protein yield",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "f0126ca89a8b853088b4bccfd2cc8c378d3678be",
+      "source_checkout": "{data}/external/LinearDesign",
+      "required_paths": [
+        {
+          "path": "{data}/external/LinearDesign/bin/LinearDesign_2D",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/external/LinearDesign/codon_usage_freq_table_human.csv",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "synonymous",
+      "kind": "backend",
+      "sources": [
+        "local deterministic standard genetic code"
+      ],
+      "license": "Project license",
+      "role": "baseline",
+      "limitations": "Explicit uniform synonymous sampling fallback; no learned biological efficacy; caller supplies task inputs. check does not import installed packages.",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_via": "runtime"
+    },
+    {
+      "id": "ribonn",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/Sanofi-Public/RiboNN"
+      ],
+      "license": "Academic/noncommercial code and separate model-weights license",
+      "role": "predictor",
+      "limitations": "Human/mouse endogenous TE; IVT, delivery and modifications are domain shifts; 1381 nt 5UTR and 11937 nt CDS+3UTR",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "dc896e1d1f78bf6b4e9bb7525c7852fcf25532e8",
+      "source_checkout": "{data}/external/RiboNN",
+      "required_paths": [
+        {
+          "path": "{data}/external/RiboNN",
+          "kind": "directory"
+        },
+        {
+          "path": "{data}/models/ribonn/human/runs.csv",
+          "kind": "file"
+        },
+        {
+          "glob": "{data}/models/ribonn/human/*/state_dict.pth"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "vienna",
+      "kind": "backend",
+      "sources": [
+        "https://www.tbi.univie.ac.at/RNA/"
+      ],
+      "license": "ViennaRNA license",
+      "role": "structure",
+      "limitations": "Unmodified-RNA thermodynamic prior at 37 C; full molecule MFE, ensemble and start accessibility; application cap 2000 nt; caller supplies task inputs. check does not import installed packages.",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_via": "runtime"
+    },
+    {
+      "id": "smart5utr",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/deepomicslab/Smart5UTR"
+      ],
+      "license": "GPL-3.0 upstream; weights stored separately",
+      "role": "generator",
+      "limitations": "50 nt 5UTR, m1Psi, eGFP MPRA-derived MRL objective; reporter/cell transfer needs validation",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "0085dd6982e112257ee4b0a7225b5ef3b6db59e9",
+      "source_checkout": "{data}/external/Smart5UTR",
+      "required_paths": [
+        {
+          "path": "{data}/external/Smart5UTR/models/Smart5UTR/Smart5UTR_egfp_m1pseudo2_Model.h5",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/Smart5UTR/models/egfp_m1pseudo2.scaler",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "parade",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/autosome-ru/parade"
+      ],
+      "license": "MIT code; track exact weights and data",
+      "role": "generator_predictor",
+      "limitations": "50 nt 5UTR / 240 nt 3UTR; author cell codes c1,c2,c4,c6,c17 (+c13 for 3UTR); reporter activity, not delivery or absolute protein",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "f8e3e02688918e40d85eff0976a984810ee04372",
+      "source_checkout": "{data}/external/parade",
+      "required_paths": [
+        {
+          "path": "{data}/external/parade/predictor/model",
+          "kind": "directory"
+        },
+        {
+          "glob": "{data}/external/parade/predictor/regression_multiple/saved_models/model-utr5-*.ckpt"
+        },
+        {
+          "glob": "{data}/external/parade/predictor/regression_multiple/saved_models/model-utr3-*.ckpt"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "optimus5",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/deepomicslab/Smart5UTR"
+      ],
+      "license": "Upstream GPL-3.0 distribution; author checkpoint",
+      "role": "predictor",
+      "limitations": "50 nt 5UTR, m1Psi eGFP reporter MRL; same MPRA lineage as Smart5UTR, correlated evidence",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "0085dd6982e112257ee4b0a7225b5ef3b6db59e9",
+      "source_checkout": "{data}/external/Smart5UTR",
+      "required_paths": [
+        {
+          "path": "{data}/external/Smart5UTR/models/Optimus5-Prime/Optimus5_egfp_m1pseudo2_model_200k.h5",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/external/Smart5UTR/models/Optimus5-Prime/Optimus5_egfp_m1pseudo2_200k.scaler",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "install_via": "core"
+    },
+    {
+      "id": "saluki",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/calico/basenji"
+      ],
+      "license": "Apache-2.0 code; official Zenodo 6326409 weights",
+      "role": "predictor",
+      "limitations": "Full 50-member human/mouse ensemble; 6 channels, synthetic splice sites zero; normalized consensus, not hours",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "asset_sources": [
+        "https://zenodo.org/records/6326409"
+      ],
+      "source_revision": "06ce5d387e20b47184d05433b3983163c5f923cd",
+      "source_checkout": "{data}/external/basenji",
+      "required_paths": [
+        {
+          "path": "{data}/models/saluki/f0_c0/train/model0_best.h5",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/external/basenji",
+          "kind": "directory"
+        },
+        {
+          "glob": "{data}/models/saluki/f*_c*/train/model*_best.h5",
+          "min_count": 100
+        },
+        {
+          "path": "{data}/models/saluki/f0_c0/train/params.json",
+          "kind": "file"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "saluki",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "rnadegformer",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/Shujun-He/RNAdegformer"
+      ],
+      "license": "Official author Webapp release",
+      "role": "predictor",
+      "limitations": "All 10 folds, short-RNA training/long-mRNA domain shift, native RNAsoft BPP at default 37 C (author Arnie ignores T); 5 per-base chemical-assay channels; unmodified RNA only",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "source_revision": "9933ae080c44a1ddcfb4634c1713534036cf2c75",
+      "source_checkout": "{data}/external/RNAdegformer-Webapp",
+      "required_paths": [
+        {
+          "path": "{data}/external/RNAdegformer-Webapp/RNA_Inference/best_weights/fold0top1.ckpt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "glob": "{data}/external/RNAdegformer-Webapp/RNA_Inference/best_weights/fold*top1.ckpt",
+          "min_count": 10
+        },
+        {
+          "path": "{data}/external/RNAdegformer-Webapp/MultiRNAFold/simfold_pf",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/external/arnie",
+          "kind": "directory"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "rnadegformer",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "utr_lm",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/a96123155/UTR-LM"
+      ],
+      "license": "GPL-3.0",
+      "role": "predictor",
+      "limitations": "Official unmodified egfp MRL fold0 head; exactly 50 nt; reporter transfer remains unvalidated",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "source_revision": "b77b589bf182eb9de6a1a5024fa09d44294d94fc",
+      "source_checkout": "{data}/external/UTR-LM",
+      "required_paths": [
+        {
+          "path": "{data}/external/UTR-LM/Scripts/esm/model/esm2_secondarystructure.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "glob": "{data}/external/UTR-LM/Model/Downstream/MRL/*unmod_1*fold0*.pt"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "utr_lm",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "codongpt",
+      "kind": "backend",
+      "sources": [
+        "https://huggingface.co/naniltx/codonGPT"
+      ],
+      "license": "Free for research use",
+      "role": "generator",
+      "limitations": "GPT2 codon sampler constrained to exact target protein; no functional optimization claim",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "ee7017c4bdd285206b87be2e65a28272ff4ac88e",
+      "required_paths": [
+        {
+          "path": "{data}/models/codongpt/pytorch_model.bin",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "codongpt",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "utrgan",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/ciceklab/UTRGAN"
+      ],
+      "license": "CC BY-NC-SA 2.0",
+      "role": "generator",
+      "limitations": "Author pretrained WGAN prior; 5UTR diversity, no predictor reward optimization",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "source_revision": "003b278facf7f08752a0020c94d7b3dd8069aba4",
+      "source_checkout": "{data}/external/UTRGAN",
+      "required_paths": [
+        {
+          "path": "{data}/external/UTRGAN/models/checkpoint_3000.h5",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/gemorna/bin/python",
+          "kind": "executable"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "utrgan",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "mrnabert",
+      "kind": "backend",
+      "sources": [
+        "https://huggingface.co/YYLY66/mRNABERT"
+      ],
+      "license": "Apache-2.0",
+      "role": "representation",
+      "limitations": "Mixed nucleotide/codon tokenization; mean hidden representation only; no deployed mammalian functional head",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "a1eb7df25804d23f08646e1cb996b234d7208a40",
+      "source_revision": "893ccc920bb9be02a4677d14d96b03126da17689",
+      "source_checkout": "{data}/external/mRNABERT",
+      "required_paths": [
+        {
+          "path": "{data}/models/mrnabert/pytorch_model.bin",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/transformers4/bin/python",
+          "kind": "executable"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "mrnabert",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "joint",
+      "kind": "backend",
+      "sources": [
+        "local provenance-bearing proposal import"
+      ],
+      "license": "External provider terms supplied with each proposal",
+      "role": "proposal_import",
+      "limitations": "User-supplied external full constructs, strictly evaluated before delivery; no remote generation service implied; caller supplies task inputs. check does not import installed packages.",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_via": "runtime"
+    },
+    {
+      "id": "mrnautilus",
+      "kind": "backend",
+      "sources": [
+        "https://huggingface.co/atombio/mrnautilus"
+      ],
+      "license": "CC BY-NC 4.0; source README badge differs, retain upstream terms",
+      "role": "joint_generator",
+      "limitations": "Official 150M weights; bounded 8-step masked diffusion, synonymous CDS; native torch SDPA; no MCTS/reward reranking",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "revision": "b04a676809be4b743842b207c743491cc607882b",
+      "required_paths": [
+        {
+          "path": "{data}/models/mrnautilus/best.ckpt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/envs/transformers4/bin/python",
+          "kind": "executable"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "mrnautilus",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "degscore",
+      "kind": "backend",
+      "sources": [
+        "https://github.com/eternagame/DegScore"
+      ],
+      "license": "Upstream license in pinned source",
+      "role": "control_predictor",
+      "limitations": "DegScore 2.1 chemical-degradation ridge model, ViennaRNA structure; correlated OpenVaccine evidence, not independent vote",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "source_revision": "2d56eaf5f560687f94f22fb8619a621dc2b798d8",
+      "source_checkout": "{data}/external/DegScore",
+      "required_paths": [
+        {
+          "path": "{data}/external/DegScore/DegScore.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/assets.json",
+          "kind": "file"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/model-validation.json",
+          "key": [
+            "degscore",
+            "passed"
+          ],
+          "equals": true
+        }
+      ],
+      "install_via": "optional"
+    },
+    {
+      "id": "promorna",
+      "kind": "backend",
+      "sources": [
+        "https://arxiv.org/html/2605.01513v2"
+      ],
+      "license": "No public deployable checkpoint identified",
+      "role": "joint_generator",
+      "limitations": "Paper v2; no authenticated official model/API found in availability audit",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "required_paths": [],
+      "manual_reason": "This route has no deployable integrated backend in the public snapshot. Obtain suitable official assets/API and implement an adapter before enabling it; no substitute is installed."
+    },
+    {
+      "id": "mrna_gpt",
+      "kind": "backend",
+      "sources": [
+        "https://www.biorxiv.org/content/10.64898/2026.03.31.715707v1"
+      ],
+      "license": "No public Sanofi checkpoint identified",
+      "role": "joint_generator",
+      "limitations": "Sanofi model; unrelated ZHymLumine/ZYMScott models are not substitutes",
+      "adapter": "agents/mRNA-agent/src/mrna_agent/registry.py",
+      "required_paths": [],
+      "manual_reason": "This route has no deployable integrated backend in the public snapshot. Obtain suitable official assets/API and implement an adapter before enabling it; no substitute is installed."
+    },
+    {
+      "id": "references",
+      "kind": "reference_data",
+      "sources": [
+        "https://www.ncbi.nlm.nih.gov/nuccore/NM_000518.5",
+        "https://www.uniprot.org/uniprotkb/P42212",
+        "https://www.uniprot.org/uniprotkb/P08659"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/datasets/references.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/datasets/NM_000518.5.gb",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/datasets/P42212.fasta",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/datasets/P08659.fasta",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "{agent}/scripts/fetch_references.py"
+        ]
+      ],
+      "limitations": "Public sequence references; not engineered efficacy measurements."
+    },
+    {
+      "id": "esmfold2-preview",
+      "kind": "shared_model",
+      "sources": [
+        "https://huggingface.co/biohub/ESMFold2-Fast"
+      ],
+      "revision": "45fe8656f5b3ef493c17fcf9abe9a2968902e712",
+      "required_paths": [
+        {
+          "path": "{esmfold}/manifest.json",
+          "kind": "file"
+        },
+        {
+          "path": "{esmfold}/config.json",
+          "kind": "file"
+        },
+        {
+          "glob": "{esmfold}/*.safetensors"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{repo}/third_party/enzyme/install.sh",
+          "install",
+          "esmfold2"
+        ]
+      ],
+      "limitations": "Shares the Enzyme model installation. Install the Enzyme runtime first; MRNA_ESMFOLD_DIR can point to an existing matching snapshot."
+    }
+  ],
+  "license_note": "License strings are carried from the pinned adapter inventory, not a new legal determination. Consult each source and any separate weight/data terms."
+}

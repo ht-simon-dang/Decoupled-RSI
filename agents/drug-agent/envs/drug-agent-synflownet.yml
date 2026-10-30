@@ -1,0 +1,43 @@
+# Optional SynFlowNet dependencies. Install with: ./install.sh side-env synflownet
+# Hardware-specific recipe: Linux x86-64, CUDA 12.8 PyTorch/PyG wheels.
+# Adapt these pins for other hardware before installation.
+# Fetch the source separately: ./install.sh external synflownet
+# Then: conda run -n drug-agent-synflownet pip install --no-deps -e .external/synflownet
+# Building blocks and reward-specific training are separate upstream steps.
+name: drug-agent-synflownet
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu128
+      - --find-links https://data.pyg.org/whl/torch-2.7.1+cu128.html
+      - torch==2.7.1+cu128
+      - torch_scatter==2.1.2+pt27cu128
+      - torch_sparse==0.6.18+pt27cu128
+      - torch_cluster==1.6.3+pt27cu128
+      - torch_geometric==2.4.0
+      - numpy==1.26.4
+      - rdkit==2023.9.6
+      - scipy==1.15.3
+      - pandas==2.3.3
+      - networkx==3.4.2
+      - scikit-learn==1.2.2
+      - tables==3.10.1
+      - pyarrow==25.0.1
+      - cvxopt==1.3.3
+      - omegaconf==2.3.1
+      - PyYAML==6.0.3
+      - tqdm==4.70.0
+      - tensorboard==2.21.0
+      - GitPython==3.1.62
+      - wandb==0.29.0
+      - botorch==0.16.1
+      - gpytorch==1.15.2
+      - pyro-ppl==1.9.1
+      - PyTDC==1.0.7
+      - meeko==0.8.0
+      - setuptools==80.10.2
+      - gemmi==0.7.5

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>drug-agent · research prioritization console</title>
+  <link rel="stylesheet" href="/ui/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AC%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">🧬</span>
+        <div>
+          <div class="brand-name">drug-agent</div>
+          <div class="brand-sub">research prioritization</div>
+        </div>
+      </div>
+
+      <div class="run-picker">
+        <label>Run</label>
+        <select id="run-select"></select>
+        <button id="btn-new" class="btn btn-accent" title="Launch a new run">＋ New run</button>
+        <button id="btn-refresh" class="btn" title="Refresh">⟲</button>
+      </div>
+
+      <nav id="nav">
+        <a data-view="overview" class="active">📊 Overview</a>
+        <a data-view="workflow">🕸 Workflow &amp; DAG</a>
+        <a data-view="portfolio">🎯 Pareto portfolio</a>
+        <a data-view="candidates">🧪 Candidates</a>
+        <a data-view="riskmatrix">🌡 Endpoint risk matrix</a>
+        <a data-view="safety">🛡 Safety register</a>
+        <a data-view="evidence">📚 Evidence &amp; decisions</a>
+        <a data-view="sensitivity">🔬 Sensitivity &amp; experiments</a>
+        <a data-view="repro">📦 Reproducibility</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button id="theme-toggle" class="btn btn-ghost">◐ theme</button>
+        <a class="btn btn-ghost" href="/docs" target="_blank">API</a>
+        <div class="disclaimer-mini">Research prioritization — not a clinical decision system.</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div id="run-badge" class="run-badge">no run selected</div>
+        <div id="topbar-stats" class="topbar-stats"></div>
+      </header>
+      <div id="view" class="view"></div>
+    </main>
+  </div>
+
+  <!-- New-run drawer -->
+  <div id="drawer-backdrop" class="drawer-backdrop hidden"></div>
+  <section id="new-run" class="drawer hidden">
+    <div class="drawer-head">
+      <h2>Launch a run</h2>
+      <button class="btn btn-ghost" id="new-close">✕</button>
+    </div>
+    <div class="drawer-body">
+      <label class="field">Research brief
+        <select id="brief-select"></select>
+      </label>
+      <label class="field checkbox"><input type="checkbox" id="det" checked /> Deterministic (reproducible)</label>
+      <div id="brief-preview" class="brief-preview"></div>
+      <button id="launch" class="btn btn-accent btn-lg">Launch workflow</button>
+      <div id="launch-log" class="launch-log"></div>
+    </div>
+  </section>
+
+  <!-- Candidate detail drawer -->
+  <section id="cand-detail" class="drawer wide hidden">
+    <div class="drawer-head">
+      <h2 id="cand-title">Candidate</h2>
+      <button class="btn btn-ghost" id="cand-close">✕</button>
+    </div>
+    <div class="drawer-body" id="cand-body"></div>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/ui/app.js"></script>
+</body>
+</html>

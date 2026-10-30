@@ -1,0 +1,30 @@
+{
+  "basenji": [
+    "calico/basenji",
+    "06ce5d387e20b47184d05433b3983163c5f923cd"
+  ],
+  "RNAdegformer-Webapp": [
+    "Shujun-He/RNAdegformer-Webapp",
+    "9933ae080c44a1ddcfb4634c1713534036cf2c75"
+  ],
+  "UTR-LM": [
+    "a96123155/UTR-LM",
+    "b77b589bf182eb9de6a1a5024fa09d44294d94fc"
+  ],
+  "UTRGAN": [
+    "ciceklab/UTRGAN",
+    "003b278facf7f08752a0020c94d7b3dd8069aba4"
+  ],
+  "mRNABERT": [
+    "yyly6/mRNABERT",
+    "893ccc920bb9be02a4677d14d96b03126da17689"
+  ],
+  "arnie": [
+    "DasLab/arnie",
+    "bdb7f803fe24273c34b3402c3d18036d9bfc882e"
+  ],
+  "DegScore": [
+    "eternagame/DegScore",
+    "2d56eaf5f560687f94f22fb8619a621dc2b798d8"
+  ]
+}

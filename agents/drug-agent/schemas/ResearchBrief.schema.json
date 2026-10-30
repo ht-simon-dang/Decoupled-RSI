@@ -1,0 +1,761 @@
+{
+  "$defs": {
+    "BriefKind": {
+      "enum": [
+        "target_based",
+        "phenotype_based"
+      ],
+      "title": "BriefKind",
+      "type": "string"
+    },
+    "Constraint": {
+      "additionalProperties": false,
+      "description": "A hard filter applied before ranking.",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "op": {
+          "description": "One of: <, <=, >, >=, ==, in, not_in, is_true, is_false.",
+          "title": "Op",
+          "type": "string"
+        },
+        "property": {
+          "description": "Property key the constraint applies to.",
+          "title": "Property",
+          "type": "string"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "name",
+        "property",
+        "op"
+      ],
+      "title": "Constraint",
+      "type": "object"
+    },
+    "GenerationMethod": {
+      "description": "De-novo candidate-generation backend selected by a brief.",
+      "enum": [
+        "none",
+        "pfm"
+      ],
+      "title": "GenerationMethod",
+      "type": "string"
+    },
+    "GenerationSpec": {
+      "additionalProperties": false,
+      "description": "De-novo generation configuration for a brief.\n\nParameters only \u2014 *whether* generation runs is decided by\n:attr:`ResearchBrief.candidate_source` (which the validator keeps in sync).",
+      "properties": {
+        "batch_size": {
+          "default": 10,
+          "description": "Molecules per model call.",
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "keep_invalid": {
+          "default": false,
+          "description": "Keep unparseable outputs for QC instead of discarding them.",
+          "title": "Keep Invalid",
+          "type": "boolean"
+        },
+        "max_heavy_atoms": {
+          "default": 70,
+          "description": "Post-hoc validity filter.",
+          "minimum": 1,
+          "title": "Max Heavy Atoms",
+          "type": "integer"
+        },
+        "max_runtime_seconds": {
+          "default": 1800.0,
+          "description": "Hard wall-clock cap.",
+          "exclusiveMinimum": 0.0,
+          "title": "Max Runtime Seconds",
+          "type": "number"
+        },
+        "method": {
+          "$ref": "#/$defs/GenerationMethod",
+          "default": "none"
+        },
+        "min_heavy_atoms": {
+          "default": 10,
+          "description": "Post-hoc validity filter.",
+          "minimum": 1,
+          "title": "Min Heavy Atoms",
+          "type": "integer"
+        },
+        "n_molecules": {
+          "default": 50,
+          "description": "Molecules to sample.",
+          "maximum": 5000,
+          "minimum": 1,
+          "title": "N Molecules",
+          "type": "integer"
+        },
+        "pocket": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PocketSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Required by structure-based methods."
+        },
+        "pocket_detector": {
+          "default": "auto",
+          "description": "auto | p2rank | fpocket | vnegnn",
+          "title": "Pocket Detector",
+          "type": "string"
+        },
+        "pocket_source": {
+          "default": "brief",
+          "description": "brief | detect",
+          "title": "Pocket Source",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Sampling seed; defaults to the run seed.",
+          "title": "Seed"
+        }
+      },
+      "title": "GenerationSpec",
+      "type": "object"
+    },
+    "Objective": {
+      "additionalProperties": false,
+      "description": "An optimization objective used for Pareto ranking.",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/ObjectiveDirection"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "name": {
+          "description": "Endpoint name, e.g. 'pIC50', 'logP', 'sa_score'.",
+          "title": "Name",
+          "type": "string"
+        },
+        "required": {
+          "default": false,
+          "description": "Whether the endpoint must be present.",
+          "title": "Required",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "target_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional desired value.",
+          "title": "Target Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "weight": {
+          "default": 1.0,
+          "description": "Display-utility weight only.",
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "direction"
+      ],
+      "title": "Objective",
+      "type": "object"
+    },
+    "ObjectiveDirection": {
+      "enum": [
+        "maximize",
+        "minimize"
+      ],
+      "title": "ObjectiveDirection",
+      "type": "string"
+    },
+    "PhenotypeSpec": {
+      "additionalProperties": false,
+      "description": "A phenotypic / cell-state objective for phenotype-based discovery.",
+      "properties": {
+        "cell_context": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Cell type / tissue / organoid.",
+          "title": "Cell Context"
+        },
+        "dataset_hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Fixture/dataset identifier hint.",
+          "title": "Dataset Hint"
+        },
+        "description": {
+          "description": "Desired phenotypic change.",
+          "title": "Description",
+          "type": "string"
+        },
+        "desired_state_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Desired State Label"
+        },
+        "disease_state_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Disease State Label"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "title": "PhenotypeSpec",
+      "type": "object"
+    },
+    "PocketSpec": {
+      "additionalProperties": false,
+      "description": "A binding site, as consumed by structure-conditioned generative models.\n\n``pdb_path`` must already be a *pocket* file (a few hundred atoms), not a\nwhole structure: PFM samples inside the box implied by these coordinates, so\na full-protein PDB produces a meaningless pocket size. Use the upstream\n``clean_pocket`` helper (or any pocket-extraction tool) to cut one.",
+      "properties": {
+        "center": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Pocket centre [x, y, z] in Angstrom. NOT provenance: tasks that denoise inside a box require it \u2014 PocketXMol sbdd / sbdd_simple / dock / dock_flexible and RxnFlow refuse without it, and OMTRA falls back to the structure's heavy-atom mean and warns. TargetDiff, Pocket2Mol and PocketFlow legitimately run without one.",
+          "title": "Center"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "pdb_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Source PDB accession, if any.",
+          "title": "Pdb Id"
+        },
+        "pdb_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Path to a prepared pocket PDB file.",
+          "title": "Pdb Path"
+        },
+        "radius": {
+          "default": 10.0,
+          "description": "Pocket radius in Angstrom.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 50.0,
+          "title": "Radius",
+          "type": "number"
+        },
+        "receptor_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Receptor/ProteinStructure id.",
+          "title": "Receptor Id"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "title": "PocketSpec",
+      "type": "object"
+    },
+    "TargetSpec": {
+      "additionalProperties": false,
+      "description": "A molecular target for target-based discovery.",
+      "properties": {
+        "chembl_target_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chembl Target Id"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "gene_symbol": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gene Symbol"
+        },
+        "name": {
+          "description": "Human name, e.g. 'Soluble epoxide hydrolase'.",
+          "title": "Name",
+          "type": "string"
+        },
+        "organism": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "Homo sapiens",
+          "title": "Organism"
+        },
+        "pdb_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pdb Ids",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "uniprot": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "UniProt accession, e.g. P34913.",
+          "title": "Uniprot"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "TargetSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Versioned research brief. The unit of work submitted to the platform.",
+  "properties": {
+    "approval_gates": {
+      "description": "Named human-approval gates to pause at.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Approval Gates",
+      "type": "array"
+    },
+    "assess_target_evidence": {
+      "default": false,
+      "description": "Assemble association, tractability, safety and essentiality evidence first.",
+      "title": "Assess Target Evidence",
+      "type": "boolean"
+    },
+    "author": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Author"
+    },
+    "budget_seconds": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional wall-clock budget.",
+      "title": "Budget Seconds"
+    },
+    "budget_tokens": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional LLM token budget.",
+      "title": "Budget Tokens"
+    },
+    "candidate_source": {
+      "default": "fixture_library",
+      "description": "Connector/strategy for sourcing candidates. '+'-separated tokens from {fixture_library, library, seed, analogue, pfm, none}; 'fixture_library' expands to library+seed+analogue.",
+      "title": "Candidate Source",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "dataset_snapshot": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Pinned data snapshot name.",
+      "title": "Dataset Snapshot"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "generation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GenerationSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "De-novo generation parameters (see candidate_source)."
+    },
+    "hard_constraints": {
+      "items": {
+        "$ref": "#/$defs/Constraint"
+      },
+      "title": "Hard Constraints",
+      "type": "array"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "brief",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/BriefKind"
+    },
+    "max_candidates": {
+      "default": 200,
+      "maximum": 100000,
+      "minimum": 1,
+      "title": "Max Candidates",
+      "type": "integer"
+    },
+    "objectives": {
+      "items": {
+        "$ref": "#/$defs/Objective"
+      },
+      "title": "Objectives",
+      "type": "array"
+    },
+    "phenotype": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PhenotypeSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "program_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Owning research program.",
+      "title": "Program Id"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed_smiles": {
+      "description": "Optional seed molecules to expand/screen.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Seed Smiles",
+      "type": "array"
+    },
+    "shortlist_size": {
+      "default": 10,
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Shortlist Size",
+      "type": "integer"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "target": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TargetSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "title"
+  ],
+  "title": "ResearchBrief",
+  "type": "object"
+}

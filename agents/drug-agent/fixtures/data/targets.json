@@ -1,0 +1,34 @@
+{
+  "target_id": "TARGET_EPHX2",
+  "gene_symbol": "EPHX2",
+  "uniprot": "P34913",
+  "name": "Soluble epoxide hydrolase (sEH / EPHX2)",
+  "organism": "Homo sapiens",
+  "associations": [
+    {
+      "disease": "Hypertension",
+      "efo_id": "EFO_0000537",
+      "score": 0.62,
+      "evidence": "genetic + pathway",
+      "source": "synthetic_demo"
+    },
+    {
+      "disease": "Inflammatory pain",
+      "efo_id": "EFO_0003843",
+      "score": 0.55,
+      "evidence": "animal model",
+      "source": "synthetic_demo"
+    },
+    {
+      "disease": "Diabetic neuropathy",
+      "efo_id": "EFO_1001459",
+      "score": 0.41,
+      "evidence": "expression",
+      "source": "synthetic_demo"
+    }
+  ],
+  "tractability": {
+    "small_molecule": true,
+    "structure_available": true
+  }
+}

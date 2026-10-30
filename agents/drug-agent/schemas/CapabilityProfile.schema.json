@@ -1,0 +1,196 @@
+{
+  "$defs": {
+    "CapabilityStatus": {
+      "enum": [
+        "AVAILABLE",
+        "MOCKED",
+        "UNAVAILABLE",
+        "DEGRADED"
+      ],
+      "title": "CapabilityStatus",
+      "type": "string"
+    },
+    "CostClass": {
+      "description": "Coarse expected cost of invoking a capability.",
+      "enum": [
+        "TRIVIAL",
+        "CHEAP",
+        "MODERATE",
+        "EXPENSIVE"
+      ],
+      "title": "CostClass",
+      "type": "string"
+    },
+    "Determinism": {
+      "enum": [
+        "DETERMINISTIC",
+        "STOCHASTIC"
+      ],
+      "title": "Determinism",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Self-description an adapter publishes to the capability registry.",
+  "properties": {
+    "backend": {
+      "default": "builtin",
+      "description": "Selected backend name.",
+      "title": "Backend",
+      "type": "string"
+    },
+    "capability_id": {
+      "description": "Stable dotted id, e.g. 'chem.standardize'.",
+      "title": "Capability Id",
+      "type": "string"
+    },
+    "cost_class": {
+      "$ref": "#/$defs/CostClass",
+      "default": "CHEAP"
+    },
+    "data_restrictions": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Data Restrictions"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "determinism": {
+      "$ref": "#/$defs/Determinism",
+      "default": "DETERMINISTIC"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "input_schema_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the input contract.",
+      "title": "Input Schema Ref"
+    },
+    "known_failure_modes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Failure Modes",
+      "type": "array"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "max_retries": {
+      "default": 0,
+      "title": "Max Retries",
+      "type": "integer"
+    },
+    "output_schema_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the output contract.",
+      "title": "Output Schema Ref"
+    },
+    "provides_mock": {
+      "default": false,
+      "title": "Provides Mock",
+      "type": "boolean"
+    },
+    "runtime_requirements": {
+      "additionalProperties": true,
+      "description": "e.g. {'gpu': False, 'binary': 'vina', 'extra': 'sim'}.",
+      "title": "Runtime Requirements",
+      "type": "object"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/CapabilityStatus",
+      "default": "AVAILABLE"
+    },
+    "timeout_seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": 60.0,
+      "title": "Timeout Seconds"
+    },
+    "title": {
+      "default": "",
+      "title": "Title",
+      "type": "string"
+    },
+    "unavailable_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unavailable Reason"
+    },
+    "validation_checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Checks",
+      "type": "array"
+    },
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "capability_id"
+  ],
+  "title": "CapabilityProfile",
+  "type": "object"
+}

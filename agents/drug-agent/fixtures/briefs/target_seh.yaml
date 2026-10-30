@@ -1,0 +1,60 @@
+schema_version: "1.0.0"
+kind: target_based
+title: "sEH inhibitor prioritization (demonstration)"
+author: "demo"
+description: >
+  Prioritize small-molecule candidate inhibitors of soluble epoxide hydrolase
+  (sEH / EPHX2) for follow-up. Demonstration brief over synthetic activity
+  labels; no clinical or efficacy claim is implied.
+
+target:
+  name: "Soluble epoxide hydrolase (sEH / EPHX2)"
+  gene_symbol: "EPHX2"
+  uniprot: "P34913"
+  chembl_target_id: "TARGET_EPHX2"
+  organism: "Homo sapiens"
+  pdb_ids: ["5AI0", "3I28"]
+
+objectives:
+  - name: pIC50
+    direction: maximize
+    weight: 3.0
+    unit: pIC50
+    required: true
+  - name: sa_score
+    direction: minimize
+    weight: 1.0
+  - name: qed
+    direction: maximize
+    weight: 1.5
+  - name: hERG
+    direction: minimize
+    weight: 2.0
+
+hard_constraints:
+  - name: mw_upper
+    property: descriptors.mw
+    op: "<="
+    value: 550
+    rationale: "Keep within lead-like molecular weight."
+  - name: logp_upper
+    property: descriptors.logp
+    op: "<="
+    value: 5.5
+    rationale: "Avoid excessive lipophilicity."
+  - name: no_reactive_alerts
+    property: n_structural_alerts
+    op: "=="
+    value: 0
+    rationale: "Exclude reactive/undesirable substructures at the hard-filter stage."
+
+seed_smiles:
+  - "CC(C)Cc1ccc(cc1)C(C)C(=O)O"      # ibuprofen
+  - "COc1ccc2cc(ccc2c1)C(C)C(=O)O"    # naproxen
+
+candidate_source: fixture_library
+max_candidates: 200
+shortlist_size: 8
+dataset_snapshot: seh_demo_v1
+approval_gates: ["portfolio_review"]
+tags: ["demo", "target_based", "sEH"]

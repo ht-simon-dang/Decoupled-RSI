@@ -1,0 +1,11 @@
+# Optional Boltz runtime. Install with: ./install.sh side-env boltz
+# Checkpoints may download on the upstream tool's first use; they are not shipped.
+name: drug-agent-boltz
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - boltz==2.2.1

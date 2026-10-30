@@ -1,0 +1,69 @@
+{
+  "name": "HBB \u00b7 first design",
+  "protein": "MVHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH",
+  "protein_version": "NM_000518.5/CDS",
+  "context": {
+    "species": "human",
+    "target_cell": "HEK293",
+    "delivery": "unspecified",
+    "dose": "unspecified",
+    "time_window_hours": [
+      0,
+      48
+    ]
+  },
+  "molecule": {
+    "cap": "Cap1",
+    "poly_a_length": 100,
+    "modification": "unmodified"
+  },
+  "objectives": [
+    {
+      "metric": "translation_efficiency",
+      "stage": "computational",
+      "direction": "maximize",
+      "role": "primary"
+    },
+    {
+      "metric": "start_accessibility",
+      "stage": "computational",
+      "direction": "maximize",
+      "role": "secondary"
+    },
+    {
+      "metric": "protein_auc",
+      "stage": "experimental",
+      "direction": "maximize",
+      "role": "explanatory"
+    }
+  ],
+  "budget": {
+    "candidates": 16,
+    "shortlist": 4,
+    "rounds": 1,
+    "tool_calls": 48,
+    "seconds": 3600
+  },
+  "generators": [
+    "gemorna",
+    "lineardesign",
+    "smart5utr",
+    "parade",
+    "codongpt",
+    "utrgan",
+    "mrnautilus",
+    "promorna",
+    "mrna_gpt"
+  ],
+  "evaluators": [
+    "vienna",
+    "ribonn",
+    "parade",
+    "optimus5",
+    "saluki",
+    "rnadegformer",
+    "utr_lm",
+    "mrnabert",
+    "degscore"
+  ]
+}

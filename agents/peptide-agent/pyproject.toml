@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "peptide-agent"
+version = "0.1.0"
+description = "Auditable peptide design with constrained Qwen planning and scientific tools"
+requires-python = ">=3.11,<3.13"
+dependencies = []
+
+[project.scripts]
+peptide-agent = "peptide_agent.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/peptide_agent"]

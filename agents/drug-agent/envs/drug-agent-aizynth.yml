@@ -1,0 +1,11 @@
+# Optional AiZynthFinder runtime. Install with: ./install.sh side-env aizynth
+# Model assets are separate: make aizynth-models
+name: drug-agent-aizynth
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - aizynthfinder==4.4.1

@@ -1,0 +1,210 @@
+{
+  "$defs": {
+    "GenerationMethod": {
+      "description": "De-novo candidate-generation backend selected by a brief.",
+      "enum": [
+        "none",
+        "pfm"
+      ],
+      "title": "GenerationMethod",
+      "type": "string"
+    },
+    "PocketSpec": {
+      "additionalProperties": false,
+      "description": "A binding site, as consumed by structure-conditioned generative models.\n\n``pdb_path`` must already be a *pocket* file (a few hundred atoms), not a\nwhole structure: PFM samples inside the box implied by these coordinates, so\na full-protein PDB produces a meaningless pocket size. Use the upstream\n``clean_pocket`` helper (or any pocket-extraction tool) to cut one.",
+      "properties": {
+        "center": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Pocket centre [x, y, z] in Angstrom. NOT provenance: tasks that denoise inside a box require it \u2014 PocketXMol sbdd / sbdd_simple / dock / dock_flexible and RxnFlow refuse without it, and OMTRA falls back to the structure's heavy-atom mean and warns. TargetDiff, Pocket2Mol and PocketFlow legitimately run without one.",
+          "title": "Center"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "pdb_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Source PDB accession, if any.",
+          "title": "Pdb Id"
+        },
+        "pdb_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Path to a prepared pocket PDB file.",
+          "title": "Pdb Path"
+        },
+        "radius": {
+          "default": 10.0,
+          "description": "Pocket radius in Angstrom.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 50.0,
+          "title": "Radius",
+          "type": "number"
+        },
+        "receptor_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Receptor/ProteinStructure id.",
+          "title": "Receptor Id"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "title": "PocketSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "De-novo generation configuration for a brief.\n\nParameters only \u2014 *whether* generation runs is decided by\n:attr:`ResearchBrief.candidate_source` (which the validator keeps in sync).",
+  "properties": {
+    "batch_size": {
+      "default": 10,
+      "description": "Molecules per model call.",
+      "maximum": 200,
+      "minimum": 1,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "keep_invalid": {
+      "default": false,
+      "description": "Keep unparseable outputs for QC instead of discarding them.",
+      "title": "Keep Invalid",
+      "type": "boolean"
+    },
+    "max_heavy_atoms": {
+      "default": 70,
+      "description": "Post-hoc validity filter.",
+      "minimum": 1,
+      "title": "Max Heavy Atoms",
+      "type": "integer"
+    },
+    "max_runtime_seconds": {
+      "default": 1800.0,
+      "description": "Hard wall-clock cap.",
+      "exclusiveMinimum": 0.0,
+      "title": "Max Runtime Seconds",
+      "type": "number"
+    },
+    "method": {
+      "$ref": "#/$defs/GenerationMethod",
+      "default": "none"
+    },
+    "min_heavy_atoms": {
+      "default": 10,
+      "description": "Post-hoc validity filter.",
+      "minimum": 1,
+      "title": "Min Heavy Atoms",
+      "type": "integer"
+    },
+    "n_molecules": {
+      "default": 50,
+      "description": "Molecules to sample.",
+      "maximum": 5000,
+      "minimum": 1,
+      "title": "N Molecules",
+      "type": "integer"
+    },
+    "pocket": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PocketSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Required by structure-based methods."
+    },
+    "pocket_detector": {
+      "default": "auto",
+      "description": "auto | p2rank | fpocket | vnegnn",
+      "title": "Pocket Detector",
+      "type": "string"
+    },
+    "pocket_source": {
+      "default": "brief",
+      "description": "brief | detect",
+      "title": "Pocket Source",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Sampling seed; defaults to the run seed.",
+      "title": "Seed"
+    }
+  },
+  "title": "GenerationSpec",
+  "type": "object"
+}

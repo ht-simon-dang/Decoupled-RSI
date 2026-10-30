@@ -1,0 +1,9 @@
+# Python 3.10 subprocess only. GEMORNA's author extension crashes on Python 3.11.
+# Install torch from https://download.pytorch.org/whl/cpu first.
+torch==2.5.1+cpu
+torchtext==0.6.0
+numpy==1.26.4
+pandas==2.2.3
+biopython==1.85
+tensorflow-cpu==2.15.1
+scikit-learn==1.5.2

@@ -1,0 +1,11 @@
+name: Ubiquitin cyclic integration example
+source: boltzgen
+target_sequence: MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDKEGIPPDQQRLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG
+topology: head_to_tail
+length: 8
+count: 1
+seed: 1729
+sampling_steps: 500
+refold: false
+assess_affinity: true
+assess_toxicity: false

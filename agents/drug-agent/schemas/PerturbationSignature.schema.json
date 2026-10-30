@@ -1,0 +1,294 @@
+{
+  "$defs": {
+    "ApplicabilityDomain": {
+      "enum": [
+        "IN_DOMAIN",
+        "BORDERLINE",
+        "OUT_OF_DOMAIN",
+        "UNKNOWN"
+      ],
+      "title": "ApplicabilityDomain",
+      "type": "string"
+    },
+    "DifferentialGene": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "default": "up",
+          "description": "'up'|'down'.",
+          "title": "Direction",
+          "type": "string"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "gene": {
+          "title": "Gene",
+          "type": "string"
+        },
+        "log2fc": {
+          "title": "Log2Fc",
+          "type": "number"
+        },
+        "pval": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pval"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "gene",
+        "log2fc",
+        "score"
+      ],
+      "title": "DifferentialGene",
+      "type": "object"
+    },
+    "QCSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "flags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "median_counts": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Median Counts"
+        },
+        "n_cells": {
+          "default": 0,
+          "title": "N Cells",
+          "type": "integer"
+        },
+        "n_donors": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N Donors"
+        },
+        "n_genes": {
+          "default": 0,
+          "title": "N Genes",
+          "type": "integer"
+        },
+        "pct_mito": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pct Mito"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "title": "QCSummary",
+      "type": "object"
+    },
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A perturbation's effect signature and restoration metric.",
+  "properties": {
+    "candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidate Id"
+    },
+    "cell_context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cell Context"
+    },
+    "context_applicability": {
+      "$ref": "#/$defs/ApplicabilityDomain",
+      "default": "UNKNOWN"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "dataset_id": {
+      "default": "",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "perturb",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "limitation": {
+      "default": "In-silico signature only; not a phenotypic efficacy claim.",
+      "title": "Limitation",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "method": {
+      "default": "signature_reversal_baseline",
+      "title": "Method",
+      "type": "string"
+    },
+    "method_version": {
+      "default": "0.0.0",
+      "title": "Method Version",
+      "type": "string"
+    },
+    "qc": {
+      "$ref": "#/$defs/QCSummary"
+    },
+    "restoration_score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Desired-state restoration (higher = more restored).",
+      "title": "Restoration Score"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Signature-scoring statistic vs disease axis.",
+      "title": "Signature Score"
+    },
+    "split_strategy": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "e.g. 'donor', 'study'.",
+      "title": "Split Strategy"
+    },
+    "top_genes": {
+      "items": {
+        "$ref": "#/$defs/DifferentialGene"
+      },
+      "title": "Top Genes",
+      "type": "array"
+    },
+    "trust_label": {
+      "$ref": "#/$defs/TrustLabel",
+      "default": "PREDICTED"
+    }
+  },
+  "title": "PerturbationSignature",
+  "type": "object"
+}

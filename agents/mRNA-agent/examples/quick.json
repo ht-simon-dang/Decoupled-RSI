@@ -1,0 +1,55 @@
+{
+  "name": "Quick computational smoke",
+  "protein": "MNDTEAI",
+  "protein_version": "synthetic-short-v1",
+  "context": {
+    "species": "human",
+    "target_cell": "HEK293",
+    "delivery": "unspecified",
+    "dose": "unspecified",
+    "time_window_hours": [
+      0,
+      48
+    ]
+  },
+  "molecule": {
+    "cap": "Cap1",
+    "poly_a_length": 100,
+    "modification": "unmodified"
+  },
+  "objectives": [
+    {
+      "metric": "translation_efficiency",
+      "stage": "computational",
+      "direction": "maximize",
+      "role": "primary"
+    },
+    {
+      "metric": "start_accessibility",
+      "stage": "computational",
+      "direction": "maximize",
+      "role": "secondary"
+    },
+    {
+      "metric": "protein_auc",
+      "stage": "experimental",
+      "direction": "maximize",
+      "role": "explanatory"
+    }
+  ],
+  "budget": {
+    "candidates": 6,
+    "shortlist": 3,
+    "rounds": 1,
+    "tool_calls": 20,
+    "seconds": 900
+  },
+  "generators": [
+    "gemorna",
+    "lineardesign"
+  ],
+  "evaluators": [
+    "vienna",
+    "ribonn"
+  ]
+}

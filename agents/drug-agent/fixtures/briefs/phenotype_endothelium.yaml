@@ -1,0 +1,47 @@
+schema_version: "1.0.0"
+kind: phenotype_based
+title: "Endothelial disease-state reversal prioritization (demonstration)"
+author: "demo"
+description: >
+  Prioritize small molecules whose in-silico perturbation signature reverses a
+  disease-associated expression state in a vascular endothelium organoid
+  fixture. Demonstration only; signature reversal is not an efficacy claim.
+
+phenotype:
+  description: "Restore healthy expression state from disease state"
+  cell_context: "vascular_endothelium_organoid"
+  disease_state_label: "disease"
+  desired_state_label: "healthy"
+  dataset_hint: "sc_perturbation"
+
+objectives:
+  - name: restoration_score
+    direction: maximize
+    weight: 3.0
+    required: true
+  - name: sa_score
+    direction: minimize
+    weight: 1.0
+  - name: qed
+    direction: maximize
+    weight: 1.0
+  - name: hERG
+    direction: minimize
+    weight: 1.5
+
+hard_constraints:
+  - name: mw_upper
+    property: descriptors.mw
+    op: "<="
+    value: 600
+  - name: no_reactive_alerts
+    property: n_structural_alerts
+    op: "=="
+    value: 0
+
+candidate_source: fixture_library
+max_candidates: 150
+shortlist_size: 6
+dataset_snapshot: seh_demo_v1
+approval_gates: ["portfolio_review"]
+tags: ["demo", "phenotype_based"]

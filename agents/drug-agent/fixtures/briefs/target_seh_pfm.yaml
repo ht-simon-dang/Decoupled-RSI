@@ -1,0 +1,87 @@
+# sEH brief with de-novo generation enabled.
+#
+# `candidate_source: fixture_library+pfm` adds a PFM-generated arm alongside the
+# library and seed analogues. With a PFM checkout configured (see
+# docs/scientific-methods.md) those molecules are sampled by the real 3D
+# generative model and tagged origin=pfm; without one, a clearly-labelled
+# deterministic surrogate runs instead and its molecules are tagged
+# origin=pfm_mock. Either way they are screened, filtered and ranked by exactly
+# the same pipeline as library compounds.
+schema_version: "1.0.0"
+kind: target_based
+title: "sEH inhibitor prioritization with de-novo generation (demonstration)"
+author: "demo"
+description: >
+  Prioritize small-molecule candidate inhibitors of soluble epoxide hydrolase
+  (sEH / EPHX2), including de-novo structures proposed by the PFM generative
+  model. Demonstration brief over synthetic activity labels; no clinical or
+  efficacy claim is implied. Generated structures are HYPOTHESES and are not
+  claimed to be synthesizable, active, or safe.
+
+target:
+  name: "Soluble epoxide hydrolase (sEH / EPHX2)"
+  gene_symbol: "EPHX2"
+  uniprot: "P34913"
+  chembl_target_id: "TARGET_EPHX2"
+  organism: "Homo sapiens"
+  pdb_ids: ["5AI0", "3I28"]
+
+objectives:
+  - name: pIC50
+    direction: maximize
+    weight: 3.0
+    unit: pIC50
+    required: true
+  - name: sa_score
+    direction: minimize
+    weight: 2.0            # generated structures are often hard to make
+  - name: qed
+    direction: maximize
+    weight: 1.5
+  - name: hERG
+    direction: minimize
+    weight: 2.0
+
+hard_constraints:
+  - name: mw_upper
+    property: descriptors.mw
+    op: "<="
+    value: 550
+    rationale: "Keep within lead-like molecular weight."
+  - name: logp_upper
+    property: descriptors.logp
+    op: "<="
+    value: 5.5
+    rationale: "Avoid excessive lipophilicity."
+  - name: no_reactive_alerts
+    property: n_structural_alerts
+    op: "=="
+    value: 0
+    rationale: "Exclude reactive/undesirable substructures at the hard-filter stage."
+
+seed_smiles:
+  - "CC(C)Cc1ccc(cc1)C(C)C(=O)O"      # ibuprofen
+  - "COc1ccc2cc(ccc2c1)C(C)C(=O)O"    # naproxen
+
+candidate_source: fixture_library+pfm
+generation:
+  method: pfm
+  n_molecules: 40
+  batch_size: 10
+  min_heavy_atoms: 12
+  max_heavy_atoms: 45
+  # Required by the real PFM backend — a PREPARED POCKET pdb, not a whole
+  # protein. Cut one with PFM's scripts/data_preparation/clean_pocket.py.
+  pocket:
+    receptor_id: "TARGET_EPHX2"
+    pdb_id: "5AI0"
+    # pdb_path: /path/to/5ai0_pocket10.pdb
+    center: [12.5, -3.1, 20.4]
+    radius: 10.0
+    notes: "C-terminal hydrolase catalytic site (demo coordinates)."
+
+max_candidates: 200
+shortlist_size: 8
+dataset_snapshot: seh_demo_v1
+approval_gates: ["portfolio_review"]
+tags: ["demo", "target_based", "sEH", "de-novo", "pfm"]

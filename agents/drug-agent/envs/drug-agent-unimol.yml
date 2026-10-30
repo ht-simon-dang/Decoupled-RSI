@@ -1,0 +1,12 @@
+# Optional Uni-Mol runtime. Install with: ./install.sh side-env unimol
+# Upstream weights are obtained separately/on first use; they are not shipped.
+name: drug-agent-unimol
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - unimol-tools
+      - numpy==2.2.6

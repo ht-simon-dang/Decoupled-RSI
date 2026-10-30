@@ -1,0 +1,672 @@
+{
+  "schema_version": 1,
+  "profile": "enzyme",
+  "agent_dir": "agents/Enzyme-Agent",
+  "contract": "Sources/weights are fetched by explicit install commands, not redistributed. check inspects paths and readiness records without loading models and never certifies scientific readiness.",
+  "status_values": [
+    "missing",
+    "present_unvalidated"
+  ],
+  "components": [
+    {
+      "id": "peptide-runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/peptide-agent/requirements.txt"
+      ],
+      "required_paths": [
+        {
+          "path": "{peptide_python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{peptide_agent}/install.sh"
+        ]
+      ],
+      "limitations": "Shared base interpreter. File presence alone does not establish installed package compatibility."
+    },
+    {
+      "id": "runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/Enzyme-Agent/requirements.txt",
+        "agents/peptide-agent/requirements.txt"
+      ],
+      "requires": [
+        "peptide-runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/scripts/bootstrap.sh",
+          "--stage",
+          "runtime"
+        ]
+      ],
+      "layout": [
+        "{data}/env/bin/python",
+        "{data}/env/lib/python3.11/site-packages/"
+      ]
+    },
+    {
+      "id": "core",
+      "kind": "installation_stage",
+      "sources": [
+        "agents/Enzyme-Agent/scripts/bootstrap.sh"
+      ],
+      "requires": [
+        "peptide-runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/manifest.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/references/cf_dnase_reference.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/scripts/bootstrap.sh",
+          "--stage",
+          "core"
+        ]
+      ],
+      "includes": [
+        "qwen",
+        "ligandmpnn",
+        "proteinmpnn",
+        "esm3",
+        "zymctrl",
+        "esmfold2",
+        "dnase-reference"
+      ]
+    },
+    {
+      "id": "foundry",
+      "kind": "installation_stage",
+      "sources": [
+        "agents/Enzyme-Agent/scripts/bootstrap_extended.sh",
+        "https://github.com/RosettaCommons/foundry"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "required_environment": [
+        "ENZYME_FOUNDRY_BASE"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/foundry-env/bin/python",
+          "kind": "executable"
+        },
+        {
+          "path": "{data}/foundry-env/bin/rfd3",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/scripts/bootstrap_extended.sh"
+        ]
+      ],
+      "includes": [
+        "rfdiffusion3",
+        "thermompnn",
+        "Python 3.12 Foundry environment"
+      ],
+      "limitations": "Requires a user-selected Python 3.12 CUDA Torch interpreter. Downloads extended sources/weights and installs pinned packages; does not create readiness evidence.",
+      "readiness": [
+        {
+          "path": "{data}/models/rfdiffusion3/runtime-validation.json",
+          "key": [
+            "status"
+          ],
+          "equals": "passed"
+        },
+        {
+          "path": "{data}/models/thermompnn/runtime-validation.json",
+          "key": [
+            "status"
+          ],
+          "equals": "passed"
+        }
+      ]
+    },
+    {
+      "id": "qwen",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/Qwen/Qwen3.5-0.8B"
+      ],
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "license": "Apache-2.0",
+      "role": "planner",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{qwen}/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{qwen}/*.safetensors",
+            "{qwen}/*.bin",
+            "{qwen}/*.pth"
+          ]
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "qwen"
+        ]
+      ],
+      "layout": [
+        "{qwen}/{config,weights,manifest.json}"
+      ]
+    },
+    {
+      "id": "esm3",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/biohub/esm3-sm-open-v1"
+      ],
+      "revision": "47f0545b2b6daf26a93439a3cd610f4f7f3d5478",
+      "license": "MIT",
+      "role": "generator",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/config.json"
+        },
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/manifest.json"
+        },
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/weights/esm3_sm_open_v1.pth"
+        },
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/weights/esm3_function_decoder_v0.pth"
+        },
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/weights/esm3_structure_decoder_v0.pth"
+        },
+        {
+          "path": "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/weights/esm3_structure_encoder_v0.pth"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "esm3"
+        ]
+      ],
+      "layout": [
+        "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/weights/*.pth",
+        "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/data/{vocabularies,annotations,features}",
+        "{data}/models/esm3/47f0545b2b6daf26a93439a3cd610f4f7f3d5478/manifest.json"
+      ]
+    },
+    {
+      "id": "esmfold2",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/biohub/ESMFold2-Fast"
+      ],
+      "revision": "45fe8656f5b3ef493c17fcf9abe9a2968902e712",
+      "license": "MIT",
+      "role": "independent_fold",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/*.safetensors",
+            "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/*.bin",
+            "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/*.pth"
+          ]
+        },
+        {
+          "path": "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/manifest.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "esmfold2"
+        ]
+      ],
+      "layout": [
+        "{data}/models/esmfold2/45fe8656f5b3ef493c17fcf9abe9a2968902e712/{config,weights,manifest.json}"
+      ]
+    },
+    {
+      "id": "zymctrl",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/AI4PD/ZymCTRL"
+      ],
+      "revision": "3c532ef172b9cd2e95238baadf5167ebb89fbc32",
+      "license": "Apache-2.0",
+      "role": "generator",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/*.safetensors",
+            "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/*.bin",
+            "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/*.pth"
+          ]
+        },
+        {
+          "path": "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/manifest.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "zymctrl"
+        ]
+      ],
+      "layout": [
+        "{data}/models/zymctrl/3c532ef172b9cd2e95238baadf5167ebb89fbc32/{config,weights,manifest.json}"
+      ]
+    },
+    {
+      "id": "ligandmpnn",
+      "kind": "source_and_model",
+      "sources": [
+        "https://github.com/dauparas/LigandMPNN",
+        "https://files.ipd.uw.edu/pub/ligandmpnn/ligandmpnn_v_32_010_25.pt"
+      ],
+      "revision": "26ec57ac976ade5379920dbd43c7f97a91cf82de",
+      "license": "MIT according to the pinned adapter inventory; retain upstream notices.",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/ligandmpnn/source/run.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/model_utils.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/data_utils.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/openfold",
+          "kind": "directory"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/ligandmpnn_v_32_010_25.pt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/manifest.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "ligandmpnn"
+        ]
+      ],
+      "includes": [
+        "ligandmpnn",
+        "proteinmpnn"
+      ],
+      "limitations": "The shared upstream bundle downloader retrieves both MPNN checkpoints."
+    },
+    {
+      "id": "proteinmpnn",
+      "kind": "source_and_model",
+      "sources": [
+        "https://github.com/dauparas/LigandMPNN",
+        "https://files.ipd.uw.edu/pub/ligandmpnn/proteinmpnn_v_48_020.pt"
+      ],
+      "revision": "26ec57ac976ade5379920dbd43c7f97a91cf82de",
+      "license": "MIT according to the pinned adapter inventory; retain upstream notices.",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/ligandmpnn/source/run.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/model_utils.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/data_utils.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/source/openfold",
+          "kind": "directory"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/proteinmpnn_v_48_020.pt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/ligandmpnn/manifest.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "proteinmpnn"
+        ]
+      ],
+      "includes": [
+        "ligandmpnn",
+        "proteinmpnn"
+      ],
+      "limitations": "The shared upstream bundle downloader retrieves both MPNN checkpoints."
+    },
+    {
+      "id": "rfdiffusion3",
+      "kind": "source_and_model",
+      "sources": [
+        "https://github.com/RosettaCommons/foundry",
+        "https://files.ipd.uw.edu/pub/rfd3/rfd3_foundry_2025_12_01_remapped.ckpt"
+      ],
+      "revision": "d078b24d6d0e6f8607e9a0311128f4a897f83953",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/rfdiffusion3/manifest.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/rfdiffusion3/rfd3_latest.ckpt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/rfdiffusion3/source",
+          "kind": "directory"
+        },
+        {
+          "path": "{data}/foundry-env/bin/rfd3",
+          "kind": "executable"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/models/rfdiffusion3/runtime-validation.json",
+          "key": [
+            "status"
+          ],
+          "equals": "passed"
+        },
+        {
+          "path": "{data}/models/rfdiffusion3/runtime-validation.json",
+          "key": [
+            "revision"
+          ],
+          "equals": "d078b24d6d0e6f8607e9a0311128f4a897f83953"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "rfdiffusion3"
+        ]
+      ],
+      "limitations": "Downloads source/weights only. Use install foundry for the separate Foundry runtime. Local inference validation is required and its historic records/internal scripts are not included."
+    },
+    {
+      "id": "thermompnn",
+      "kind": "source_and_model",
+      "sources": [
+        "https://github.com/Kuhlman-Lab/ThermoMPNN"
+      ],
+      "revision": "370f76ec62bd929f7425e311d8df04a0d094990f",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/models/thermompnn/manifest.json",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/thermompnn/source/transfer_model.py",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/thermompnn/source/models/thermoMPNN_default.pt",
+          "kind": "file"
+        },
+        {
+          "path": "{data}/models/thermompnn/source/vanilla_model_weights/v_48_020.pt",
+          "kind": "file"
+        }
+      ],
+      "readiness": [
+        {
+          "path": "{data}/models/thermompnn/runtime-validation.json",
+          "key": [
+            "status"
+          ],
+          "equals": "passed"
+        },
+        {
+          "path": "{data}/models/thermompnn/runtime-validation.json",
+          "key": [
+            "revision"
+          ],
+          "equals": "370f76ec62bd929f7425e311d8df04a0d094990f"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "enzyme_agent.cli",
+          "download",
+          "thermompnn"
+        ]
+      ],
+      "limitations": "Downloads source/weights only. Use install foundry for the separate Foundry runtime. Local inference validation is required and its historic records/internal scripts are not included."
+    },
+    {
+      "id": "dnase-reference",
+      "kind": "reference_data",
+      "sources": [
+        "https://rest.uniprot.org/uniprotkb/P24855",
+        "https://files.rcsb.org/download/4AWN.pdb"
+      ],
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{data}/references/cf_dnase_reference.json",
+          "kind": "file"
+        },
+        {
+          "path": "{agent}/examples/dnase_reference.json",
+          "kind": "file"
+        },
+        {
+          "path": "{agent}/examples/dnase_design.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "{agent}/scripts/prepare_dnase.py"
+        ]
+      ],
+      "limitations": "Downloads public reference data and generates local JSON inputs. Generated examples are ignored by Git."
+    },
+    {
+      "id": "rfdiffusion2",
+      "kind": "manual_integration",
+      "role": "generator",
+      "sources": [
+        "https://github.com/RosettaCommons/RFdiffusion2"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires motif atom constraints and separately validated runtime; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "placer",
+      "kind": "manual_integration",
+      "role": "local_conformation",
+      "sources": [
+        "https://github.com/baker-laboratory/PLACER"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires a protein/ligand complex; local conformations are not rates; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "catpred",
+      "kind": "manual_integration",
+      "role": "kinetics",
+      "sources": [
+        "https://github.com/maranasgroup/CatPred"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires small-molecule compatibility and calibrated domain; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "catapro",
+      "kind": "manual_integration",
+      "role": "kinetics",
+      "sources": [
+        "https://github.com/zchwang/CataPro"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires small-molecule compatibility and calibrated domain; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "ezspecificity",
+      "kind": "manual_integration",
+      "role": "substrate_compatibility",
+      "sources": [
+        "https://github.com/antecede/EZSpecificity"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires structures and license/input validation; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "netsolp",
+      "kind": "manual_integration",
+      "role": "solubility",
+      "sources": [
+        "https://services.healthtech.dtu.dk/services/NetSolP-1.0/"
+      ],
+      "required_paths": [],
+      "manual_reason": "E. coli domain only; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "netmhciipan",
+      "kind": "manual_integration",
+      "role": "immunogenicity_clue",
+      "sources": [
+        "https://services.healthtech.dtu.dk/services/NetMHCIIpan-4.3/"
+      ],
+      "required_paths": [],
+      "manual_reason": "Requires licensed installation and explicit HLA panel; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "progen3",
+      "kind": "manual_integration",
+      "role": "generator",
+      "sources": [
+        "https://github.com/Profluent-AI/progen3"
+      ],
+      "required_paths": [],
+      "manual_reason": "Separate noncommercial weight terms; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    },
+    {
+      "id": "genzyme",
+      "kind": "manual_integration",
+      "role": "research_generator",
+      "sources": [
+        "https://github.com/WillHua127/GENzyme"
+      ],
+      "required_paths": [],
+      "manual_reason": "Research hypothesis; separate noncommercial terms; this release has no executable validated adapter or automatic install path for this route.",
+      "acquisition": "Follow the upstream source and applicable licensed-access process; integrate and validate an adapter before activation."
+    }
+  ],
+  "license_note": "License strings are carried from the pinned adapter inventory, not a new legal determination. Consult each source and any separate weight/data terms."
+}

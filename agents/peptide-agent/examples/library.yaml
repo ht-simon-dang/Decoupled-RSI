@@ -1,0 +1,8 @@
+name: offline-linear-peptide-demo
+source: library
+sequences:
+  - AGCKNFFWKTFTSC
+  - YGGFL
+  - GIGAVLKVLTTGLPALISWIKRKRQQ
+shortlist: 3
+ph: 7.4

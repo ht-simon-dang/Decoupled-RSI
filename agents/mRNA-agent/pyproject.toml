@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mrna-agent"
+version = "0.2.1"
+description = "EMA4D mRNA design: constrained planning, scientific tools and auditable evaluation"
+requires-python = ">=3.11,<3.13"
+dependencies = ["pydantic>=2.11,<3", "numpy>=1.26,<3", "biopython>=1.85", "PyYAML>=6", "fastapi>=0.115", "uvicorn>=0.30", "requests>=2.32", "ViennaRNA==2.7.2"]
+
+[project.scripts]
+mrna-agent = "mrna_agent.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mrna_agent"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"examples" = "mrna_agent/examples"

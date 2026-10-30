@@ -1,0 +1,31 @@
+# Independent Self-Evolve Agent configuration.
+# Use newly generated local journals or another explicitly configured source.
+# The public snapshot excludes the private regression suite. The unchanged
+# evaluation kernel requires that suite at gate 0; baseline/step/run cannot
+# pass that gate until a compatible suite is supplied. No gate is bypassed.
+journal_dir: ""
+store_dir: ""
+workspace_dir: ""
+max_cycles: 10
+max_candidates: 30
+claude_call_budget: 800
+ollama_call_budget: 1000
+benchmark_timeout_s: 86400
+controller_backend: ollama
+controller_model: ""
+deep_backend: claude_cli
+deep_model: opus
+critic_backend: claude_cli
+critic_model: sonnet
+escalation_fallback: true
+benchmark_id: drugagent-master-v1
+program_cycles: 1
+repeats: 1
+task_ids: []
+auto_promote: false
+min_effect: 0.0
+max_regression: 0.0001
+bootstrap_resamples: 2000
+allow_internet: false
+require_clean_tree: false
+dry_run: false

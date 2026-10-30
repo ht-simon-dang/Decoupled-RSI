@@ -1,0 +1,377 @@
+{
+  "$defs": {
+    "BuildingBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "default": false,
+          "title": "Available",
+          "type": "boolean"
+        },
+        "catalog": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Catalog"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "price_class": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'cheap'|'moderate'|'costly'|'unknown'.",
+          "title": "Price Class"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "smiles": {
+          "title": "Smiles",
+          "type": "string"
+        }
+      },
+      "required": [
+        "smiles"
+      ],
+      "title": "BuildingBlock",
+      "type": "object"
+    },
+    "RouteStep": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "order": {
+          "title": "Order",
+          "type": "integer"
+        },
+        "product": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Product"
+        },
+        "reactants": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reactants",
+          "type": "array"
+        },
+        "reaction_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reaction Type"
+        },
+        "risk": {
+          "$ref": "#/$defs/Severity",
+          "default": "LOW"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "order",
+        "description"
+      ],
+      "title": "RouteStep",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "NONE",
+        "LOW",
+        "MODERATE",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SynthesisRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "building_blocks": {
+          "items": {
+            "$ref": "#/$defs/BuildingBlock"
+          },
+          "title": "Building Blocks",
+          "type": "array"
+        },
+        "created_at": {
+          "description": "ISO-8601 UTC creation time.",
+          "title": "Created At",
+          "type": "string"
+        },
+        "engine": {
+          "default": "mock",
+          "title": "Engine",
+          "type": "string"
+        },
+        "engine_version": {
+          "default": "0.0.0",
+          "title": "Engine Version",
+          "type": "string"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "feasible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Feasible"
+        },
+        "id": {
+          "default": "",
+          "description": "Stable prefixed identifier.",
+          "title": "Id",
+          "type": "string"
+        },
+        "id_prefix": {
+          "default": "route",
+          "title": "Id Prefix",
+          "type": "string"
+        },
+        "n_steps": {
+          "default": 0,
+          "title": "N Steps",
+          "type": "integer"
+        },
+        "overall_confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overall Confidence"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/RouteStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "target_smiles": {
+          "default": "",
+          "title": "Target Smiles",
+          "type": "string"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "PREDICTED"
+        }
+      },
+      "title": "SynthesisRoute",
+      "type": "object"
+    },
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Synthesizability assessment for a candidate.",
+  "properties": {
+    "best_route_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Best Route Id"
+    },
+    "building_block_availability": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Building Block Availability"
+    },
+    "candidate_id": {
+      "default": "",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "synth",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "limitation": {
+      "default": "Heuristic estimate; no laboratory validation implied.",
+      "title": "Limitation",
+      "type": "string"
+    },
+    "risk_factors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Risk Factors",
+      "type": "array"
+    },
+    "routes": {
+      "items": {
+        "$ref": "#/$defs/SynthesisRoute"
+      },
+      "title": "Routes",
+      "type": "array"
+    },
+    "sa_label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sa Label"
+    },
+    "sa_score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Synthetic accessibility (1 easy - 10 hard).",
+      "title": "Sa Score"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_label": {
+      "$ref": "#/$defs/TrustLabel",
+      "default": "PREDICTED"
+    }
+  },
+  "title": "SynthesisPlan",
+  "type": "object"
+}

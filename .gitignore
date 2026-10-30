@@ -1,0 +1,53 @@
+# Credentials and local settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local runtime state and third-party resources
+.external/
+.research/
+.drugagent*/
+.peptide-agent/
+running-history/
+runs/
+logs/
+checkpoints/
+weights/
+models/
+*.sqlite
+*.sqlite3
+*.db
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Development material is outside this public snapshot
+tests/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.claude/
+.codex/
+.idea/
+.vscode/
+.DS_Store
+
+# Generated distribution and manuscript files
+*.zip
+*.tar.gz
+*.docx
+*.pptx
+*.log

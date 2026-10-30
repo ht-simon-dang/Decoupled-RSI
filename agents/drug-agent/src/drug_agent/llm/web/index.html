@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM Master Agent · Drug Discovery</title>
+  <link rel="stylesheet" href="/web/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">◇</div>
+      <div>
+        <h1>LLM Master Agent</h1>
+        <p class="sub">Plans · transcribes intent → chemistry · dispatches specialists · adaptively re-prompts</p>
+      </div>
+    </div>
+    <div class="segmented viewtabs" id="viewtabs">
+      <button data-val="discovery" class="on" title="Run the master agent: plan, transcribe, generate — including de-novo generation with PFM">🧫 Discovery run</button>
+      <button data-val="evolve" title="The self-evolution loop: what the platform's own history says is wrong with it, and what has been earned">🧬 Self-evolution</button>
+      <button data-val="topology" title="The pool drawn as a tree: the master agent, the agents it dispatches to, and every tool each one can call — with what runs on this machine and what does not">🗺️ Agent map</button>
+    </div>
+    <div class="health" id="health"><span class="dot dot-wait"></span> checking Ollama…</div>
+  </header>
+
+  <div class="layout" id="view-discovery">
+    <!-- ------------------------------------------------------------ -->
+    <aside class="sidebar">
+      <label class="field-label" for="instruction">Research instruction</label>
+      <textarea id="instruction" rows="5" placeholder="e.g. Find selective, potent, drug-like sEH inhibitors with novel scaffolds…"></textarea>
+
+      <label class="field-label" for="preset">Examples</label>
+      <select id="preset"><option value="">— choose an example —</option></select>
+
+      <label class="field-label">Refinement strategy <span class="hint" title="Ablation switch. Adaptive: the LLM diagnoses failures and rewrites the generation prompt each cycle. Naive: re-runs identical requirements (baseline).">ⓘ</span></label>
+      <div class="segmented" id="strategy">
+        <button data-val="adaptive" class="on">Adaptive re-prompt</button>
+        <button data-val="naive">Naive retry</button>
+      </div>
+
+      <label class="field-label">Candidate source <span class="hint" title="Whether a goal needs newly generated chemistry or a search of known chemistry is a scientific judgement about the goal, so the master agent makes it during transcription — and it is shown here, with its reasoning, as the run happens.">ⓘ</span></label>
+      <div id="genstatus" class="ablation-note"></div>
+
+      <label class="field-label" for="maxcycles">Max cycles</label>
+      <input id="maxcycles" type="number" min="1" max="6" value="3" />
+
+      <label class="field-label" for="model">Model</label>
+      <select id="model"></select>
+
+      <button id="launch" class="launch">▸ Launch master agent</button>
+      <div id="runmeta" class="runmeta"></div>
+
+      <div class="ablation-note">
+        <strong>Ablation.</strong> The backend is deterministic, so <em>naive retry</em> reproduces
+        identical results every cycle — while <em>adaptive re-prompt</em> changes seeds, constraints
+        or objectives from a diagnosed root cause. Run both and compare the scoreboard.
+      </div>
+      <p class="disclaimer">Research-prioritization only — not a clinical decision system. Predicted/synthetic values require external validation.</p>
+    </aside>
+
+    <!-- ------------------------------------------------------------ -->
+    <main class="main">
+      <section class="thinkpanel" id="thinkpanel" hidden>
+        <div class="thinkhead">
+          <span class="pulse" id="pulse"></span>
+          <span class="phasechip" id="phasechip">idle</span>
+          <span class="thinktitle" id="thinktitle"></span>
+          <span class="spacer"></span>
+          <label class="toggle"><input type="checkbox" id="showcontent" /> show JSON channel</label>
+        </div>
+        <pre class="thinkstream" id="thinkstream"></pre>
+        <pre class="contentstream" id="contentstream" hidden></pre>
+      </section>
+
+      <section class="scoreboard" id="scoreboard" hidden>
+        <h2>Scoreboard <small>criteria met &amp; best predicted pIC50 per cycle</small></h2>
+        <div id="chart"></div>
+        <div id="scoretable"></div>
+      </section>
+
+      <section class="timeline" id="timeline">
+        <div class="empty" id="empty">
+          <div class="empty-glyph">🧫</div>
+          <p>Enter a research instruction and launch the master agent.<br />
+          You'll see it <strong>think</strong> — plan, translate intent into chemical requirements,
+          dispatch the chemical &amp; evaluation agents, judge the results, and re-prompt when needed.</p>
+        </div>
+      </section>
+
+      <section class="final" id="final" hidden></section>
+
+      <!-- Journal: what past requests did, and how the tools performed -->
+      <section class="journal" id="journal">
+        <div class="jhead">
+          <h2>Journal <small>every request is recorded: full chat log, tool usage, outcome</small></h2>
+          <div class="segmented small" id="jtabs">
+            <button data-val="requests" class="on">Requests</button>
+            <button data-val="tools">Tool performance</button>
+            <button data-val="pools">Agents &amp; tools</button>
+          </div>
+          <button class="ghost" id="jrefresh" title="Reload">⟳</button>
+        </div>
+        <div id="jbody" class="jbody"><p class="tgt">loading…</p></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- SELF-EVOLUTION — the loop that studies the journals above      -->
+  <!-- ============================================================== -->
+  <section class="evolve" id="view-evolve" hidden>
+    <div class="ehead">
+      <div>
+        <h2>Self-evolution</h2>
+        <p class="sub">Reads the request journals · measures what is wrong · proposes changes · earns each one against a benchmark it cannot touch</p>
+      </div>
+      <div class="segmented small" id="etabs">
+        <button data-val="overview" class="on">Overview</button>
+        <button data-val="findings">Findings</button>
+        <button data-val="methods">Methods</button>
+        <button data-val="benchmark">Benchmark</button>
+        <button data-val="candidates">Candidates</button>
+        <button data-val="run">Run the loop</button>
+        <button data-val="cycles">Cycles</button>
+        <button data-val="logs">Logs</button>
+      </div>
+      <button class="ghost" id="erefresh" title="Reload">⟳</button>
+    </div>
+    <div id="ebody" class="ebody"><p class="tgt">loading…</p></div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- AGENT MAP — the pool as a horizontal tree:                     -->
+  <!-- master agent → agents → capability groups → tools              -->
+  <!-- ============================================================== -->
+  <section class="topo" id="view-topology" hidden>
+    <div class="ehead">
+      <div>
+        <h2>Agent map</h2>
+        <p class="sub">The master agent · the agents it dispatches to · every tool each one can call — read live from the pool, so this is what <em>this</em> machine can do</p>
+      </div>
+      <div class="segmented small" id="topofilter">
+        <button data-val="all" class="on" title="Every tool in the pool">All tools</button>
+        <button data-val="available" title="Only the tools that compute something on this machine">Runs here</button>
+        <button data-val="unavailable" title="Only the tools that report UNAVAILABLE, with the reason each one gives">Unavailable</button>
+      </div>
+      <button class="ghost" id="topoexpand" title="Open every branch">⤢ expand</button>
+      <button class="ghost" id="topocollapse" title="Fold every branch back to its agent">⤡ collapse</button>
+      <button class="ghost" id="toporefresh" title="Re-read the pools">⟳</button>
+    </div>
+    <div id="topobody" class="topobody"><p class="tgt">reading the agent and tool pools…</p></div>
+  </section>
+
+  <!-- One tooltip panel, moved and refilled per node: these descriptions are
+       paragraphs, and a native title= would truncate the one line an operator
+       needs most — why a tool is unavailable. -->
+  <div id="topotip" class="topotip" role="tooltip" hidden></div>
+
+  <script src="/web/app.js"></script>
+  <script src="/web/evolve.js"></script>
+  <script src="/web/topology.js"></script>
+</body>
+</html>

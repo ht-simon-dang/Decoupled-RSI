@@ -1,0 +1,15 @@
+# Optional GPU execution profile. Install the requested backends separately.
+profile: gpu
+allow_network: false
+workflow_backend: embedded
+storage_backend: local
+llm_provider: fake
+telemetry: local
+max_concurrency: 12
+default_task_timeout_s: 600
+generator_backend: auto
+pfm_device: "cuda:0"
+pfm_timeout_seconds: 3600
+external_tools: {}
+# Supply a prepared pocket path and any backend-specific paths locally.
+# pfm_pocket_pdb: ./pockets/target.pdb

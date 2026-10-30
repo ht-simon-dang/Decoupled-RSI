@@ -1,0 +1,12 @@
+# Additional packages layered over the peptide-agent Python 3.11 environment.
+# bootstrap.sh installs these with --no-deps to retain the inherited modern
+# Torch/Transformers runtime used by the adapters. This is not a standalone env.
+esm==3.2.1.post1
+ProDy==2.6.1
+cloudpathlib==0.26.0
+msgpack-numpy==0.4.8
+brotli==1.2.1
+tenacity==9.2.1
+zstd==1.5.7.2
+ml-collections==1.1.0
+dm-tree==0.1.10

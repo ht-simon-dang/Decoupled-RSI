@@ -1,0 +1,40 @@
+# Upstream checkouts the tool catalogue binds, and the commit each driver was
+# written against. `make external-clone` reads this file; nothing else does.
+#
+# The pinned sha is not decoration. A driver calls an upstream entry point by name
+# with named arguments, and upstream projects rename both. Cloning at HEAD and
+# hoping is how an adapter starts failing for reasons that look like this repo's
+# fault, so the clone is pinned and a drift is a deliberate act with a new sha.
+#
+# These clones are CODE ONLY. Generative checkpoints are not fetched here — they
+# are multi-GB, they live behind Zenodo/Drive links with varying terms, and several
+# require accepting a licence. Each adapter's `unavailable_reason` names the exact
+# weight file it wants and where upstream says to get it.
+#
+# dir<TAB>url<TAB>sha
+REINVENT4	https://github.com/MolecularAI/REINVENT4	ee0d56f4a074
+synformer	https://github.com/wenhao-gao/synformer	bef02bc4481a
+prexsyn	https://github.com/luost26/prexsyn	3522e9747538
+reasyn	https://github.com/NVIDIA-Digital-Bio/reasyn	8a0b02178e90
+RxnFlow	https://github.com/SeonghwanSeo/RxnFlow	a39c7aebd45f
+flowr_root	https://github.com/jule-c/flowr_root	86a25f08161d
+DrugFlow	https://github.com/LPDI-EPFL/DrugFlow	ed6841677ccf
+MolCRAFT	https://github.com/GenSI-THUAIR/MolCRAFT	743dfb5198c4
+PocketXMol	https://github.com/pengxingang/PocketXMol	65488cf635c8
+OMTRA	https://github.com/gnina/OMTRA	745127dabfa1
+shepherd	https://github.com/coleygroup/shepherd	1707fddc3b87
+shepherd-score	https://github.com/coleygroup/shepherd-score	20ebed761e05
+e3moldiffusion	https://github.com/pfizer-opensource/e3moldiffusion	f5e9bb8a77b6
+FlowMol	https://github.com/Dunni3/FlowMol	77cae22174b7
+Pocket2Mol	https://github.com/pengxingang/Pocket2Mol	836a0c4ce487
+targetdiff	https://github.com/guanjq/targetdiff	142f1eb71784
+PocketFlow	https://github.com/Saoge123/PocketFlow	a31a5a03f7d1
+DiffDock	https://github.com/gcorso/DiffDock	85c49b60d3e0
+FlowDock	https://github.com/BioinfoMachineLearning/FlowDock	c233fd8be67f
+PoseBench	https://github.com/BioinfoMachineLearning/PoseBench	c5d728d2a31d
+Uni-Mol	https://github.com/deepmodeling/Uni-Mol	90f52c41299a
+aizynthfinder	https://github.com/MolecularAI/aizynthfinder	21ff546d5f22
+openfe	https://github.com/OpenFreeEnergy/openfe	678bbd4a23b9
+boltz	https://github.com/jwohlwend/boltz	b1ebfc46ecf5
+gnina	https://github.com/gnina/gnina	6fe1ce2bb9c3
+synflownet	https://github.com/mirunacrt/synflownet	574f1e148f42

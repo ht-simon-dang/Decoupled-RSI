@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "profile": "peptide",
+  "agent_dir": "agents/peptide-agent",
+  "contract": "Sources/weights are fetched by explicit install commands, not redistributed. check inspects paths and readiness records without loading models and never certifies scientific readiness.",
+  "status_values": [
+    "missing",
+    "present_unvalidated"
+  ],
+  "components": [
+    {
+      "id": "runtime",
+      "kind": "environment",
+      "sources": [
+        "agents/peptide-agent/environment.yml",
+        "agents/peptide-agent/requirements.txt"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_commands": [
+        [
+          "bash",
+          "{agent}/install.sh"
+        ]
+      ],
+      "includes": [
+        "Python 3.11",
+        "Torch/Transformers",
+        "Biopython",
+        "RDKit",
+        "PRODIGY",
+        "MCP",
+        "Web runtime"
+      ],
+      "layout": [
+        "agents/peptide-agent/.venv/bin/python",
+        "agents/peptide-agent/.venv/lib/python3.11/site-packages/"
+      ],
+      "adapter_ids": []
+    },
+    {
+      "id": "qwen",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/Qwen/Qwen3.5-0.8B"
+      ],
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "license": "See the pinned upstream model card; project Apache license does not cover downloaded weights.",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{models}/qwen/2fc06364715b967f1860aea9cf38778875588b17/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{models}/qwen/2fc06364715b967f1860aea9cf38778875588b17/*.safetensors",
+            "{models}/qwen/2fc06364715b967f1860aea9cf38778875588b17/*.bin"
+          ]
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "peptide_agent.cli",
+          "download",
+          "qwen"
+        ]
+      ],
+      "layout": [
+        "{models}/qwen/2fc06364715b967f1860aea9cf38778875588b17/{config,tokenizer,weights}"
+      ],
+      "adapter": "agents/peptide-agent/src/peptide_agent/models.py",
+      "adapter_ids": [
+        "planner"
+      ]
+    },
+    {
+      "id": "pepmlm",
+      "kind": "model",
+      "sources": [
+        "https://huggingface.co/ChatterjeeLab/PepMLM-650M"
+      ],
+      "revision": "898fca941a9057aebdd1a6164b5ee09a1a71780e",
+      "license": "See the pinned upstream model card; project Apache license does not cover downloaded weights.",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{models}/pepmlm/898fca941a9057aebdd1a6164b5ee09a1a71780e/config.json",
+          "kind": "file"
+        },
+        {
+          "any_of": [
+            "{models}/pepmlm/898fca941a9057aebdd1a6164b5ee09a1a71780e/*.safetensors",
+            "{models}/pepmlm/898fca941a9057aebdd1a6164b5ee09a1a71780e/*.bin"
+          ]
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "peptide_agent.cli",
+          "download",
+          "pepmlm"
+        ]
+      ],
+      "layout": [
+        "{models}/pepmlm/898fca941a9057aebdd1a6164b5ee09a1a71780e/{config,tokenizer,weights}"
+      ],
+      "adapter": "agents/peptide-agent/src/peptide_agent/models.py",
+      "adapter_ids": [
+        "generation.pepmlm"
+      ]
+    },
+    {
+      "id": "boltzgen",
+      "kind": "model_and_data",
+      "sources": [
+        "https://github.com/HannesStark/boltzgen",
+        "https://huggingface.co/boltzgen/boltzgen-1",
+        "https://huggingface.co/datasets/boltzgen/inference-data"
+      ],
+      "revision": "c1be29e1f82ffcc72264f64b993c43fb4e0d17f0",
+      "data_revision": "c3d36fd276e9caf098c75d4113c6d5eb320b1a4c",
+      "package": "boltzgen==0.3.2",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{models}/boltzgen/models--boltzgen--boltzgen-1/snapshots/c1be29e1f82ffcc72264f64b993c43fb4e0d17f0/boltzgen1_diverse.ckpt",
+          "kind": "file"
+        },
+        {
+          "path": "{models}/boltzgen/models--boltzgen--boltzgen-1/snapshots/c1be29e1f82ffcc72264f64b993c43fb4e0d17f0/boltz2_conf_final.ckpt",
+          "kind": "file"
+        },
+        {
+          "path": "{models}/boltzgen/datasets--boltzgen--inference-data/snapshots/c3d36fd276e9caf098c75d4113c6d5eb320b1a4c/mols.zip",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "peptide_agent.cli",
+          "download",
+          "boltzgen"
+        ]
+      ],
+      "license": "Upstream code, model and inference-data terms apply separately.",
+      "adapter": "agents/peptide-agent/src/peptide_agent/structural.py",
+      "adapter_ids": [
+        "generation.boltzgen"
+      ]
+    },
+    {
+      "id": "toxinpred3",
+      "kind": "model_export",
+      "sources": [
+        "https://github.com/raghavagps/toxinpred3"
+      ],
+      "revision": "dcdba833cd48cc8a2090ac90f3319fd9bcb87a1c",
+      "source_model_sha256": "bacaef2ff40136babe98edcde861ea79d62ea3420a6b1b5d36019fa0ddc2db3b",
+      "requires": [
+        "runtime"
+      ],
+      "required_paths": [
+        {
+          "path": "{models}/toxinpred3/trees.npz",
+          "kind": "file"
+        },
+        {
+          "path": "{models}/toxinpred3/manifest.json",
+          "kind": "file"
+        }
+      ],
+      "install_commands": [
+        [
+          "{python}",
+          "-m",
+          "peptide_agent.cli",
+          "download",
+          "toxinpred3"
+        ]
+      ],
+      "license": "See upstream license; downloader verifies the pinned official pickle before exporting local array weights.",
+      "layout": [
+        "{models}/toxinpred3/model.pkl",
+        "{models}/toxinpred3/trees.npz",
+        "{models}/toxinpred3/manifest.json"
+      ],
+      "adapter_ids": [
+        "safety.toxinpred3"
+      ]
+    },
+    {
+      "id": "prodigy",
+      "kind": "runtime_package",
+      "sources": [
+        "https://github.com/haddocking/prodigy"
+      ],
+      "package": "prodigy-prot==2.4.0",
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_via": "runtime",
+      "limitations": "Requires a caller-supplied complex structure. A presence check does not import or execute the package.",
+      "adapter_ids": [
+        "affinity.prodigy"
+      ]
+    },
+    {
+      "id": "sequence-chemistry",
+      "kind": "runtime_packages",
+      "sources": [
+        "https://github.com/biopython/biopython",
+        "https://github.com/rdkit/rdkit"
+      ],
+      "required_paths": [
+        {
+          "path": "{python}",
+          "kind": "executable"
+        }
+      ],
+      "install_via": "runtime",
+      "limitations": "ProtParam, RDKit and geometric calculations use caller-provided sequences/structures.",
+      "adapter_ids": [
+        "sequence.analyze",
+        "structure.contacts"
+      ]
+    },
+    {
+      "id": "calibrated-affinity",
+      "kind": "user_data",
+      "sources": [
+        "agents/peptide-agent/src/peptide_agent/calibration.py"
+      ],
+      "required_paths": [
+        {
+          "glob": "{models}/calibrations/*.json"
+        }
+      ],
+      "manual_reason": "Requires user-supplied measured pKd with declared disjoint train/calibration/test groups and local calibration; no measurements or fitted artifacts are redistributed.",
+      "acquisition": "Use the packaged calibration API with your own admissible measured dataset.",
+      "adapter_ids": [
+        "affinity.calibrated"
+      ]
+    },
+    {
+      "id": "research-backends",
+      "kind": "manual_integration",
+      "sources": [
+        "https://github.com/aigensciences/PepTri",
+        "https://github.com/NiuDongjiang/PepFGLD"
+      ],
+      "required_paths": [],
+      "manual_reason": "Not integrated executable backends in this release. Upstream source/weights, terms and a validated adapter are required.",
+      "adapter_ids": []
+    }
+  ],
+  "license_note": "License strings are carried from the pinned adapter inventory, not a new legal determination. Consult each source and any separate weight/data terms."
+}

@@ -1,0 +1,48 @@
+{
+  "name": "PARADE \u00b7 paired cell context",
+  "protein": "MNDTEAI",
+  "protein_version": "synthetic-short-v1",
+  "context": {
+    "species": "human",
+    "target_cell": "c1",
+    "non_target_cells": [
+      "c6"
+    ]
+  },
+  "molecule": {
+    "cap": "Cap1",
+    "poly_a_length": 100,
+    "modification": "unmodified"
+  },
+  "objectives": [
+    {
+      "metric": "protein_auc",
+      "stage": "experimental",
+      "direction": "maximize",
+      "role": "primary"
+    }
+  ],
+  "budget": {
+    "candidates": 6,
+    "shortlist": 3,
+    "rounds": 1,
+    "tool_calls": 20,
+    "seconds": 900
+  },
+  "generators": [
+    "parade"
+  ],
+  "evaluators": [
+    "parade",
+    "vienna"
+  ],
+  "mode": "utr",
+  "reference": {
+    "utr5": "ACGACGACGACGACGACGACGACGACGACGACGACGACGACGACGACGAC",
+    "cds": "AUGAACGACACCGAGGCCAUCUGA",
+    "utr3": "GCUCGCUUUCUUGCUGUCCAAUUUCUAUUAAAGGUUCCUUUGUUCCCUAAGUCCAACUACUAAACUGGGGGAUAUUAUGAAGGGCCUUGAGCAUCUGGAUUCUGCCUAAUAAAAAACAUUUAUUUUCAUUGCAA"
+  },
+  "fixed_regions": [
+    "utr3"
+  ]
+}

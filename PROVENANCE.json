@@ -1,0 +1,79 @@
+{
+  "project": "Decoupled RSI Agent",
+  "title": "Decoupled RSI: Give Self-Evolution Its Own Agent",
+  "snapshot_date": "2026-10-28",
+  "publication_status": "LOCAL_COMMIT_REVIEWED_NOT_PUBLISHED",
+  "source_repository": "drug-agent-ver-0_1",
+  "source_base_commit": "285b23b7b80edf8a36b42b6fde9645c9d810e24e",
+  "source_branch": "release/v1_1",
+  "source_working_tree_was_dirty": true,
+  "included_uncommitted_source": true,
+  "source_commit_is_not_the_identity_of_this_snapshot": true,
+  "original_git_history_included": false,
+  "local_git_boundary": "independent repository; initial commit contains reviewed public content only; original source history excluded; no remote configured",
+  "primary_package_version": "1.1.0",
+  "copy_policy": "explicit file allowlist; source repository retained; public-copy-only agent regrouping, monorepo path adaptation, dependency installers, and documentation changes",
+  "raw_execution_history_included": false,
+  "development_tests_included": false,
+  "third_party_source_or_weights_bundled": false,
+  "derived_example": "four PFM development evaluations; 600 gate-decision rows with scaffold digests; original raw records omitted",
+  "checks_performed": [
+    "Python AST, JSON, TOML, YAML, and shell syntax",
+    "primary CLI and evolution imports from agents/drug-agent; correct project root, Git root and project prefix",
+    "25 temporary-repository checks covering flat/monorepo candidate patches, real import origins, cleanup, protected paths, sibling output boundaries, and parent/index integrity",
+    "all Agent installation help, dependency installation help/plans, and root Makefile dispatch",
+    "offline dependency file checks; no inference or dependency installation",
+    "PFM recorded-evaluation replay through the root Makefile",
+    "excluded-path, symlink, personal-path, and credential-pattern checks",
+    "relative Markdown links",
+    "original source hashes unchanged",
+    "29 Simplified Chinese documentation counterparts; language navigation, local links, executable command blocks, version strings, and source hashes preserved; prompt checksum check and PFM replay passed",
+    "Adopted root READMEs: repository-relative links, bilingual command parity, four SVG/PNG figure pairs reproduced byte-for-byte from the approved draft, and PFM replay"
+  ],
+  "not_performed": [
+    "fresh dependency installation",
+    "new LLM calls",
+    "new GPU/model runs",
+    "private regression suite",
+    "decoupled-versus-coupled ablation"
+  ],
+  "known_limits": [
+    "title-named review folder contains a colon; use a standalone path without a colon for installation and evolution subprocesses",
+    "platform gate 0 still requires the excluded private regression suite and cannot pass in this snapshot alone",
+    "some experimental backends need local readiness validation records that are not distributed",
+    "the three additional Task Agents are incomplete and not fully integrated with a shared Self-Evolve Agent",
+    "historical per-target campaigns require inputs and configuration that are not distributed",
+    "kernel integrity hash changed with monorepo path handling; the PFM replay retains the original historical evaluator hash"
+  ],
+  "snapshot_revision": 4,
+  "layout": {
+    "agents_root": "agents",
+    "task_agents": [
+      "agents/drug-agent",
+      "agents/peptide-agent",
+      "agents/mRNA-agent",
+      "agents/Enzyme-Agent"
+    ],
+    "self_evolve_entrypoint": "agents/self-evolve-agent",
+    "self_evolve_shared_implementation": "agents/drug-agent/src/drug_agent/selfevolve",
+    "third_party_families": [
+      "third_party/drug",
+      "third_party/peptide",
+      "third_party/mrna",
+      "third_party/enzyme"
+    ]
+  },
+  "third_party_inventory": {
+    "drug": 42,
+    "peptide": 9,
+    "mrna": 26,
+    "enzyme": 22
+  },
+  "file_inventory_published": false,
+  "documentation_languages": [
+    "en",
+    "zh-Hans"
+  ],
+  "documentation_note": "Owner-approved bilingual README adopted at the repository root with four SVG/PNG figures and a portable rendering script. Links resolve within the public repository. Executable prompt text and runtime configuration are unchanged.",
+  "readme_adopted_date": "2026-10-29"
+}

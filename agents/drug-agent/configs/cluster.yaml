@@ -1,0 +1,16 @@
+# Interface template for external backends; these *_stub implementations
+# are integration seams and do not constitute a deployed cluster backend.
+profile: cluster
+allow_network: false
+egress_allowlist:
+  - ebi.ac.uk
+  - rcsb.org
+  - ncbi.nlm.nih.gov
+workflow_backend: durable_stub
+storage_backend: s3_stub
+llm_provider: stub_openai
+telemetry: otlp
+max_concurrency: 32
+default_task_timeout_s: 900
+# Supply credentials through the environment and explicitly enable network
+# access only after configuring the external integrations.

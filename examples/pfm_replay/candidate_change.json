@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "example_kind": "recorded_candidate_change_summary",
+  "summary": "Replace the stock PFM decoder with a size- and atom-type-biased decoder that can reject and resample partial structures.",
+  "paired_cycles": [
+    {
+      "seed": 20261001,
+      "stock": "c04",
+      "shaped": "c10"
+    },
+    {
+      "seed": 20260929,
+      "stock": "c06",
+      "shaped": "c13"
+    }
+  ],
+  "effective_decoder_parameters": {
+    "bond_cutoff_angstrom": 2.0,
+    "check_step_indices": [
+      15,
+      17
+    ],
+    "const_k": 5.0,
+    "max_attempts": 3,
+    "min_heavy_atoms": 10,
+    "num_steps": 20,
+    "require_carbon": true,
+    "require_single_component": true,
+    "size_ceiling": 70,
+    "size_floor": 10,
+    "size_scale": 0.8,
+    "t_start": 0.05,
+    "type_logit_bias": [
+      0.75,
+      0.75,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+    ],
+    "work_cap_fraction": 1.25
+  },
+  "parameter_source_field": "funnel.json: decoding.knobs.effective",
+  "parameter_source_sha256": [
+    {
+      "cycle": "c10",
+      "sampling_summary_sha256": "6eb14409265794f25aeb49282249e5165e5ae89c39153e5a5fafbd42c7e55b21"
+    },
+    {
+      "cycle": "c13",
+      "sampling_summary_sha256": "90df4c8f0b59b113745fcf98b31b3316e98e4662d713ed488c9b36562a88bd43"
+    }
+  ],
+  "recorded_constants": {
+    "checkpoint_sha256": "sha256:018fbb6feacfe7f61955ab1332e04bc9adbcaa746d9266940ab9ace81996a86e",
+    "weights_changed": false,
+    "optimiser_steps": 0,
+    "submission_budget": 150,
+    "draw_ceiling": 8000,
+    "evaluator_hash": "sha256:695cc35698188f64e73d27a77f5c5dd51b7b960d95cb49f39a505a5ecaab0058",
+    "qualification_hash": "sha256:365cc0cc936ed1fa4cabbd8cdd30c459ae21baf7f9838d25d3546494ad0240f2"
+  },
+  "limits": [
+    "This is a description of an already executed candidate change; the vendored third-party sampler is not included.",
+    "A decoder change draws a different molecule pool even when the seed is paired.",
+    "The checkpoint and evaluator hashes identify the recorded artifacts; those artifact bytes are not distributed in this example.",
+    "The example does not demonstrate adoption or deployment of the candidate.",
+    "The example is not an ablation of decoupled versus coupled self-evolution."
+  ]
+}

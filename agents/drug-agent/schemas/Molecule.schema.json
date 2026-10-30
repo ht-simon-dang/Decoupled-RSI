@@ -1,0 +1,348 @@
+{
+  "$defs": {
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a value/object came from and how to reproduce it.",
+      "properties": {
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Content hash of the source data.",
+          "title": "Content Hash"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Capability/algorithm that produced it.",
+          "title": "Method"
+        },
+        "method_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method Version"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Data snapshot identifier.",
+          "title": "Snapshot Id"
+        },
+        "source": {
+          "description": "Human/system origin, e.g. 'rdkit', 'chembl_fixture'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Version of the source.",
+          "title": "Source Version"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "CALCULATED"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A standardized chemical identity with descriptors and provenance.\n\n``input_smiles`` is preserved verbatim; ``canonical_smiles`` /\n``inchikey`` are the standardized identity used for de-duplication.",
+  "properties": {
+    "canonical_smiles": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Canonical Smiles"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "descriptors": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Descriptors",
+      "type": "object"
+    },
+    "errors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "fingerprint_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Artifact ref to fingerprint.",
+      "title": "Fingerprint Ref"
+    },
+    "formula": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Formula"
+    },
+    "has_stereo": {
+      "default": false,
+      "title": "Has Stereo",
+      "type": "boolean"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "mol",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "inchi": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Inchi"
+    },
+    "inchikey": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Inchikey"
+    },
+    "input_smiles": {
+      "description": "Verbatim input representation.",
+      "title": "Input Smiles",
+      "type": "string"
+    },
+    "is_mixture": {
+      "default": false,
+      "title": "Is Mixture",
+      "type": "boolean"
+    },
+    "is_salt": {
+      "default": false,
+      "title": "Is Salt",
+      "type": "boolean"
+    },
+    "isomeric_smiles": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Isomeric Smiles"
+    },
+    "lineage": {
+      "description": "Seed/parent molecule IDs this derives from.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Lineage",
+      "type": "array"
+    },
+    "parent_inchikey": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Desalted parent identity.",
+      "title": "Parent Inchikey"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "sanitization_ok": {
+      "default": true,
+      "title": "Sanitization Ok",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source"
+    },
+    "standardized": {
+      "default": false,
+      "title": "Standardized",
+      "type": "boolean"
+    },
+    "standardizer_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Standardizer Version"
+    },
+    "stereo_defined": {
+      "default": false,
+      "title": "Stereo Defined",
+      "type": "boolean"
+    },
+    "structural_alerts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Structural Alerts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "input_smiles"
+  ],
+  "title": "Molecule",
+  "type": "object"
+}

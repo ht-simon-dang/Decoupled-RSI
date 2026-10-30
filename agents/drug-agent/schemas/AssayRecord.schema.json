@@ -1,0 +1,425 @@
+{
+  "$defs": {
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a value/object came from and how to reproduce it.",
+      "properties": {
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Content hash of the source data.",
+          "title": "Content Hash"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Capability/algorithm that produced it.",
+          "title": "Method"
+        },
+        "method_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method Version"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Data snapshot identifier.",
+          "title": "Snapshot Id"
+        },
+        "source": {
+          "description": "Human/system origin, e.g. 'rdkit', 'chembl_fixture'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Version of the source.",
+          "title": "Source Version"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "CALCULATED"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Qualifier": {
+      "description": "Measurement qualifier for assay/prediction values.",
+      "enum": [
+        "=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "~",
+        "range",
+        "censored"
+      ],
+      "title": "Qualifier",
+      "type": "string"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "A scientific value with unit, qualifier, uncertainty and trust label.\n\n``original_value`` / ``original_unit`` preserve the source representation so\nunit normalization is never lossy.",
+      "properties": {
+        "ci_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ci High"
+        },
+        "ci_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ci Low"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "original_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit"
+        },
+        "original_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim source value.",
+          "title": "Original Value"
+        },
+        "qualifier": {
+          "$ref": "#/$defs/Qualifier",
+          "default": "="
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "std": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Standard deviation / 1-sigma uncertainty.",
+          "title": "Std"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "CALCULATED"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Normalized unit (UCUM-ish token).",
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Normalized numeric value.",
+          "title": "Value"
+        },
+        "value_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper bound for ranges.",
+          "title": "Value High"
+        }
+      },
+      "title": "Quantity",
+      "type": "object"
+    },
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A single bioactivity measurement, preserving original value/unit/qualifier.",
+  "properties": {
+    "assay_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assay Description"
+    },
+    "assay_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assay Type"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "endpoint": {
+      "description": "e.g. 'IC50', 'Ki', 'pIC50'.",
+      "title": "Endpoint",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "assay",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "measurement": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "molecule_inchikey": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Molecule Inchikey"
+    },
+    "molecule_smiles": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Molecule Smiles"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "relation": {
+      "$ref": "#/$defs/Qualifier",
+      "default": "="
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "series_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Med-chem series for group splits.",
+      "title": "Series Id"
+    },
+    "target_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target Id"
+    },
+    "target_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target Name"
+    },
+    "trust_label": {
+      "$ref": "#/$defs/TrustLabel",
+      "default": "OBSERVED"
+    },
+    "year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Year"
+    }
+  },
+  "required": [
+    "endpoint",
+    "measurement",
+    "provenance"
+  ],
+  "title": "AssayRecord",
+  "type": "object"
+}

@@ -1,0 +1,14 @@
+# Local execution profile; optional backends report UNAVAILABLE until installed.
+profile: local
+allow_network: false
+workflow_backend: embedded
+storage_backend: local
+llm_provider: fake
+telemetry: local
+max_concurrency: 8
+default_task_timeout_s: 120
+fingerprint_bits: 2048
+fingerprint_radius: 2
+generator_backend: auto
+# Add per-tool root/python/device overrides for your machine when needed.
+external_tools: {}

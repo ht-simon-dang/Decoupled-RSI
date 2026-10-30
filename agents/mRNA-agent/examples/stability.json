@@ -1,0 +1,88 @@
+{
+  "name": "HBB stability research task",
+  "mode": "full",
+  "protein": "MVHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH",
+  "protein_version": "NM_000518.5/CDS",
+  "application": "research",
+  "reference": {
+    "utr5": "ACAUUUGCUUCUGACACAACUGUGUUCACUAGCAACCUCAAACAGACACC",
+    "cds": "AUGGUGCAUCUGACUCCUGAGGAGAAGUCUGCCGUUACUGCCCUGUGGGGCAAGGUGAACGUGGAUGAAGUUGGUGGUGAGGCCCUGGGCAGGCUGCUGGUGGUCUACCCUUGGACCCAGAGGUUCUUUGAGUCCUUUGGGGAUCUGUCCACUCCUGAUGCUGUUAUGGGCAACCCUAAGGUGAAGGCUCAUGGCAAGAAAGUGCUCGGUGCCUUUAGUGAUGGCCUGGCUCACCUGGACAACCUCAAGGGCACCUUUGCCACACUGAGUGAGCUGCACUGUGACAAGCUGCACGUGGAUCCUGAGAACUUCAGGCUCCUGGGCAACGUGCUGGUCUGUGUGCUGGCCCAUCACUUUGGCAAAGAAUUCACCCCACCAGUGCAGGCUGCCUAUCAGAAAGUGGUGGCUGGUGUGGCUAAUGCCCUGGCCCACAAGUAUCACUAA",
+    "utr3": "GCUCGCUUUCUUGCUGUCCAAUUUCUAUUAAAGGUUCCUUUGUUCCCUAAGUCCAACUACUAAACUGGGGGAUAUUAUGAAGGGCCUUGAGCAUCUGGAUUCUGCCUAAUAAAAAACAUUUAUUUUCAUUGCAA"
+  },
+  "reference_config": null,
+  "parent_run": null,
+  "fixed_regions": [],
+  "locked_spans": [],
+  "forbidden_motifs": [],
+  "required_motifs": [],
+  "context": {
+    "species": "human",
+    "target_cell": "HEK293",
+    "non_target_cells": [],
+    "delivery": "unspecified",
+    "dose": "unspecified",
+    "time_window_hours": [
+      0.0,
+      48.0
+    ],
+    "assay": "unspecified"
+  },
+  "molecule": {
+    "form": "linear_nonreplicating",
+    "cap": "Cap1",
+    "poly_a_length": 100,
+    "modification": "unmodified",
+    "retained_elements": []
+  },
+  "objectives": [
+    {
+      "metric": "rna_stability",
+      "role": "primary",
+      "direction": "maximize",
+      "target": null,
+      "threshold": null,
+      "stage": "computational"
+    }
+  ],
+  "budget": {
+    "candidates": 8,
+    "shortlist": 4,
+    "tool_calls": 48,
+    "seconds": 3600,
+    "rounds": 1,
+    "synthesis_slots": null,
+    "experiment_slots": null
+  },
+  "generators": [
+    "gemorna",
+    "lineardesign",
+    "smart5utr",
+    "parade",
+    "codongpt",
+    "utrgan",
+    "mrnautilus",
+    "promorna",
+    "mrna_gpt"
+  ],
+  "joint_proposals": [],
+  "evaluators": [
+    "vienna",
+    "ribonn",
+    "parade",
+    "optimus5",
+    "saluki",
+    "rnadegformer",
+    "utr_lm",
+    "mrnabert",
+    "degscore"
+  ],
+  "utr_length": "short",
+  "seed": 42,
+  "temperature": 1.0,
+  "linear_lambda": 1.0,
+  "allow_fallback": true,
+  "workflow_version": "v1",
+  "assumptions": [
+    "Natural NCBI NM_000518.5 reference; same fixed high-potential policy as all tasks"
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "additionalProperties": false,
+  "description": "Immutable, content-addressed reference to a stored artifact.",
+  "properties": {
+    "content_hash": {
+      "default": "",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "artifact",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "kind": {
+      "description": "e.g. 'parquet', 'json', 'sdf', 'png', 'html'.",
+      "title": "Kind",
+      "type": "string"
+    },
+    "media_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Media Type"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "produced_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Capability/task that produced it.",
+      "title": "Produced By"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "size_bytes": {
+      "default": 0,
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "uri": {
+      "description": "Backend URI, e.g. 'cas://sha256/<hash>'.",
+      "title": "Uri",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "uri"
+  ],
+  "title": "ArtifactRef",
+  "type": "object"
+}

@@ -1,0 +1,4944 @@
+{
+  "schema_version": 1,
+  "scope": "Drug Task Agent optional sources, environments and scientific assets; no third-party bytes are bundled.",
+  "source_catalogue": "agents/drug-agent/scripts/external/CHECKOUTS.tsv",
+  "source_catalogue_sha256": "cdcf47b6ae9a28885abef746be8c9b19e43fab088370923c79bdf8c70ea8918b",
+  "default_external_root": "agents/drug-agent/.external",
+  "stage_names": [
+    "source",
+    "environment",
+    "assets"
+  ],
+  "components": [
+    {
+      "id": "admetai",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/properties/admetai_tool.py",
+        "source_sha256": "f920873449160fab9844179cd40f8a6b6f9a92a2b6a5b90d8bf034a9577e2732",
+        "name": "ADMET-AI",
+        "env_prefix": "ADMETAI",
+        "selection_modules": [
+          "admet_ai"
+        ],
+        "runtime_modules": [
+          "admet_ai",
+          "chemprop",
+          "lightning",
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "scipy",
+          "sklearn",
+          "tqdm"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/swansonk14/admet_ai",
+        "upstream_ref": "v2.0.1 (PyPI wheel; no .external checkout)",
+        "license": "ADMET-AI MIT (Copyright (c) 2026 Kyle Swanson). The bundled drugbank_approved.csv reference set carries DrugBank's own licence terms.",
+        "install_hint": "make env",
+        "needs_gpu": false
+      },
+      "display_name": "ADMET-AI",
+      "runtime": {
+        "modules": [
+          "admet_ai",
+          "chemprop",
+          "lightning",
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "scipy",
+          "sklearn",
+          "tqdm"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_ADMETAI_ROOT",
+          "python": "DRUGAGENT_ADMETAI_PYTHON",
+          "device": "DRUGAGENT_ADMETAI_DEVICE",
+          "timeout_seconds": "DRUGAGENT_ADMETAI_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": [],
+        "package_artifact_probe": {
+          "module": "admet_ai",
+          "pattern": "**/*.pt",
+          "note": "Checks package files without importing the model; the runtime adapter uses admet_ai.constants.DEFAULT_MODELS_DIR."
+        }
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "core"
+            ]
+          ],
+          "dependency_file": "{drug}/environment.yml",
+          "environment_name": "{core_env}"
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "The admet-ai package supplies the model files. Install its environment, then check assets. No separate checkpoint downloader is declared."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "aizynthfinder",
+      "source_checkout": {
+        "name": "aizynthfinder",
+        "url": "https://github.com/MolecularAI/aizynthfinder",
+        "revision": "21ff546d5f22"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/retrosynthesis/aizynthfinder_tool.py",
+        "source_sha256": "d7ecabf3d5bb85003900788e7674bec1f5f4eed6f10415f010b156010af5159e",
+        "name": "AiZynthFinder",
+        "env_prefix": "AIZYNTH",
+        "checkout_relpath": ".external/aizynthfinder-data",
+        "sentinel_files": [
+          "uspto_model.onnx",
+          "uspto_templates.csv.gz",
+          "uspto_filter_model.onnx"
+        ],
+        "driver_name": "aizynth_plan.py",
+        "selection_modules": [
+          "aizynthfinder"
+        ],
+        "runtime_modules": [
+          "aizynthfinder",
+          "rdkit",
+          "rdchiral",
+          "onnxruntime",
+          "pandas",
+          "tables",
+          "networkx"
+        ],
+        "weight_relpaths": [
+          "config.yml",
+          "zinc_stock.hdf5"
+        ],
+        "conda_envs": [
+          "drug-agent-aizynth"
+        ],
+        "upstream_url": "https://github.com/MolecularAI/aizynthfinder",
+        "upstream_ref": "21ff546d5f22",
+        "license": "AiZynthFinder MIT (Genheden & Bjerrum 2020). The USPTO expansion, ring-breaker and filter models and the ZINC stock file are the public release `download_public_data` fetches from Zenodo records 7797465 and 7341155 and from figshare.",
+        "install_hint": "make aizynth-install",
+        "needs_gpu": false
+      },
+      "display_name": "AiZynthFinder",
+      "runtime": {
+        "modules": [
+          "aizynthfinder",
+          "rdkit",
+          "rdchiral",
+          "onnxruntime",
+          "pandas",
+          "tables",
+          "networkx"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-aizynth"
+        ],
+        "binary": null,
+        "driver": "aizynth_plan.py",
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_AIZYNTH_ROOT",
+          "python": "DRUGAGENT_AIZYNTH_PYTHON",
+          "device": "DRUGAGENT_AIZYNTH_DEVICE",
+          "timeout_seconds": "DRUGAGENT_AIZYNTH_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/aizynthfinder",
+        "runtime_root": "{external}/aizynthfinder-data",
+        "source_sentinels": [
+          "uspto_model.onnx",
+          "uspto_templates.csv.gz",
+          "uspto_filter_model.onnx"
+        ],
+        "required_artifacts": [
+          "config.yml",
+          "zinc_stock.hdf5"
+        ],
+        "additional_inputs": [
+          "A caller-supplied target SMILES and search budget. The source reference checkout and the runtime data folder are different directories."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "aizynthfinder"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "side-env",
+              "aizynth"
+            ]
+          ],
+          "dependency_file": "{drug}/envs/drug-agent-aizynth.yml",
+          "environment_name": "drug-agent-aizynth"
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{conda}",
+              "run",
+              "--no-capture-output",
+              "-n",
+              "drug-agent-aizynth",
+              "download_public_data",
+              "{runtime_root}"
+            ]
+          ],
+          "create_runtime_root": true
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "boltz",
+      "source_checkout": {
+        "name": "boltz",
+        "url": "https://github.com/jwohlwend/boltz",
+        "revision": "b1ebfc46ecf5"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/boltz2_tool.py",
+        "source_sha256": "4e379c38711cd04ea22fbc109b4f4d02da1a50278448d79ac1022e53f69de04e",
+        "name": "Boltz-2",
+        "env_prefix": "BOLTZ",
+        "driver_name": "boltz_predict.py",
+        "selection_modules": [
+          "boltz"
+        ],
+        "runtime_modules": [
+          "boltz",
+          "torch",
+          "pytorch_lightning",
+          "rdkit",
+          "numba",
+          "gemmi"
+        ],
+        "conda_envs": [
+          "drug-agent-boltz"
+        ],
+        "upstream_url": "https://github.com/jwohlwend/boltz",
+        "upstream_ref": "b1ebfc46ecf5",
+        "license": "Boltz MIT License (c) 2024 Jeremy Wohlwend, Gabriele Corso, Saro Passaro",
+        "install_hint": "conda run -n drug-agent-boltz python -c \"from pathlib import Path; from boltz.main import download_boltz2; c = Path('~/.boltz').expanduser(); c.mkdir(parents=True, exist_ok=True); download_boltz2(c)\"",
+        "needs_gpu": true
+      },
+      "display_name": "Boltz-2",
+      "runtime": {
+        "modules": [
+          "boltz",
+          "torch",
+          "pytorch_lightning",
+          "rdkit",
+          "numba",
+          "gemmi"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-boltz"
+        ],
+        "binary": null,
+        "driver": "boltz_predict.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_BOLTZ_ROOT",
+          "python": "DRUGAGENT_BOLTZ_PYTHON",
+          "device": "DRUGAGENT_BOLTZ_DEVICE",
+          "timeout_seconds": "DRUGAGENT_BOLTZ_TIMEOUT_SECONDS",
+          "cache": "BOLTZ_CACHE"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/boltz",
+        "runtime_root": "{boltz_cache}",
+        "source_sentinels": [],
+        "required_artifacts": [
+          "boltz2_conf.ckpt",
+          "boltz2_aff.ckpt",
+          "mols"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "boltz"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "side-env",
+              "boltz"
+            ]
+          ],
+          "dependency_file": "{drug}/envs/drug-agent-boltz.yml",
+          "environment_name": "drug-agent-boltz"
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{runtime_python}",
+              "-c",
+              "from pathlib import Path; from boltz.main import download_boltz2; import sys; p=Path(sys.argv[1]); p.mkdir(parents=True,exist_ok=True); download_boltz2(p)",
+              "{runtime_root}"
+            ]
+          ],
+          "unblock": "Install the pinned Boltz environment first. This invokes its public download_boltz2 helper."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "chemprop",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/properties/chemprop_tool.py",
+        "source_sha256": "13509fd6809cf686d63de29f68b42e8bb434342c0b09862ff10615f7e7361d4e",
+        "name": "Chemprop",
+        "env_prefix": "CHEMPROP",
+        "selection_modules": [
+          "chemprop"
+        ],
+        "runtime_modules": [
+          "chemprop",
+          "torch",
+          "lightning",
+          "torchmetrics",
+          "astartes",
+          "multiprocess",
+          "psutil",
+          "packaging",
+          "rdkit",
+          "sklearn",
+          "numpy"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/chemprop/chemprop",
+        "upstream_ref": "v2.2.4",
+        "license": "Chemprop MIT",
+        "install_hint": "conda run -n drug-agent pip install \"chemprop==2.2.4\"",
+        "needs_gpu": false
+      },
+      "display_name": "Chemprop",
+      "runtime": {
+        "modules": [
+          "chemprop",
+          "torch",
+          "lightning",
+          "torchmetrics",
+          "astartes",
+          "multiprocess",
+          "psutil",
+          "packaging",
+          "rdkit",
+          "sklearn",
+          "numpy"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_CHEMPROP_ROOT",
+          "python": "DRUGAGENT_CHEMPROP_PYTHON",
+          "device": "DRUGAGENT_CHEMPROP_DEVICE",
+          "timeout_seconds": "DRUGAGENT_CHEMPROP_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "A trained endpoint-specific .ckpt and matching metadata, or admitted training data to fit one. Default model directory: DRUGAGENT_HOME/chemprop (otherwise .drugagent/chemprop)."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "core"
+            ]
+          ],
+          "dependency_file": "{drug}/environment.yml",
+          "environment_name": "{core_env}"
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "Chemprop does not supply a pretrained checkpoint for your endpoint. Fit a model through the adapter or pass a trusted compatible checkpoint explicitly; installation alone cannot satisfy prediction readiness."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "depmap",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/target/depmap_tool.py",
+        "source_sha256": "67d8b210747337ec4a1454b3d2eef7c6d569740824eb22e66c2d68ff37392095",
+        "name": "DepMap Public 24Q4 gene-effect subset",
+        "env_prefix": "DEPMAP",
+        "checkout_relpath": ".external/depmap",
+        "sentinel_files": [
+          "index.json",
+          "gene_effect.csv",
+          "Model.csv",
+          "CRISPRInferredCommonEssentials.csv",
+          "control_reference.csv"
+        ],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [],
+        "conda_envs": [],
+        "binary": null,
+        "upstream_url": "https://depmap.org/portal/ (figshare+ article 27993248)",
+        "upstream_ref": "DepMap Public 24Q4, doi 10.25452/figshare.plus.27993248.v1",
+        "license": "DepMap Public 24Q4 is released CC BY 4.0 by the Broad Institute. The cache holds a column subset of CRISPRGeneEffect.csv and CRISPRGeneDependency.csv, MD5-verified against figshare's published digests.",
+        "install_hint": "make depmap-fetch GENES=<symbol>",
+        "needs_gpu": false
+      },
+      "display_name": "DepMap Public 24Q4 gene-effect subset",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_DEPMAP_ROOT",
+          "python": "DRUGAGENT_DEPMAP_PYTHON",
+          "device": "DRUGAGENT_DEPMAP_DEVICE",
+          "timeout_seconds": "DRUGAGENT_DEPMAP_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/depmap",
+        "source_sentinels": [
+          "index.json",
+          "gene_effect.csv",
+          "Model.csv",
+          "CRISPRInferredCommonEssentials.csv",
+          "control_reference.csv"
+        ],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "Use agents/drug-agent/scripts/fetch_depmap_subset.py --help and explicitly choose the target identifiers; this installer does not invent a study dataset."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "manual",
+          "unblock": "This integration consumes a prepared data cache rather than a source checkout. Supply inputs to the referenced first-party fetch script before checking the runtime layout."
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make depmap-fetch GENES=<symbol> Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make depmap-fetch GENES=<symbol> Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "diffdock",
+      "source_checkout": {
+        "name": "DiffDock",
+        "url": "https://github.com/gcorso/DiffDock",
+        "revision": "85c49b60d3e0"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/diffdock_tool.py",
+        "source_sha256": "169697868ae030ceabd0d43282a8a6813472d53ab693170f925c64a4c1916451",
+        "name": "DiffDock",
+        "env_prefix": "DIFFDOCK",
+        "checkout_relpath": ".external/DiffDock",
+        "sentinel_files": [
+          "inference.py",
+          "default_inference_args.yaml",
+          "utils/inference_utils.py",
+          "utils/sampling.py",
+          "datasets/process_mols.py",
+          "models/aa_model.py"
+        ],
+        "driver_name": "diffdock_predict.py",
+        "selection_modules": [
+          "e3nn"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_cluster",
+          "torch_scatter",
+          "e3nn",
+          "esm",
+          "prody",
+          "Bio",
+          "networkx",
+          "rdkit",
+          "pandas",
+          "yaml"
+        ],
+        "weight_relpaths": [
+          "workdir/v1.1/score_model/model_parameters.yml",
+          "workdir/v1.1/score_model/best_ema_inference_epoch_model.pt",
+          "workdir/v1.1/confidence_model/model_parameters.yml",
+          "workdir/v1.1/confidence_model/best_model_epoch75.pt"
+        ],
+        "conda_envs": [
+          "drug-agent-diffdock",
+          "diffdock",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/gcorso/DiffDock",
+        "upstream_ref": "85c49b60d3e0",
+        "license": "MIT — DiffDock LICENSE, Copyright (c) 2022 Gabriele Corso, Hannes Stärk, Bowen Jing",
+        "install_hint": "make diffdock-install",
+        "needs_gpu": true
+      },
+      "display_name": "DiffDock",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_cluster",
+          "torch_scatter",
+          "e3nn",
+          "esm",
+          "prody",
+          "Bio",
+          "networkx",
+          "rdkit",
+          "pandas",
+          "yaml"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-diffdock",
+          "diffdock",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "diffdock_predict.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_DIFFDOCK_ROOT",
+          "python": "DRUGAGENT_DIFFDOCK_PYTHON",
+          "device": "DRUGAGENT_DIFFDOCK_DEVICE",
+          "timeout_seconds": "DRUGAGENT_DIFFDOCK_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/DiffDock",
+        "runtime_root": "{external}/DiffDock",
+        "source_sentinels": [
+          "inference.py",
+          "default_inference_args.yaml",
+          "utils/inference_utils.py",
+          "utils/sampling.py",
+          "datasets/process_mols.py",
+          "models/aa_model.py"
+        ],
+        "required_artifacts": [
+          "workdir/v1.1/score_model/model_parameters.yml",
+          "workdir/v1.1/score_model/best_ema_inference_epoch_model.pt",
+          "workdir/v1.1/confidence_model/model_parameters.yml",
+          "workdir/v1.1/confidence_model/best_model_epoch75.pt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "DiffDock"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "drug-agent-diffdock",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make diffdock-install Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "drugflow",
+      "source_checkout": {
+        "name": "DrugFlow",
+        "url": "https://github.com/LPDI-EPFL/DrugFlow",
+        "revision": "ed6841677ccf"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/drugflow_tool.py",
+        "source_sha256": "711f10306b09082563560e9186e94d69ee8976ab086e3754a5500676caf658ce",
+        "name": "DrugFlow",
+        "env_prefix": "DRUGFLOW",
+        "checkout_relpath": ".external/DrugFlow",
+        "sentinel_files": [
+          "src/model/lightning.py",
+          "src/data/data_utils.py",
+          "src/data/dataset.py",
+          "src/data/molecule_builder.py",
+          "src/default/size_distribution.npy"
+        ],
+        "driver_name": "drugflow_sample.py",
+        "selection_modules": [
+          "torch",
+          "pytorch_lightning"
+        ],
+        "runtime_modules": [
+          "torch",
+          "pytorch_lightning",
+          "torch_scatter",
+          "torch_geometric",
+          "webdataset",
+          "prody",
+          "fcd",
+          "useful_rdkit_utils",
+          "prolif",
+          "posebusters",
+          "Bio"
+        ],
+        "weight_relpaths": [
+          "checkpoints/drugflow_ood.ckpt"
+        ],
+        "conda_envs": [
+          "drugflow",
+          "sbdd",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/LPDI-EPFL/DrugFlow",
+        "upstream_ref": "ed6841677ccf",
+        "license": "MIT (LICENSE, (c) 2025 Arne Schneuing, Ilia Igashov, Adrian Dobbelstein) for the code, present at .external/DrugFlow. The checkpoints are distributed separately on Zenodo record 14919171 and the checkout states no licence for them; unverified here.",
+        "install_hint": "make external-clone && conda env create -f .external/DrugFlow/environment.yaml -n drugflow && wget -P .external/DrugFlow/checkpoints https://zenodo.org/records/14919171/files/drugflow_ood.ckpt",
+        "needs_gpu": true
+      },
+      "display_name": "DrugFlow",
+      "runtime": {
+        "modules": [
+          "torch",
+          "pytorch_lightning",
+          "torch_scatter",
+          "torch_geometric",
+          "webdataset",
+          "prody",
+          "fcd",
+          "useful_rdkit_utils",
+          "prolif",
+          "posebusters",
+          "Bio"
+        ],
+        "conda_env_candidates": [
+          "drugflow",
+          "sbdd",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "drugflow_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_DRUGFLOW_ROOT",
+          "python": "DRUGAGENT_DRUGFLOW_PYTHON",
+          "device": "DRUGAGENT_DRUGFLOW_DEVICE",
+          "timeout_seconds": "DRUGAGENT_DRUGFLOW_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/DrugFlow",
+        "runtime_root": "{external}/DrugFlow",
+        "source_sentinels": [
+          "src/model/lightning.py",
+          "src/data/data_utils.py",
+          "src/data/dataset.py",
+          "src/data/molecule_builder.py",
+          "src/default/size_distribution.npy"
+        ],
+        "required_artifacts": [
+          "checkpoints/drugflow_ood.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "DrugFlow"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yaml",
+          "environment_name": "drugflow",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone && conda env create -f .external/DrugFlow/environment.yaml -n drugflow && wget -P .external/DrugFlow/checkpoints https://zenodo.org/records/14919171/files/drugflow_ood.ckpt Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "e3moldiffusion",
+      "source_checkout": {
+        "name": "e3moldiffusion",
+        "url": "https://github.com/pfizer-opensource/e3moldiffusion",
+        "revision": "f5e9bb8a77b6"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/pilot_tool.py",
+        "source_sha256": "8dfaf8acee4c038e08adfaaab8fd32348347c09f30a2b26c4cfdffa6926f44a0",
+        "name": "PILOT",
+        "env_prefix": "PILOT",
+        "checkout_relpath": ".external/e3moldiffusion",
+        "sentinel_files": [
+          "experiments/diffusion_discrete_pocket.py",
+          "experiments/utils.py",
+          "experiments/molecule_utils.py",
+          "experiments/data/data_info.py",
+          "e3moldiffusion/coordsatomsbonds.py"
+        ],
+        "driver_name": "pilot_sample.py",
+        "selection_modules": [
+          "torch",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_sparse",
+          "pytorch_lightning",
+          "torchmetrics",
+          "Bio",
+          "openbabel",
+          "rdkit"
+        ],
+        "weight_relpaths": [
+          "checkpoints/best_valid.ckpt"
+        ],
+        "conda_envs": [
+          "e3mol",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/pfizer-opensource/e3moldiffusion",
+        "upstream_ref": "f5e9bb8a77b6",
+        "license": "Apache-2.0 (LICENSE at the checkout root). The model weights are not covered by that file and are not present: upstream releases them by email on request.",
+        "install_hint": "make external-clone; then request the PILOT checkpoints from the addresses in the upstream README and place best_valid.ckpt at .external/e3moldiffusion/checkpoints/",
+        "needs_gpu": true
+      },
+      "display_name": "PILOT",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_sparse",
+          "pytorch_lightning",
+          "torchmetrics",
+          "Bio",
+          "openbabel",
+          "rdkit"
+        ],
+        "conda_env_candidates": [
+          "e3mol",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "pilot_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_PILOT_ROOT",
+          "python": "DRUGAGENT_PILOT_PYTHON",
+          "device": "DRUGAGENT_PILOT_DEVICE",
+          "timeout_seconds": "DRUGAGENT_PILOT_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/e3moldiffusion",
+        "runtime_root": "{external}/e3moldiffusion",
+        "source_sentinels": [
+          "experiments/diffusion_discrete_pocket.py",
+          "experiments/utils.py",
+          "experiments/molecule_utils.py",
+          "experiments/data/data_info.py",
+          "e3moldiffusion/coordsatomsbonds.py"
+        ],
+        "required_artifacts": [
+          "checkpoints/best_valid.ckpt"
+        ],
+        "additional_inputs": [
+          "A processed CrossDocked dataset root compatible with the checkpoint.",
+          "Pocket inputs include a protein .pdb, reference-ligand .sdf, and residue-list .txt; generation alone cannot create the missing training statistics."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "e3moldiffusion"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "e3mol",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone; then request the PILOT checkpoints from the addresses in the upstream README and place best_valid.ckpt at .external/e3moldiffusion/checkpoints/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "experimental",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/experimental_tool.py",
+        "source_sha256": "d85ba00f64b3c0c7d9cb4a2d5fc41720c00c7724badbc4f7e845aa40d6d474da",
+        "name": "RCSB experimental structure cache",
+        "env_prefix": "EXPERIMENTAL",
+        "checkout_relpath": ".external/pdb",
+        "selection_modules": [
+          "Bio"
+        ],
+        "runtime_modules": [
+          "Bio"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://www.rcsb.org",
+        "upstream_ref": "wwPDB file formats: PDB v3.30, PDBx/mmCIF",
+        "license": "RCSB PDB entries are released under CC0 1.0 Universal (public domain)",
+        "install_hint": "make experimental-structures",
+        "needs_gpu": false
+      },
+      "display_name": "RCSB experimental structure cache",
+      "runtime": {
+        "modules": [
+          "Bio"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_EXPERIMENTAL_ROOT",
+          "python": "DRUGAGENT_EXPERIMENTAL_PYTHON",
+          "device": "DRUGAGENT_EXPERIMENTAL_DEVICE",
+          "timeout_seconds": "DRUGAGENT_EXPERIMENTAL_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/pdb",
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "Use agents/drug-agent/scripts/fetch_experimental_structures.py --help and explicitly choose the target identifiers; this installer does not invent a study dataset."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "manual",
+          "unblock": "This integration consumes a prepared data cache rather than a source checkout. Supply inputs to the referenced first-party fetch script before checking the runtime layout."
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make experimental-structures Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make experimental-structures Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "flowdock",
+      "source_checkout": {
+        "name": "FlowDock",
+        "url": "https://github.com/BioinfoMachineLearning/FlowDock",
+        "revision": "c233fd8be67f"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/flowdock_tool.py",
+        "source_sha256": "c1848fc919c49d25fdb3ce3cbfd95b7b9921851b46a02221993a083175157643",
+        "name": "FlowDock",
+        "env_prefix": "FLOWDOCK",
+        "checkout_relpath": ".external/FlowDock",
+        "sentinel_files": [
+          "flowdock/sample.py",
+          "flowdock/models/flowdock_fm_module.py",
+          "flowdock/utils/sampling_utils.py",
+          "configs/sample.yaml",
+          "configs/model/flowdock_fm.yaml"
+        ],
+        "driver_name": "flowdock_predict.py",
+        "selection_modules": [
+          "openfold"
+        ],
+        "runtime_modules": [
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "beartype",
+          "lovely_tensors",
+          "mendeleev",
+          "msgpack_numpy",
+          "torch",
+          "torch_scatter",
+          "torchmetrics",
+          "lightning",
+          "esm",
+          "openfold",
+          "pytorch3d"
+        ],
+        "weight_relpaths": [
+          "checkpoints/esmfold_prior_paper_weights-EMA.ckpt"
+        ],
+        "conda_envs": [
+          "drug-agent-flowdock",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/BioinfoMachineLearning/FlowDock",
+        "upstream_ref": "c233fd8be67f",
+        "license": "FlowDock MIT (LICENSE, Copyright (c) 2024 BioinfoMachineLearning)",
+        "install_hint": "mamba env create -f .external/FlowDock/environments/flowdock_environment.yaml, then untar flowdock_checkpoints.tar.gz from zenodo.org/records/15066450 into .external/FlowDock/checkpoints/",
+        "needs_gpu": true
+      },
+      "display_name": "FlowDock",
+      "runtime": {
+        "modules": [
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "beartype",
+          "lovely_tensors",
+          "mendeleev",
+          "msgpack_numpy",
+          "torch",
+          "torch_scatter",
+          "torchmetrics",
+          "lightning",
+          "esm",
+          "openfold",
+          "pytorch3d"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-flowdock",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "flowdock_predict.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_FLOWDOCK_ROOT",
+          "python": "DRUGAGENT_FLOWDOCK_PYTHON",
+          "device": "DRUGAGENT_FLOWDOCK_DEVICE",
+          "timeout_seconds": "DRUGAGENT_FLOWDOCK_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/FlowDock",
+        "runtime_root": "{external}/FlowDock",
+        "source_sentinels": [
+          "flowdock/sample.py",
+          "flowdock/models/flowdock_fm_module.py",
+          "flowdock/utils/sampling_utils.py",
+          "configs/sample.yaml",
+          "configs/model/flowdock_fm.yaml"
+        ],
+        "required_artifacts": [
+          "checkpoints/esmfold_prior_paper_weights-EMA.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "FlowDock"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environments/flowdock_environment.yaml",
+          "environment_name": "drug-agent-flowdock",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "mamba env create -f .external/FlowDock/environments/flowdock_environment.yaml, then untar flowdock_checkpoints.tar.gz from zenodo.org/records/15066450 into .external/FlowDock/checkpoints/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "flowmol",
+      "source_checkout": {
+        "name": "FlowMol",
+        "url": "https://github.com/Dunni3/FlowMol",
+        "revision": "77cae22174b7"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/flowmol3_tool.py",
+        "source_sha256": "3e4a0e3ee15b2183b24381a4f22ce78e4a7d2895213172f798180284a99a525f",
+        "name": "FlowMol3",
+        "env_prefix": "FLOWMOL3",
+        "checkout_relpath": ".external/FlowMol",
+        "sentinel_files": [
+          "flowmol/__init__.py",
+          "flowmol/models/flowmol.py",
+          "flowmol/analysis/molecule_builder.py",
+          "data/geom_full_kekulized/train_data_n_atoms_histogram.pt"
+        ],
+        "driver_name": "flowmol3_sample.py",
+        "selection_modules": [
+          "dgl"
+        ],
+        "runtime_modules": [
+          "torch",
+          "dgl",
+          "pytorch_lightning",
+          "einops",
+          "torch_scatter",
+          "rdkit",
+          "wandb",
+          "posebusters",
+          "useful_rdkit_utils",
+          "pandas",
+          "scipy",
+          "yaml"
+        ],
+        "weight_relpaths": [
+          "flowmol/trained_models/flowmol3/checkpoints/last.ckpt"
+        ],
+        "conda_envs": [
+          "drug-agent-flowmol3-gpu",
+          "drug-agent-flowmol3"
+        ],
+        "upstream_url": "https://github.com/Dunni3/FlowMol",
+        "upstream_ref": "77cae22174b7",
+        "license": "FlowMol MIT (Copyright (c) 2023 University of Pittsburgh); LICENSE present in the clone",
+        "install_hint": "make external-clone && bash .external/FlowMol/build_env.sh && wget -r -np -nH --cut-dirs=3 --reject 'index.html*' -P .external/FlowMol/flowmol/trained_models/ https://bits.csb.pitt.edu/files/FlowMol/trained_models_v3.1/flowmol3/",
+        "needs_gpu": true
+      },
+      "display_name": "FlowMol3",
+      "runtime": {
+        "modules": [
+          "torch",
+          "dgl",
+          "pytorch_lightning",
+          "einops",
+          "torch_scatter",
+          "rdkit",
+          "wandb",
+          "posebusters",
+          "useful_rdkit_utils",
+          "pandas",
+          "scipy",
+          "yaml"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-flowmol3",
+          "drug-agent-flowmol3-gpu"
+        ],
+        "binary": null,
+        "driver": "flowmol3_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_FLOWMOL3_ROOT",
+          "python": "DRUGAGENT_FLOWMOL3_PYTHON",
+          "device": "DRUGAGENT_FLOWMOL3_DEVICE",
+          "timeout_seconds": "DRUGAGENT_FLOWMOL3_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/FlowMol",
+        "runtime_root": "{external}/FlowMol",
+        "source_sentinels": [
+          "flowmol/__init__.py",
+          "flowmol/models/flowmol.py",
+          "flowmol/analysis/molecule_builder.py",
+          "data/geom_full_kekulized/train_data_n_atoms_histogram.pt"
+        ],
+        "required_artifacts": [
+          "flowmol/trained_models/flowmol3/checkpoints/last.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "FlowMol"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "drug-agent-flowmol3",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone && bash .external/FlowMol/build_env.sh && wget -r -np -nH --cut-dirs=3 --reject 'index.html*' -P .external/FlowMol/flowmol/trained_models/ https://bits.csb.pitt.edu/files/FlowMol/trained_models_v3.1/flowmol3/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "flowr",
+      "source_checkout": {
+        "name": "flowr_root",
+        "url": "https://github.com/jule-c/flowr_root",
+        "revision": "86a25f08161d"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/flowr_tool.py",
+        "source_sha256": "4c3bee052663f4e1285fcc73b04ecd0b01ae56dc98fc9d2411bebed1c306f84c",
+        "name": "FLOWR (published checkpoint)",
+        "env_prefix": "FLOWR",
+        "checkout_relpath": ".external/flowr_root",
+        "sentinel_files": [
+          "flowr/gen/generate_from_pdb.py",
+          "flowr/gen/generate.py",
+          "flowr/gen/utils.py",
+          "flowr/scriptutil.py",
+          "flowr/models/fm_pocket.py",
+          "flowr/models/pocket.py",
+          "flowr/util/pocket.py"
+        ],
+        "driver_name": "flowr_sample.py",
+        "selection_modules": [
+          "torch",
+          "lightning"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "lightning",
+          "torchmetrics",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "yaml",
+          "tensordict",
+          "lmdb",
+          "biotite",
+          "MDAnalysis",
+          "prolif",
+          "pymol",
+          "hydride",
+          "pdbinf",
+          "posecheck",
+          "biopandas",
+          "dill",
+          "openbabel"
+        ],
+        "weight_relpaths": [
+          "ckpts/flowr.ckpt",
+          "ckpts/flowr.ckpt.sha256"
+        ],
+        "conda_envs": [
+          "flowr_root",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/jule-c/flowr_root",
+        "upstream_ref": "86a25f08161d",
+        "license": "MIT (LICENSE); the flowr_vis/ app is under a separate source-available licence",
+        "install_hint": "make external-clone; conda env create -f .external/flowr_root/environment.yml; put the published FLOWR checkpoint at .external/flowr_root/ckpts/flowr.ckpt and run `sha256sum flowr.ckpt > flowr.ckpt.sha256` beside it",
+        "needs_gpu": true
+      },
+      "display_name": "FLOWR (published checkpoint)",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "lightning",
+          "torchmetrics",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "yaml",
+          "tensordict",
+          "lmdb",
+          "biotite",
+          "MDAnalysis",
+          "prolif",
+          "pymol",
+          "hydride",
+          "pdbinf",
+          "posecheck",
+          "biopandas",
+          "dill",
+          "openbabel"
+        ],
+        "conda_env_candidates": [
+          "flowr_root",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "flowr_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_FLOWR_ROOT",
+          "python": "DRUGAGENT_FLOWR_PYTHON",
+          "device": "DRUGAGENT_FLOWR_DEVICE",
+          "timeout_seconds": "DRUGAGENT_FLOWR_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/flowr_root",
+        "runtime_root": "{external}/flowr_root",
+        "source_sentinels": [
+          "flowr/gen/generate_from_pdb.py",
+          "flowr/gen/generate.py",
+          "flowr/gen/utils.py",
+          "flowr/scriptutil.py",
+          "flowr/models/fm_pocket.py",
+          "flowr/models/pocket.py",
+          "flowr/util/pocket.py"
+        ],
+        "required_artifacts": [
+          "ckpts/flowr.ckpt",
+          "ckpts/flowr.ckpt.sha256"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "flowr_root"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "flowr_root",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone; conda env create -f .external/flowr_root/environment.yml; put the published FLOWR checkpoint at .external/flowr_root/ckpts/flowr.ckpt and run `sha256sum flowr.ckpt > flowr.ckpt.sha256` beside it Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "flowr_root",
+      "source_checkout": {
+        "name": "flowr_root",
+        "url": "https://github.com/jule-c/flowr_root",
+        "revision": "86a25f08161d"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/flowr_root_tool.py",
+        "source_sha256": "6046a2761e583c8a5e7236c4c2f0aac7d6fb92fe63f33b81555e518c308d0966",
+        "name": "FLOWR.root",
+        "env_prefix": "FLOWR_ROOT",
+        "checkout_relpath": ".external/flowr_root",
+        "sentinel_files": [
+          "flowr/gen/generate_from_pdb.py",
+          "flowr/gen/generate_from_sdf_mol.py",
+          "flowr/gen/generate.py",
+          "flowr/gen/utils.py",
+          "flowr/scriptutil.py",
+          "flowr/models/pocket.py"
+        ],
+        "driver_name": "flowr_root_sample.py",
+        "selection_modules": [
+          "torch",
+          "lightning"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "lightning",
+          "torchmetrics",
+          "tensordict",
+          "pymol",
+          "openbabel",
+          "biotite",
+          "hydride",
+          "pdbinf",
+          "prolif",
+          "MDAnalysis",
+          "biopandas",
+          "lmdb",
+          "dill"
+        ],
+        "weight_relpaths": [
+          "ckpts/flowr_root_v2.ckpt"
+        ],
+        "conda_envs": [
+          "flowr_root",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/jule-c/flowr_root",
+        "upstream_ref": "86a25f08161d",
+        "license": "MIT (LICENSE, Copyright (c) 2025-2026 Julian Cremer) covers the FLOWR.root model code — the `flowr/` package, which is all this adapter imports and runs. The FLOWR.ui visualisation app in `flowr_vis/` is NOT MIT: it carries a separate source-available licence (flowr_vis/LICENSE) permitting internal, non-redistributive use only. This adapter uses no part of `flowr_vis/`. Model weights are distributed separately by the authors and carry their own terms.",
+        "install_hint": "make external-clone, then download flowr_root_v2.ckpt (pocket) and flowr_root_v2_mol.ckpt (ligand-only) from the Google Drive folder linked in the FLOWR.root README into .external/flowr_root/ckpts/, and build the flowr_root conda environment from .external/flowr_root/environment.yml",
+        "needs_gpu": true
+      },
+      "display_name": "FLOWR.root",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "lightning",
+          "torchmetrics",
+          "tensordict",
+          "pymol",
+          "openbabel",
+          "biotite",
+          "hydride",
+          "pdbinf",
+          "prolif",
+          "MDAnalysis",
+          "biopandas",
+          "lmdb",
+          "dill"
+        ],
+        "conda_env_candidates": [
+          "flowr_root",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "flowr_root_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_FLOWR_ROOT_ROOT",
+          "python": "DRUGAGENT_FLOWR_ROOT_PYTHON",
+          "device": "DRUGAGENT_FLOWR_ROOT_DEVICE",
+          "timeout_seconds": "DRUGAGENT_FLOWR_ROOT_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/flowr_root",
+        "runtime_root": "{external}/flowr_root",
+        "source_sentinels": [
+          "flowr/gen/generate_from_pdb.py",
+          "flowr/gen/generate_from_sdf_mol.py",
+          "flowr/gen/generate.py",
+          "flowr/gen/utils.py",
+          "flowr/scriptutil.py",
+          "flowr/models/pocket.py"
+        ],
+        "required_artifacts": [
+          "ckpts/flowr_root_v2.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "flowr_root"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "flowr_root",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone, then download flowr_root_v2.ckpt (pocket) and flowr_root_v2_mol.ckpt (ligand-only) from the Google Drive folder linked in the FLOWR.root README into .external/flowr_root/ckpts/, and build the flowr_root conda environment from .external/flowr_root/environment.yml Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "fpocket",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/pockets/fpocket_tool.py",
+        "source_sha256": "07bbf747547d985547b2b5c43696819735fd68217d1bf65f58029e0fa3773e24",
+        "name": "fpocket",
+        "env_prefix": "FPOCKET",
+        "checkout_relpath": "",
+        "sentinel_files": [],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [],
+        "conda_envs": [],
+        "binary": "fpocket",
+        "upstream_url": "https://github.com/Discngine/fpocket",
+        "upstream_ref": "4.2.3 (conda-forge h5fd1fdb_2)",
+        "license": "fpocket MIT (Le Guilloux, Schmidtke & Tuffery, BMC Bioinformatics 2009, 10:168)",
+        "install_hint": "conda create -y -n drug-agent-fpocket -c conda-forge fpocket",
+        "needs_gpu": false
+      },
+      "display_name": "fpocket",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [],
+        "binary": "fpocket",
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_FPOCKET_ROOT",
+          "python": "DRUGAGENT_FPOCKET_PYTHON",
+          "device": "DRUGAGENT_FPOCKET_DEVICE",
+          "timeout_seconds": "DRUGAGENT_FPOCKET_TIMEOUT_SECONDS",
+          "binary": "DRUGAGENT_FPOCKET_BINARY"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_packages",
+          "environment_name": "drug-agent-fpocket",
+          "packages": [
+            "fpocket"
+          ],
+          "channels": [
+            "conda-forge"
+          ]
+        },
+        "assets": {
+          "support": "not_required",
+          "reason": "This algorithm does not require a pretrained model checkpoint. Task-specific structures and other inputs remain caller supplied."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "gnina",
+      "source_checkout": {
+        "name": "gnina",
+        "url": "https://github.com/gnina/gnina",
+        "revision": "6fe1ce2bb9c3"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/gnina_tool.py",
+        "source_sha256": "cbe33fb8db26b7419ac5a3a68ad44de2b27eb20c7db1f2a2b24718fd3057313a",
+        "name": "GNINA",
+        "env_prefix": "GNINA",
+        "checkout_relpath": ".external/gnina",
+        "sentinel_files": [
+          "CMakeLists.txt",
+          "gninasrc/main/main.cpp",
+          "gninasrc/lib/result_info.cpp"
+        ],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [],
+        "conda_envs": [],
+        "binary": "gnina",
+        "upstream_url": "https://github.com/gnina/gnina",
+        "upstream_ref": "6fe1ce2bb9c3",
+        "license": "GNINA dual GPL-2.0 / Apache-2.0 (GPL required by its OpenBabel dependency)",
+        "install_hint": "on x86-64: download gnina.cuda12.8.static from the v1.3.3 release, unpack the nvidia-*-cu12 wheels beside it (libcudart.so.12, libcublas.so.12, libcufft.so.11, libcusolver.so.11, libcudnn.so.9 — the CUDA-13 environment has none of them), and put a wrapper that prepends them to LD_LIBRARY_PATH on PATH as `gnina`. On any other architecture: build from source, see .external/gnina/README.md",
+        "needs_gpu": true,
+        "unresolved_source_expressions": {
+          "platform_blockers": "_platform_blockers()"
+        }
+      },
+      "display_name": "GNINA",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [],
+        "binary": "gnina",
+        "driver": null,
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_GNINA_ROOT",
+          "python": "DRUGAGENT_GNINA_PYTHON",
+          "device": "DRUGAGENT_GNINA_DEVICE",
+          "timeout_seconds": "DRUGAGENT_GNINA_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/gnina",
+        "runtime_root": "{external}/gnina",
+        "source_sentinels": [
+          "CMakeLists.txt",
+          "gninasrc/main/main.cpp",
+          "gninasrc/lib/result_info.cpp"
+        ],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "CUDA 12.8 runtime libraries required by the published x86-64 executable; add its directory or a compatible wrapper to PATH."
+        ],
+        "additional_asset_paths": [
+          "{external}/gnina-bin/gnina"
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "gnina"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "on x86-64: download gnina.cuda12.8.static from the v1.3.3 release, unpack the nvidia-*-cu12 wheels beside it (libcudart.so.12, libcublas.so.12, libcufft.so.11, libcusolver.so.11, libcudnn.so.9 — the CUDA-13 environment has none of them), and put a wrapper that prepends them to LD_LIBRARY_PATH on PATH as `gnina`. On any other architecture: build from source, see .external/gnina/README.md Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_weights.py",
+              "--only",
+              "gnina"
+            ]
+          ],
+          "environment": {
+            "CONDA_PREFIX": ""
+          },
+          "unblock": "Existing downloader verifies size and file magic; review upstream changes if its recorded checks no longer match."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "molcraft",
+      "source_checkout": {
+        "name": "MolCRAFT",
+        "url": "https://github.com/GenSI-THUAIR/MolCRAFT",
+        "revision": "743dfb5198c4"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/molcraft_tool.py",
+        "source_sha256": "7569da3ef3bbaecaa649bf3106280f0d93ce0fadda8561cc228235b948e37f48",
+        "name": "MolCRAFT",
+        "env_prefix": "MOLCRAFT",
+        "checkout_relpath": ".external/MolCRAFT",
+        "sentinel_files": [
+          "MolCRAFT/sample_for_pocket.py",
+          "MolCRAFT/core/models/sbdd_train_loop.py",
+          "MolCRAFT/core/models/bfn4sbdd.py",
+          "MolCRAFT/core/callbacks/validation_callback_for_sample.py",
+          "MolCRAFT/core/config/config.py",
+          "MolCRAFT/configs/default.yaml"
+        ],
+        "driver_name": "molcraft_sample.py",
+        "selection_modules": [
+          "torch",
+          "pytorch_lightning",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "pytorch_lightning",
+          "torch_geometric",
+          "torch_scatter",
+          "rdkit",
+          "openbabel",
+          "meeko",
+          "easydict",
+          "matplotlib",
+          "absl",
+          "fire",
+          "overrides",
+          "wandb",
+          "posecheck",
+          "vina",
+          "AutoDockTools"
+        ],
+        "weight_relpaths": [
+          "MolCRAFT/checkpoints/last.ckpt",
+          "MolCRAFT/checkpoints/config.yaml"
+        ],
+        "conda_envs": [
+          "drug-agent",
+          "pfm"
+        ],
+        "upstream_url": "https://github.com/GenSI-THUAIR/MolCRAFT",
+        "upstream_ref": "743dfb5198c4",
+        "license": "MolCRAFT CC-BY-NC-SA-4.0 (non-commercial; see .external/MolCRAFT/LICENSE)",
+        "install_hint": "make external-clone, then put last.ckpt and config.yaml in .external/MolCRAFT/MolCRAFT/checkpoints/ (MolCRAFT/scripts.mk target `checkpoint`)",
+        "needs_gpu": true
+      },
+      "display_name": "MolCRAFT",
+      "runtime": {
+        "modules": [
+          "torch",
+          "pytorch_lightning",
+          "torch_geometric",
+          "torch_scatter",
+          "rdkit",
+          "openbabel",
+          "meeko",
+          "easydict",
+          "matplotlib",
+          "absl",
+          "fire",
+          "overrides",
+          "wandb",
+          "posecheck",
+          "vina",
+          "AutoDockTools"
+        ],
+        "conda_env_candidates": [
+          "drug-agent",
+          "pfm"
+        ],
+        "binary": null,
+        "driver": "molcraft_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_MOLCRAFT_ROOT",
+          "python": "DRUGAGENT_MOLCRAFT_PYTHON",
+          "device": "DRUGAGENT_MOLCRAFT_DEVICE",
+          "timeout_seconds": "DRUGAGENT_MOLCRAFT_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/MolCRAFT",
+        "runtime_root": "{external}/MolCRAFT",
+        "source_sentinels": [
+          "MolCRAFT/sample_for_pocket.py",
+          "MolCRAFT/core/models/sbdd_train_loop.py",
+          "MolCRAFT/core/models/bfn4sbdd.py",
+          "MolCRAFT/core/callbacks/validation_callback_for_sample.py",
+          "MolCRAFT/core/config/config.py",
+          "MolCRAFT/configs/default.yaml"
+        ],
+        "required_artifacts": [
+          "MolCRAFT/checkpoints/last.ckpt",
+          "MolCRAFT/checkpoints/config.yaml"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "MolCRAFT"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make external-clone, then put last.ckpt and config.yaml in .external/MolCRAFT/MolCRAFT/checkpoints/ (MolCRAFT/scripts.mk target `checkpoint`) Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone, then put last.ckpt and config.yaml in .external/MolCRAFT/MolCRAFT/checkpoints/ (MolCRAFT/scripts.mk target `checkpoint`) Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "moljo",
+      "source_checkout": {
+        "name": "MolCRAFT",
+        "url": "https://github.com/GenSI-THUAIR/MolCRAFT",
+        "revision": "743dfb5198c4"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/moljo_tool.py",
+        "source_sha256": "2da05d65448ffbb06351de379e6e72860f6fd76b1178fbc68ace218894ff40fe",
+        "name": "MolJO",
+        "env_prefix": "MOLJO",
+        "checkout_relpath": ".external/MolCRAFT",
+        "sentinel_files": [
+          "MolJO/sample_for_pocket_guided.py",
+          "MolJO/configs/test_opt.yaml",
+          "MolJO/core/config/config.py",
+          "MolJO/core/models/train_loop.py",
+          "MolJO/core/models/bfn4sbdd.py",
+          "MolJO/core/datasets/utils.py",
+          "MolJO/core/callbacks/basic.py"
+        ],
+        "driver_name": "moljo_sample.py",
+        "selection_modules": [
+          "torch",
+          "pytorch_lightning"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "rdkit",
+          "openbabel",
+          "sklearn",
+          "pytz",
+          "absl",
+          "fire",
+          "overrides",
+          "easydict",
+          "imageio",
+          "wandb",
+          "vina",
+          "meeko",
+          "AutoDockTools",
+          "posecheck"
+        ],
+        "weight_relpaths": [
+          "MolJO/pretrained/affinity.ckpt",
+          "MolJO/pretrained/affinity.yaml",
+          "MolJO/pretrained/sa.ckpt",
+          "MolJO/pretrained/sa.yaml"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/GenSI-THUAIR/MolCRAFT",
+        "upstream_ref": "743dfb5198c4",
+        "license": "MolCRAFT/MolJO CC BY-NC-SA 4.0 (non-commercial; weights not redistributed)",
+        "install_hint": "see MolJO/README.md: backbone ckpt, its training config.yaml, and the affinity/sa predictors go in .external/MolCRAFT/MolJO/pretrained/",
+        "needs_gpu": true
+      },
+      "display_name": "MolJO",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "rdkit",
+          "openbabel",
+          "sklearn",
+          "pytz",
+          "absl",
+          "fire",
+          "overrides",
+          "easydict",
+          "imageio",
+          "wandb",
+          "vina",
+          "meeko",
+          "AutoDockTools",
+          "posecheck"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "moljo_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_MOLJO_ROOT",
+          "python": "DRUGAGENT_MOLJO_PYTHON",
+          "device": "DRUGAGENT_MOLJO_DEVICE",
+          "timeout_seconds": "DRUGAGENT_MOLJO_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/MolCRAFT",
+        "runtime_root": "{external}/MolCRAFT",
+        "source_sentinels": [
+          "MolJO/sample_for_pocket_guided.py",
+          "MolJO/configs/test_opt.yaml",
+          "MolJO/core/config/config.py",
+          "MolJO/core/models/train_loop.py",
+          "MolJO/core/models/bfn4sbdd.py",
+          "MolJO/core/datasets/utils.py",
+          "MolJO/core/callbacks/basic.py"
+        ],
+        "required_artifacts": [
+          "MolJO/pretrained/affinity.ckpt",
+          "MolJO/pretrained/affinity.yaml",
+          "MolJO/pretrained/sa.ckpt",
+          "MolJO/pretrained/sa.yaml"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "MolCRAFT"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "see MolJO/README.md: backbone ckpt, its training config.yaml, and the affinity/sa predictors go in .external/MolCRAFT/MolJO/pretrained/ Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "see MolJO/README.md: backbone ckpt, its training config.yaml, and the affinity/sa predictors go in .external/MolCRAFT/MolJO/pretrained/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "molpilot",
+      "source_checkout": {
+        "name": "MolCRAFT",
+        "url": "https://github.com/GenSI-THUAIR/MolCRAFT",
+        "revision": "743dfb5198c4"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/molpilot_tool.py",
+        "source_sha256": "10f488173eed1419489a2da2908e1986c323043816637a1e9d7b872ab0d45335",
+        "name": "MolPilot",
+        "env_prefix": "MOLPILOT",
+        "checkout_relpath": ".external/MolCRAFT",
+        "sentinel_files": [
+          "MolPilot/sample_for_pocket.py",
+          "MolPilot/core/models/sbdd4train_timewarp.py",
+          "MolPilot/core/models/bfn4sbdd.py",
+          "MolPilot/core/models/uni_transformer_edge.py",
+          "MolPilot/core/config/config.py",
+          "MolPilot/configs/crossdock_train_test.yaml"
+        ],
+        "driver_name": "molpilot_sample.py",
+        "selection_modules": [
+          "torch",
+          "torchdiffeq"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_scatter",
+          "torch_sparse",
+          "torch_geometric",
+          "pytorch_lightning",
+          "torchdiffeq",
+          "absl",
+          "wandb",
+          "fire",
+          "overrides",
+          "imageio",
+          "easydict",
+          "Bio",
+          "openbabel",
+          "meeko",
+          "posebusters",
+          "posecheck",
+          "vina",
+          "AutoDockTools"
+        ],
+        "weight_relpaths": [
+          "MolPilot/checkpoints/molpilot_epoch26-val_loss5.42-mol_stable0.48-complete0.83.ckpt",
+          "MolPilot/checkpoints/optimized_path_rect_closest.pt",
+          "MolPilot/checkpoints/molpilot_config.yaml"
+        ],
+        "conda_envs": [
+          "drug-agent-molpilot"
+        ],
+        "upstream_url": "https://github.com/AlgoMole/MolCRAFT",
+        "upstream_ref": "743dfb5198c4",
+        "license": "MolCRAFT code: CC BY-NC-SA 4.0 (.external/MolCRAFT/LICENSE and MolPilot/LICENSE). Weights: CC BY-NC-SA 2.0 (huggingface.co/GenSI/MolPilot). Non-commercial only; not downloaded here.",
+        "install_hint": "make external-clone && huggingface-cli download GenSI/MolPilot molpilot_epoch26-val_loss5.42-mol_stable0.48-complete0.83.ckpt optimized_path_rect_closest.pt molpilot_config.yaml --local-dir .external/MolCRAFT/MolPilot/checkpoints",
+        "needs_gpu": true,
+        "unresolved_source_expressions": {
+          "platform_blockers": "_VINA_WHEEL_BLOCKERS"
+        }
+      },
+      "display_name": "MolPilot",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_scatter",
+          "torch_sparse",
+          "torch_geometric",
+          "pytorch_lightning",
+          "torchdiffeq",
+          "absl",
+          "wandb",
+          "fire",
+          "overrides",
+          "imageio",
+          "easydict",
+          "Bio",
+          "openbabel",
+          "meeko",
+          "posebusters",
+          "posecheck",
+          "vina",
+          "AutoDockTools"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-molpilot"
+        ],
+        "binary": null,
+        "driver": "molpilot_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_MOLPILOT_ROOT",
+          "python": "DRUGAGENT_MOLPILOT_PYTHON",
+          "device": "DRUGAGENT_MOLPILOT_DEVICE",
+          "timeout_seconds": "DRUGAGENT_MOLPILOT_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/MolCRAFT",
+        "runtime_root": "{external}/MolCRAFT",
+        "source_sentinels": [
+          "MolPilot/sample_for_pocket.py",
+          "MolPilot/core/models/sbdd4train_timewarp.py",
+          "MolPilot/core/models/bfn4sbdd.py",
+          "MolPilot/core/models/uni_transformer_edge.py",
+          "MolPilot/core/config/config.py",
+          "MolPilot/configs/crossdock_train_test.yaml"
+        ],
+        "required_artifacts": [
+          "MolPilot/checkpoints/molpilot_epoch26-val_loss5.42-mol_stable0.48-complete0.83.ckpt",
+          "MolPilot/checkpoints/optimized_path_rect_closest.pt",
+          "MolPilot/checkpoints/molpilot_config.yaml"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "MolCRAFT"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make external-clone && huggingface-cli download GenSI/MolPilot molpilot_epoch26-val_loss5.42-mol_stable0.48-complete0.83.ckpt optimized_path_rect_closest.pt molpilot_config.yaml --local-dir .external/MolCRAFT/MolPilot/checkpoints Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone && huggingface-cli download GenSI/MolPilot molpilot_epoch26-val_loss5.42-mol_stable0.48-complete0.83.ckpt optimized_path_rect_closest.pt molpilot_config.yaml --local-dir .external/MolCRAFT/MolPilot/checkpoints Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "omtra",
+      "source_checkout": {
+        "name": "OMTRA",
+        "url": "https://github.com/gnina/OMTRA",
+        "revision": "745127dabfa1"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/omtra_tool.py",
+        "source_sha256": "2d481a0118fee7b7bf36553b1525c4e87d683b8d99b03451353924f3e2e82597",
+        "name": "OMTRA",
+        "env_prefix": "OMTRA",
+        "checkout_relpath": ".external/OMTRA",
+        "sentinel_files": [
+          "cli.py",
+          "routines/sample.py",
+          "omtra/utils/checkpoints.py",
+          "omtra/utils/file_to_graph.py",
+          "omtra/models/omtra.py",
+          "omtra/eval/system.py"
+        ],
+        "driver_name": "omtra_sample.py",
+        "selection_modules": [
+          "dgl"
+        ],
+        "runtime_modules": [
+          "torch",
+          "dgl",
+          "torch_scatter",
+          "torch_cluster",
+          "hydra",
+          "omegaconf",
+          "pytorch_lightning",
+          "einops",
+          "biotite",
+          "zarr",
+          "peppr",
+          "useful_rdkit_utils",
+          "wandb",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "pandas"
+        ],
+        "weight_relpaths": [
+          "omtra/trained_models/mt_plcd_cr_2025-11-26_10-09-673392/checkpoints/last.ckpt"
+        ],
+        "conda_envs": [
+          "drug-agent-omtra-gpu",
+          "drug-agent-omtra"
+        ],
+        "upstream_url": "https://github.com/gnina/OMTRA",
+        "upstream_ref": "745127dabfa1",
+        "license": "Apache-2.0 (LICENSE in the checkout); weights served separately from bits.csb.pitt.edu",
+        "install_hint": "make external-clone && conda create -y -n omtra python=3.11 && conda run -n omtra bash .external/OMTRA/build_env.sh && wget -r -np -nH --cut-dirs=3 -R 'index.html*' -P .external/OMTRA/omtra/trained_models https://bits.csb.pitt.edu/files/OMTRA/omtra_v0_weights/",
+        "needs_gpu": true,
+        "unresolved_source_expressions": {
+          "platform_blockers": "_DGL_WHEEL_BLOCKERS"
+        }
+      },
+      "display_name": "OMTRA",
+      "runtime": {
+        "modules": [
+          "torch",
+          "dgl",
+          "torch_scatter",
+          "torch_cluster",
+          "hydra",
+          "omegaconf",
+          "pytorch_lightning",
+          "einops",
+          "biotite",
+          "zarr",
+          "peppr",
+          "useful_rdkit_utils",
+          "wandb",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "pandas"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-omtra-gpu",
+          "drug-agent-omtra"
+        ],
+        "binary": null,
+        "driver": "omtra_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_OMTRA_ROOT",
+          "python": "DRUGAGENT_OMTRA_PYTHON",
+          "device": "DRUGAGENT_OMTRA_DEVICE",
+          "timeout_seconds": "DRUGAGENT_OMTRA_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/OMTRA",
+        "runtime_root": "{external}/OMTRA",
+        "source_sentinels": [
+          "cli.py",
+          "routines/sample.py",
+          "omtra/utils/checkpoints.py",
+          "omtra/utils/file_to_graph.py",
+          "omtra/models/omtra.py",
+          "omtra/eval/system.py"
+        ],
+        "required_artifacts": [
+          "omtra/trained_models/mt_plcd_cr_2025-11-26_10-09-673392/checkpoints/last.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "OMTRA"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make external-clone && conda create -y -n omtra python=3.11 && conda run -n omtra bash .external/OMTRA/build_env.sh && wget -r -np -nH --cut-dirs=3 -R 'index.html*' -P .external/OMTRA/omtra/trained_models https://bits.csb.pitt.edu/files/OMTRA/omtra_v0_weights/ Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make external-clone && conda create -y -n omtra python=3.11 && conda run -n omtra bash .external/OMTRA/build_env.sh && wget -r -np -nH --cut-dirs=3 -R 'index.html*' -P .external/OMTRA/omtra/trained_models https://bits.csb.pitt.edu/files/OMTRA/omtra_v0_weights/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "openfe",
+      "source_checkout": {
+        "name": "openfe",
+        "url": "https://github.com/OpenFreeEnergy/openfe",
+        "revision": "678bbd4a23b9"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/freeenergy/openfe_tool.py",
+        "source_sha256": "80293cfd2d63c2d4b9fff9bc3532a9d286b11432d94ec6fe4718bff4568e0149",
+        "name": "OpenFE",
+        "env_prefix": "OPENFE",
+        "checkout_relpath": ".external/openfe",
+        "sentinel_files": [
+          "src/openfe/__init__.py",
+          "src/openfe/protocols/openmm_rfe/hybridtop_protocols.py",
+          "src/openfe/protocols/openmm_rfe/hybridtop_units.py",
+          "src/openfe/setup/alchemical_network_planner/relative_alchemical_network_planner.py",
+          "src/openfe/setup/ligand_network_planning.py",
+          "src/openfecli/commands/quickrun.py"
+        ],
+        "driver_name": "openfe_rbfe.py",
+        "selection_modules": [
+          "openfe"
+        ],
+        "runtime_modules": [
+          "openfe",
+          "gufe",
+          "openmm",
+          "openmmtools",
+          "openmmforcefields",
+          "openff",
+          "lomap",
+          "kartograf",
+          "konnektor",
+          "pymbar",
+          "mdtraj"
+        ],
+        "conda_envs": [
+          "drug-agent-openfe"
+        ],
+        "upstream_url": "https://github.com/OpenFreeEnergy/openfe",
+        "upstream_ref": "678bbd4a23b9",
+        "license": "OpenFE MIT (checkout LICENSE); conda-forge build; not installed here",
+        "install_hint": "make openfe-install",
+        "needs_gpu": true
+      },
+      "display_name": "OpenFE",
+      "runtime": {
+        "modules": [
+          "openfe",
+          "gufe",
+          "openmm",
+          "openmmtools",
+          "openmmforcefields",
+          "openff",
+          "lomap",
+          "kartograf",
+          "konnektor",
+          "pymbar",
+          "mdtraj"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-openfe"
+        ],
+        "binary": null,
+        "driver": "openfe_rbfe.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_OPENFE_ROOT",
+          "python": "DRUGAGENT_OPENFE_PYTHON",
+          "device": "DRUGAGENT_OPENFE_DEVICE",
+          "timeout_seconds": "DRUGAGENT_OPENFE_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/openfe",
+        "runtime_root": "{external}/openfe",
+        "source_sentinels": [
+          "src/openfe/__init__.py",
+          "src/openfe/protocols/openmm_rfe/hybridtop_protocols.py",
+          "src/openfe/protocols/openmm_rfe/hybridtop_units.py",
+          "src/openfe/setup/alchemical_network_planner/relative_alchemical_network_planner.py",
+          "src/openfe/setup/ligand_network_planning.py",
+          "src/openfecli/commands/quickrun.py"
+        ],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "Prepared and posed ligands, receptor/system preparation, force-field inputs, and an explicitly budgeted alchemical network; there is no universal downloadable target dataset."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "openfe"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_packages",
+          "environment_name": "drug-agent-openfe",
+          "packages": [
+            "openfe"
+          ],
+          "channels": [
+            "conda-forge"
+          ]
+        },
+        "assets": {
+          "support": "not_required",
+          "reason": "This algorithm does not require a pretrained model checkpoint. Task-specific structures and other inputs remain caller supplied."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "opentargets",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/target/opentargets_tool.py",
+        "source_sha256": "e129dc745e12327b1df49b1d757f187ea9cde80ba2557b3e4d08e8a4b59618f3",
+        "name": "Open Targets Platform snapshot",
+        "env_prefix": "OPENTARGETS",
+        "checkout_relpath": ".external/opentargets",
+        "sentinel_files": [
+          "index.json",
+          "queries.graphql"
+        ],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [
+          "targets"
+        ],
+        "conda_envs": [],
+        "binary": null,
+        "upstream_url": "https://platform.opentargets.org",
+        "upstream_ref": "GraphQL API v4 (built 26.6.3, data release 26.06)",
+        "license": "Open Targets Platform data are CC0 1.0; individual datasources keep their own terms (https://platform-docs.opentargets.org/licence). The snapshot is a verbatim copy of the API's answer to a recorded query.",
+        "install_hint": "make opentargets-fetch TARGETS=<ENSG id>",
+        "needs_gpu": false
+      },
+      "display_name": "Open Targets Platform snapshot",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_OPENTARGETS_ROOT",
+          "python": "DRUGAGENT_OPENTARGETS_PYTHON",
+          "device": "DRUGAGENT_OPENTARGETS_DEVICE",
+          "timeout_seconds": "DRUGAGENT_OPENTARGETS_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/opentargets",
+        "source_sentinels": [
+          "index.json",
+          "queries.graphql"
+        ],
+        "required_artifacts": [
+          "targets"
+        ],
+        "additional_inputs": [
+          "Use agents/drug-agent/scripts/fetch_opentargets_snapshot.py --help and explicitly choose the target identifiers; this installer does not invent a study dataset."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "manual",
+          "unblock": "This integration consumes a prepared data cache rather than a source checkout. Supply inputs to the referenced first-party fetch script before checking the runtime layout."
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make opentargets-fetch TARGETS=<ENSG id> Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make opentargets-fetch TARGETS=<ENSG id> Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "p2rank",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/pockets/p2rank_tool.py",
+        "source_sha256": "f7717ca053330e61875406a68069df23c3a180df7dc4728b655339269acc9242",
+        "name": "P2Rank",
+        "env_prefix": "P2RANK",
+        "checkout_relpath": ".external/p2rank",
+        "sentinel_files": [
+          "prank",
+          "bin/p2rank.jar",
+          "config/default.groovy",
+          "config/default_rescore.groovy"
+        ],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [
+          "models/default/model.zst",
+          "models/default_rescore/model.zst"
+        ],
+        "conda_envs": [],
+        "binary": null,
+        "upstream_url": "https://github.com/rdk/p2rank",
+        "upstream_ref": "2.5.1",
+        "license": "P2Rank MIT (Krivák & Hoksza, J. Cheminformatics 2018, 10:39)",
+        "install_hint": "python scripts/external/fetch_pockets.py --only p2rank",
+        "needs_gpu": false,
+        "unresolved_source_expressions": {
+          "platform_blockers": "_platform_blockers()"
+        }
+      },
+      "display_name": "P2Rank",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_P2RANK_ROOT",
+          "python": "DRUGAGENT_P2RANK_PYTHON",
+          "device": "DRUGAGENT_P2RANK_DEVICE",
+          "timeout_seconds": "DRUGAGENT_P2RANK_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/p2rank",
+        "source_sentinels": [
+          "prank",
+          "bin/p2rank.jar",
+          "config/default.groovy",
+          "config/default_rescore.groovy"
+        ],
+        "required_artifacts": [
+          "models/default/model.zst",
+          "models/default_rescore/model.zst"
+        ],
+        "additional_inputs": [
+          "A Java runtime compatible with the pinned P2Rank release; protein PDB input."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "manual",
+          "unblock": "P2Rank is distributed as a release tree; use the assets stage, which installs the scripts and model files together."
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "python scripts/external/fetch_pockets.py --only p2rank Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_pockets.py",
+              "--only",
+              "p2rank"
+            ]
+          ]
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "pfm",
+      "source_checkout": {
+        "name": "PFM",
+        "url": "https://github.com/kurisu92725/PFM",
+        "revision": "33be6c1f3dc9f42deb7a27be974ab9f5fc241497"
+      },
+      "integration": {
+        "name": "PFM",
+        "env_prefix": "PFM",
+        "checkout_relpath": ".external/PFM",
+        "sentinel_files": [
+          "scripts/sampling.py",
+          "egnn/DotGat.py",
+          "utils/reconstruct.py"
+        ],
+        "weight_relpaths": [
+          "model_params/pfm.pth",
+          "model_params/training.yml"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "source_file": "src/drug_agent/tools/pfm_tool.py",
+        "source_sha256": "68369e6146c14f7c7d1b776a7c8a6e3f98171d26f61a7aa5050dfb73601878e5",
+        "install_hint": "Install the core runtime, PFM overlay and compiled extensions; obtain model_params assets and a prepared pocket separately.",
+        "needs_gpu": true
+      },
+      "display_name": "PFM",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_PFM_ROOT",
+          "python": "DRUGAGENT_PFM_PYTHON",
+          "device": "DRUGAGENT_PFM_DEVICE",
+          "timeout_seconds": "DRUGAGENT_PFM_TIMEOUT_SECONDS",
+          "checkpoint": "DRUGAGENT_PFM_CHECKPOINT",
+          "training_yml": "DRUGAGENT_PFM_TRAINING_YML",
+          "x_predictor": "DRUGAGENT_PFM_X_PREDICTOR",
+          "h_predictor": "DRUGAGENT_PFM_H_PREDICTOR",
+          "pocket": "DRUGAGENT_PFM_POCKET",
+          "pocket_pdb": "DRUGAGENT_PFM_POCKET_PDB"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/PFM",
+        "runtime_root": "{external}/PFM",
+        "source_sentinels": [
+          "scripts/sampling.py",
+          "egnn/DotGat.py",
+          "utils/reconstruct.py"
+        ],
+        "required_artifacts": [
+          "model_params/pfm.pth",
+          "model_params/training.yml"
+        ],
+        "additional_inputs": [
+          "Prepared protein pocket PDB supplied by the request or DRUGAGENT_PFM_POCKET/DRUGAGENT_PFM_POCKET_PDB.",
+          "Optional target manifest for pocket identity checks."
+        ],
+        "optional_artifacts": [
+          "model_params/x_predictor.pth",
+          "model_params/h_predictor.pth"
+        ],
+        "artifact_env_overrides": {
+          "model_params/pfm.pth": "DRUGAGENT_PFM_CHECKPOINT",
+          "model_params/training.yml": "DRUGAGENT_PFM_TRAINING_YML"
+        }
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "pfm-source"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "pfm"
+            ]
+          ],
+          "dependency_file": "{drug}/environment-pfm.yml",
+          "prerequisite": "Install core first; compiled torch_scatter and torch_cluster must match the installed torch/CUDA build.",
+          "environment_name": "{core_env}"
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "Install the core runtime, PFM overlay and compiled extensions; obtain model_params assets and a prepared pocket separately. Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "pocket2mol",
+      "source_checkout": {
+        "name": "Pocket2Mol",
+        "url": "https://github.com/pengxingang/Pocket2Mol",
+        "revision": "836a0c4ce487"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/pocket2mol_tool.py",
+        "source_sha256": "009b4496b87c38b75dedbcf3d1c3570051b88b27b58b23af9004fc8396698fec",
+        "name": "Pocket2Mol",
+        "env_prefix": "POCKET2MOL",
+        "checkout_relpath": ".external/Pocket2Mol",
+        "sentinel_files": [
+          "sample.py",
+          "sample_for_pdb.py",
+          "models/maskfill.py",
+          "utils/transforms.py",
+          "utils/reconstruct.py",
+          "configs/sample_for_pdb.yml"
+        ],
+        "driver_name": "pocket2mol_sample.py",
+        "selection_modules": [
+          "torch",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "rdkit",
+          "easydict",
+          "yaml",
+          "tqdm",
+          "numpy",
+          "Bio",
+          "lmdb"
+        ],
+        "weight_relpaths": [
+          "ckpt/pretrained_Pocket2Mol.pt"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/pengxingang/Pocket2Mol",
+        "upstream_ref": "836a0c4ce487",
+        "license": "Pocket2Mol MIT (Copyright (c) 2022 Xingang Peng)",
+        "install_hint": "make external-clone, then download pretrained_Pocket2Mol.pt from https://drive.google.com/drive/folders/1KfdOczjUPITPhIvCuBmnj4xFTV-iI2xB into .external/Pocket2Mol/ckpt/",
+        "needs_gpu": true
+      },
+      "display_name": "Pocket2Mol",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "rdkit",
+          "easydict",
+          "yaml",
+          "tqdm",
+          "numpy",
+          "Bio",
+          "lmdb"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "pocket2mol_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_POCKET2MOL_ROOT",
+          "python": "DRUGAGENT_POCKET2MOL_PYTHON",
+          "device": "DRUGAGENT_POCKET2MOL_DEVICE",
+          "timeout_seconds": "DRUGAGENT_POCKET2MOL_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/Pocket2Mol",
+        "runtime_root": "{external}/Pocket2Mol",
+        "source_sentinels": [
+          "sample.py",
+          "sample_for_pdb.py",
+          "models/maskfill.py",
+          "utils/transforms.py",
+          "utils/reconstruct.py",
+          "configs/sample_for_pdb.yml"
+        ],
+        "required_artifacts": [
+          "ckpt/pretrained_Pocket2Mol.pt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "Pocket2Mol"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make external-clone, then download pretrained_Pocket2Mol.pt from https://drive.google.com/drive/folders/1KfdOczjUPITPhIvCuBmnj4xFTV-iI2xB into .external/Pocket2Mol/ckpt/ Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_weights.py",
+              "--only",
+              "pocket2mol"
+            ]
+          ],
+          "environment": {
+            "CONDA_PREFIX": ""
+          },
+          "unblock": "Existing downloader verifies size and file magic; review upstream changes if its recorded checks no longer match."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "pocketflow",
+      "source_checkout": {
+        "name": "PocketFlow",
+        "url": "https://github.com/Saoge123/PocketFlow",
+        "revision": "a31a5a03f7d1"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/pocketflow_tool.py",
+        "source_sha256": "897c12cadadc1c1aa7580ebc713e998ecdad975ca9f5d22b1d2da0fa09ba2bd8",
+        "name": "PocketFlow",
+        "env_prefix": "POCKETFLOW",
+        "checkout_relpath": ".external/PocketFlow",
+        "sentinel_files": [
+          "main_generate.py",
+          "pocket_flow/__init__.py",
+          "pocket_flow/generate.py",
+          "pocket_flow/gdbp_model/pocket_flow.py",
+          "pocket_flow/utils/ParseFile.py",
+          "pocket_flow/utils/transform.py"
+        ],
+        "driver_name": "pocketflow_sample.py",
+        "selection_modules": [
+          "torch",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "lmdb",
+          "easydict",
+          "tensorboard",
+          "tqdm"
+        ],
+        "weight_relpaths": [
+          "ckpt/ZINC-pretrained-255000.pt"
+        ],
+        "conda_envs": [
+          "drug-agent",
+          "pfm"
+        ],
+        "upstream_url": "https://github.com/Saoge123/PocketFlow",
+        "upstream_ref": "a31a5a03f7d1",
+        "license": "PocketFlow MIT (Liscense in the checkout root; weights ship with it)",
+        "install_hint": "conda run -n drug-agent pip install tensorboard, plus a torch-geometric/pyg-lib pair that provides knn and radius (upstream pins torch-geometric==2.3.1 and an x86-64-only pyg_lib wheel; pyg-lib is not on PyPI at all, it is published per-torch-version at data.pyg.org/whl/)",
+        "needs_gpu": true
+      },
+      "display_name": "PocketFlow",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "lmdb",
+          "easydict",
+          "tensorboard",
+          "tqdm"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-pocketflow",
+          "drug-agent",
+          "pfm"
+        ],
+        "binary": null,
+        "driver": "pocketflow_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_POCKETFLOW_ROOT",
+          "python": "DRUGAGENT_POCKETFLOW_PYTHON",
+          "device": "DRUGAGENT_POCKETFLOW_DEVICE",
+          "timeout_seconds": "DRUGAGENT_POCKETFLOW_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/PocketFlow",
+        "runtime_root": "{external}/PocketFlow",
+        "source_sentinels": [
+          "main_generate.py",
+          "pocket_flow/__init__.py",
+          "pocket_flow/generate.py",
+          "pocket_flow/gdbp_model/pocket_flow.py",
+          "pocket_flow/utils/ParseFile.py",
+          "pocket_flow/utils/transform.py"
+        ],
+        "required_artifacts": [
+          "ckpt/ZINC-pretrained-255000.pt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "PocketFlow"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "drug-agent-pocketflow",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "conda run -n drug-agent pip install tensorboard, plus a torch-geometric/pyg-lib pair that provides knn and radius (upstream pins torch-geometric==2.3.1 and an x86-64-only pyg_lib wheel; pyg-lib is not on PyPI at all, it is published per-torch-version at data.pyg.org/whl/) Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "pocketxmol",
+      "source_checkout": {
+        "name": "PocketXMol",
+        "url": "https://github.com/pengxingang/PocketXMol",
+        "revision": "65488cf635c8"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/pocketxmol_tool.py",
+        "source_sha256": "19d392e458094ad2c718c9ce9d2781b5215c6166620e004b5518cee1757afbd6",
+        "name": "PocketXMol",
+        "env_prefix": "POCKETXMOL",
+        "checkout_relpath": ".external/PocketXMol",
+        "sentinel_files": [
+          "scripts/sample_use.py",
+          "models/maskfill.py",
+          "models/sample.py",
+          "utils/sample_noise.py",
+          "utils/transforms.py",
+          "process/utils_process.py",
+          "configs/sample/pxm.yml"
+        ],
+        "driver_name": "pocketxmol_sample.py",
+        "selection_modules": [
+          "torch_geometric",
+          "torch_scatter"
+        ],
+        "runtime_modules": [
+          "PeptideBuilder",
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "easydict",
+          "lmdb",
+          "openbabel",
+          "networkx",
+          "Bio",
+          "rdkit"
+        ],
+        "weight_relpaths": [
+          "data/trained_models/pxm/checkpoints/pocketxmol.ckpt"
+        ],
+        "conda_envs": [
+          "pxm",
+          "pxm_cu128",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/pengxingang/PocketXMol",
+        "upstream_ref": "65488cf635c8",
+        "license": "MIT",
+        "install_hint": "make external-clone, then in .external/PocketXMol fetch the weights per docs/setup.md section 2 — 'wget -c https://zenodo.org/records/17801271/files/model_weights.tar.gz' then 'tar -zxvf model_weights.tar.gz' — and 'pip install peptidebuilder==1.1.0' into the interpreter that will run it (or 'conda env create -f environment.yml' for upstream's own pxm environment)",
+        "needs_gpu": true
+      },
+      "display_name": "PocketXMol",
+      "runtime": {
+        "modules": [
+          "PeptideBuilder",
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "easydict",
+          "lmdb",
+          "openbabel",
+          "networkx",
+          "Bio",
+          "rdkit"
+        ],
+        "conda_env_candidates": [
+          "pxm",
+          "pxm_cu128",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "pocketxmol_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_POCKETXMOL_ROOT",
+          "python": "DRUGAGENT_POCKETXMOL_PYTHON",
+          "device": "DRUGAGENT_POCKETXMOL_DEVICE",
+          "timeout_seconds": "DRUGAGENT_POCKETXMOL_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/PocketXMol",
+        "runtime_root": "{external}/PocketXMol",
+        "source_sentinels": [
+          "scripts/sample_use.py",
+          "models/maskfill.py",
+          "models/sample.py",
+          "utils/sample_noise.py",
+          "utils/transforms.py",
+          "process/utils_process.py",
+          "configs/sample/pxm.yml"
+        ],
+        "required_artifacts": [
+          "data/trained_models/pxm/checkpoints/pocketxmol.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "PocketXMol"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "pxm",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_weights.py",
+              "--only",
+              "pocketxmol"
+            ]
+          ],
+          "environment": {
+            "CONDA_PREFIX": ""
+          },
+          "unblock": "Existing downloader verifies size and file magic; review upstream changes if its recorded checks no longer match."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "posebench",
+      "source_checkout": {
+        "name": "PoseBench",
+        "url": "https://github.com/BioinfoMachineLearning/PoseBench",
+        "revision": "c5d728d2a31d"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/benchmarking/posebench_tool.py",
+        "source_sha256": "c0623c051ae4695ab91a7a7804ea8e9ccf12c0fdab97dc5fe99eca9619b460ef",
+        "name": "PoseBench",
+        "env_prefix": "POSEBENCH",
+        "checkout_relpath": ".external/PoseBench",
+        "sentinel_files": [
+          ".project-root",
+          "posebench/__init__.py",
+          "posebench/analysis/inference_analysis.py",
+          "posebench/utils/data_utils.py",
+          "configs/analysis/inference_analysis.yaml",
+          "data/posebusters_pdb_ccd_ids.txt"
+        ],
+        "driver_name": "posebench_evaluate.py",
+        "selection_modules": [
+          "rootutils"
+        ],
+        "runtime_modules": [
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "beartype",
+          "prody",
+          "biopandas",
+          "Bio",
+          "pandas",
+          "numpy",
+          "requests",
+          "tqdm",
+          "rdkit",
+          "posebusters"
+        ],
+        "weight_relpaths": [
+          "data/posebusters_benchmark_set"
+        ],
+        "conda_envs": [
+          "posebench",
+          "PoseBench",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/BioinfoMachineLearning/PoseBench",
+        "upstream_ref": "c5d728d2a31d",
+        "license": "PoseBench MIT (LICENSE, Copyright (c) 2024 BioinfoMachineLearning)",
+        "install_hint": "pip install -e .external/PoseBench into a dedicated environment, then unpack the Zenodo 19138652 dataset and prediction archives under .external/PoseBench/",
+        "needs_gpu": false
+      },
+      "display_name": "PoseBench",
+      "runtime": {
+        "modules": [
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "beartype",
+          "prody",
+          "biopandas",
+          "Bio",
+          "pandas",
+          "numpy",
+          "requests",
+          "tqdm",
+          "rdkit",
+          "posebusters"
+        ],
+        "conda_env_candidates": [
+          "posebench",
+          "PoseBench",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "posebench_evaluate.py",
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_POSEBENCH_ROOT",
+          "python": "DRUGAGENT_POSEBENCH_PYTHON",
+          "device": "DRUGAGENT_POSEBENCH_DEVICE",
+          "timeout_seconds": "DRUGAGENT_POSEBENCH_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/PoseBench",
+        "runtime_root": "{external}/PoseBench",
+        "source_sentinels": [
+          ".project-root",
+          "posebench/__init__.py",
+          "posebench/analysis/inference_analysis.py",
+          "posebench/utils/data_utils.py",
+          "configs/analysis/inference_analysis.yaml",
+          "data/posebusters_pdb_ccd_ids.txt"
+        ],
+        "required_artifacts": [
+          "data/posebusters_benchmark_set"
+        ],
+        "additional_inputs": [
+          "The benchmark reference set and prediction archives named by the chosen benchmark configuration; fetching source alone does not provide evaluations."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "PoseBench"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environments/posebench_environment.yaml",
+          "environment_name": "posebench",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "pip install -e .external/PoseBench into a dedicated environment, then unpack the Zenodo 19138652 dataset and prediction archives under .external/PoseBench/ Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "posebusters",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/posebusters_tool.py",
+        "source_sha256": "a7d01c2447ee94c66c86aca3afab1d32cf689d972dd52f614fdd55472410dc04",
+        "name": "PoseBusters",
+        "env_prefix": "POSEBUSTERS",
+        "selection_modules": [
+          "posebusters"
+        ],
+        "runtime_modules": [
+          "posebusters"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/maabuu/posebusters",
+        "upstream_ref": "1a5f26aa7270",
+        "license": "PoseBusters BSD-3-Clause",
+        "install_hint": "make posebusters-install",
+        "needs_gpu": false
+      },
+      "display_name": "PoseBusters",
+      "runtime": {
+        "modules": [
+          "posebusters"
+        ],
+        "conda_env_candidates": [
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_POSEBUSTERS_ROOT",
+          "python": "DRUGAGENT_POSEBUSTERS_PYTHON",
+          "device": "DRUGAGENT_POSEBUSTERS_DEVICE",
+          "timeout_seconds": "DRUGAGENT_POSEBUSTERS_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "core"
+            ]
+          ],
+          "dependency_file": "{drug}/environment.yml",
+          "environment_name": "{core_env}"
+        },
+        "assets": {
+          "support": "not_required",
+          "reason": "This algorithm does not require a pretrained model checkpoint. Task-specific structures and other inputs remain caller supplied."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "prexsyn",
+      "source_checkout": {
+        "name": "prexsyn",
+        "url": "https://github.com/luost26/prexsyn",
+        "revision": "3522e9747538"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/prexsyn_tool.py",
+        "source_sha256": "491e582c32aed864a2207d56b5414c682b6a4fa78f4b72e188cbb891f3af194c",
+        "name": "PrexSyn",
+        "env_prefix": "PREXSYN",
+        "checkout_relpath": ".external/prexsyn",
+        "sentinel_files": [
+          "prexsyn/__init__.py",
+          "prexsyn/shortcuts/loader.py",
+          "prexsyn/shortcuts/projector.py",
+          "prexsyn/samplers/basic.py",
+          "prexsyn/factory/factory.py",
+          "data/trained_models/enamine2310_rxn115_202511.yml"
+        ],
+        "driver_name": "prexsyn_sample.py",
+        "selection_modules": [
+          "prexsyn_engine"
+        ],
+        "runtime_modules": [
+          "prexsyn_engine",
+          "torch",
+          "numpy",
+          "rdkit",
+          "omegaconf",
+          "requests",
+          "tqdm",
+          "matplotlib",
+          "PIL",
+          "pydot"
+        ],
+        "weight_relpaths": [
+          "data/trained_models/enamine2310_rxn115_202511.ckpt",
+          "data/chemical_spaces/enamine2310_rxn115.chemspace"
+        ],
+        "conda_envs": [
+          "drug-agent-prexsyn"
+        ],
+        "upstream_url": "https://github.com/luost26/prexsyn",
+        "upstream_ref": "3522e9747538",
+        "license": "PrexSyn MIT (LICENSE, Copyright (c) 2025 Shitong Luo)",
+        "install_hint": "pip install 'prexsyn==1.1.3' into a dedicated env (prexsyn-engine ships wheels for linux x86-64, macos arm64 and windows only; elsewhere build it from the sdist), then fetch the weights from huggingface.co/datasets/luost26/prexsyn-data",
+        "needs_gpu": true
+      },
+      "display_name": "PrexSyn",
+      "runtime": {
+        "modules": [
+          "prexsyn_engine",
+          "torch",
+          "numpy",
+          "rdkit",
+          "omegaconf",
+          "requests",
+          "tqdm",
+          "matplotlib",
+          "PIL",
+          "pydot"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-prexsyn"
+        ],
+        "binary": null,
+        "driver": "prexsyn_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_PREXSYN_ROOT",
+          "python": "DRUGAGENT_PREXSYN_PYTHON",
+          "device": "DRUGAGENT_PREXSYN_DEVICE",
+          "timeout_seconds": "DRUGAGENT_PREXSYN_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/prexsyn",
+        "runtime_root": "{external}/prexsyn",
+        "source_sentinels": [
+          "prexsyn/__init__.py",
+          "prexsyn/shortcuts/loader.py",
+          "prexsyn/shortcuts/projector.py",
+          "prexsyn/samplers/basic.py",
+          "prexsyn/factory/factory.py",
+          "data/trained_models/enamine2310_rxn115_202511.yml"
+        ],
+        "required_artifacts": [
+          "data/trained_models/enamine2310_rxn115_202511.ckpt",
+          "data/chemical_spaces/enamine2310_rxn115.chemspace"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "prexsyn"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "pip install 'prexsyn==1.1.3' into a dedicated env (prexsyn-engine ships wheels for linux x86-64, macos arm64 and windows only; elsewhere build it from the sdist), then fetch the weights from huggingface.co/datasets/luost26/prexsyn-data Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "pip install 'prexsyn==1.1.3' into a dedicated env (prexsyn-engine ships wheels for linux x86-64, macos arm64 and windows only; elsewhere build it from the sdist), then fetch the weights from huggingface.co/datasets/luost26/prexsyn-data Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "protenix",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/structure/protenix_tool.py",
+        "source_sha256": "66f0953a501e686f6f5daf9a80954deb435fa5fc95845d46fb9ff6dfd1e2d9ec",
+        "name": "Protenix",
+        "env_prefix": "PROTENIX",
+        "driver_name": "protenix_predict.py",
+        "selection_modules": [
+          "protenix"
+        ],
+        "runtime_modules": [
+          "protenix",
+          "runner",
+          "configs",
+          "torch",
+          "biotite",
+          "rdkit",
+          "gemmi",
+          "ml_collections",
+          "cuequivariance_torch"
+        ],
+        "conda_envs": [
+          "drug-agent-protenix"
+        ],
+        "upstream_url": "https://github.com/bytedance/Protenix",
+        "upstream_ref": "v2.0.0 (PyPI protenix 2.0.0)",
+        "license": "Protenix Apache License 2.0 (c) 2024 ByteDance; checkpoints carry ByteDance's model terms",
+        "install_hint": "make protenix-install && make protenix-weights",
+        "needs_gpu": true
+      },
+      "display_name": "Protenix",
+      "runtime": {
+        "modules": [
+          "protenix",
+          "runner",
+          "configs",
+          "torch",
+          "biotite",
+          "rdkit",
+          "gemmi",
+          "ml_collections",
+          "cuequivariance_torch"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-protenix"
+        ],
+        "binary": null,
+        "driver": "protenix_predict.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_PROTENIX_ROOT",
+          "python": "DRUGAGENT_PROTENIX_PYTHON",
+          "device": "DRUGAGENT_PROTENIX_DEVICE",
+          "timeout_seconds": "DRUGAGENT_PROTENIX_TIMEOUT_SECONDS",
+          "upstream_cache": "PROTENIX_ROOT_DIR"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{protenix_cache}",
+        "source_sentinels": [],
+        "required_artifacts": [
+          "checkpoint/protenix_base_default_v1.0.0.pt",
+          "common/components.cif",
+          "common/components.cif.rdkit_mol.pkl",
+          "common/clusters-by-entity-40.txt",
+          "common/obsolete_release_date.csv"
+        ],
+        "additional_inputs": [
+          "Request-specific protein/ligand inputs. MSA or template searches require their own prepared inputs or explicit runtime network configuration; the asset stage installs only default inference caches."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "Install protenix==2.0.0 into a dedicated Python 3.11 environment with hardware-compatible PyTorch and cuequivariance_torch, then set DRUGAGENT_PROTENIX_PYTHON. No portable GPU installation recipe is asserted here."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{core_python}",
+              "{drug}/scripts/fetch_protenix_weights.py",
+              "--root",
+              "{runtime_root}",
+              "--protenix-python",
+              "{runtime_python}"
+            ]
+          ],
+          "environment": {
+            "DRUGAGENT_ALLOW_NETWORK": "1",
+            "DRUGAGENT_EGRESS_ALLOWLIST": "protenix.tos-cn-beijing.volces.com"
+          },
+          "unblock": "Install core and Protenix environments first; the downloader asks the installed Protenix version for asset URLs."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "reasyn",
+      "source_checkout": {
+        "name": "reasyn",
+        "url": "https://github.com/NVIDIA-Digital-Bio/reasyn",
+        "revision": "8a0b02178e90"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/reasyn_tool.py",
+        "source_sha256": "29faf05264afe5b096aacf65ee238bfc11b42553a31b6a715d171b805641522d",
+        "name": "ReaSyn",
+        "env_prefix": "REASYN",
+        "checkout_relpath": ".external/reasyn",
+        "sentinel_files": [
+          "reasyn/sampler/parallel.py",
+          "reasyn/sampler/sampler.py",
+          "reasyn/models/reasyn.py",
+          "reasyn/chem/mol.py"
+        ],
+        "driver_name": "reasyn_sample.py",
+        "selection_modules": [
+          "torch",
+          "omegaconf"
+        ],
+        "runtime_modules": [
+          "omegaconf",
+          "einops",
+          "torchtyping",
+          "rotary_embedding_torch",
+          "editdistance",
+          "torch",
+          "rdkit",
+          "sklearn",
+          "joblib",
+          "numpy",
+          "pandas",
+          "tqdm"
+        ],
+        "weight_relpaths": [
+          "data/trained_model/nv-reasyn-ar-166m-v2.ckpt",
+          "data/trained_model/nv-reasyn-eb-174m-v2.ckpt",
+          "data/processed/comp_2048/fpindex.pkl",
+          "data/processed/comp_2048/matrix.pkl"
+        ],
+        "conda_envs": [
+          "reasyn",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/NVIDIA-Digital-Bio/reasyn",
+        "upstream_ref": "8a0b02178e90",
+        "license": "Apache-2.0 (source); NVIDIA Open Model License (NV-ReaSyn v2 weights, absent here)",
+        "install_hint": "make reasyn-install; weights from huggingface.co/nvidia/NV-ReaSyn-AR-166M-v2 and NV-ReaSyn-EB-174M-v2, building-block index from Enamine US Stock (on request) — see .external/reasyn/README.md",
+        "needs_gpu": true
+      },
+      "display_name": "ReaSyn",
+      "runtime": {
+        "modules": [
+          "omegaconf",
+          "einops",
+          "torchtyping",
+          "rotary_embedding_torch",
+          "editdistance",
+          "torch",
+          "rdkit",
+          "sklearn",
+          "joblib",
+          "numpy",
+          "pandas",
+          "tqdm"
+        ],
+        "conda_env_candidates": [
+          "reasyn",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "reasyn_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_REASYN_ROOT",
+          "python": "DRUGAGENT_REASYN_PYTHON",
+          "device": "DRUGAGENT_REASYN_DEVICE",
+          "timeout_seconds": "DRUGAGENT_REASYN_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/reasyn",
+        "runtime_root": "{external}/reasyn",
+        "source_sentinels": [
+          "reasyn/sampler/parallel.py",
+          "reasyn/sampler/sampler.py",
+          "reasyn/models/reasyn.py",
+          "reasyn/chem/mol.py"
+        ],
+        "required_artifacts": [
+          "data/trained_model/nv-reasyn-ar-166m-v2.ckpt",
+          "data/trained_model/nv-reasyn-eb-174m-v2.ckpt",
+          "data/processed/comp_2048/fpindex.pkl",
+          "data/processed/comp_2048/matrix.pkl"
+        ],
+        "additional_inputs": [
+          "The matching Enamine US Stock building-block catalogue and derived fingerprint/reaction indices must be acquired separately under the upstream terms."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "reasyn"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make reasyn-install; weights from huggingface.co/nvidia/NV-ReaSyn-AR-166M-v2 and NV-ReaSyn-EB-174M-v2, building-block index from Enamine US Stock (on request) — see .external/reasyn/README.md Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make reasyn-install; weights from huggingface.co/nvidia/NV-ReaSyn-AR-166M-v2 and NV-ReaSyn-EB-174M-v2, building-block index from Enamine US Stock (on request) — see .external/reasyn/README.md Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "reinvent4",
+      "source_checkout": {
+        "name": "REINVENT4",
+        "url": "https://github.com/MolecularAI/REINVENT4",
+        "revision": "ee0d56f4a074"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/reinvent4_tool.py",
+        "source_sha256": "05b2da69b8a278770d4b60fda20bd3ef4078e12c9fdb09356ba53f8799e7a21e",
+        "name": "REINVENT4",
+        "env_prefix": "REINVENT4",
+        "checkout_relpath": ".external/REINVENT4",
+        "sentinel_files": [
+          "reinvent/Reinvent.py",
+          "reinvent/runmodes/samplers/run_sampling.py",
+          "reinvent/utils/prior_registry.py"
+        ],
+        "driver_name": "reinvent4_sample.py",
+        "selection_modules": [
+          "reinvent"
+        ],
+        "runtime_modules": [
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "scipy",
+          "pydantic",
+          "dotenv",
+          "yaml",
+          "molvs",
+          "xxhash",
+          "tqdm",
+          "requests",
+          "tensorboard",
+          "torchvision",
+          "mmpdblib",
+          "pumas"
+        ],
+        "weight_relpaths": [
+          "priors/reinvent.prior"
+        ],
+        "conda_envs": [
+          "reinvent4",
+          "drug-agent-reinvent4",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/MolecularAI/REINVENT4",
+        "upstream_ref": "ee0d56f4a074",
+        "license": "REINVENT4 Apache-2.0",
+        "install_hint": "make reinvent4-install (priors: https://doi.org/10.5281/zenodo.15641296)",
+        "needs_gpu": false
+      },
+      "display_name": "REINVENT4",
+      "runtime": {
+        "modules": [
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "scipy",
+          "pydantic",
+          "dotenv",
+          "yaml",
+          "molvs",
+          "xxhash",
+          "tqdm",
+          "requests",
+          "tensorboard",
+          "torchvision",
+          "mmpdblib",
+          "pumas"
+        ],
+        "conda_env_candidates": [
+          "reinvent4",
+          "drug-agent-reinvent4",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "reinvent4_sample.py",
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_REINVENT4_ROOT",
+          "python": "DRUGAGENT_REINVENT4_PYTHON",
+          "device": "DRUGAGENT_REINVENT4_DEVICE",
+          "timeout_seconds": "DRUGAGENT_REINVENT4_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/REINVENT4",
+        "runtime_root": "{external}/REINVENT4",
+        "source_sentinels": [
+          "reinvent/Reinvent.py",
+          "reinvent/runmodes/samplers/run_sampling.py",
+          "reinvent/utils/prior_registry.py"
+        ],
+        "required_artifacts": [
+          "priors/reinvent.prior"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "REINVENT4"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make reinvent4-install (priors: https://doi.org/10.5281/zenodo.15641296) Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_weights.py",
+              "--only",
+              "reinvent4"
+            ]
+          ],
+          "environment": {
+            "CONDA_PREFIX": ""
+          },
+          "unblock": "Existing downloader verifies size and file magic; review upstream changes if its recorded checks no longer match."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "rxnflow",
+      "source_checkout": {
+        "name": "RxnFlow",
+        "url": "https://github.com/SeonghwanSeo/RxnFlow",
+        "revision": "a39c7aebd45f"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/rxnflow_tool.py",
+        "source_sha256": "7d5183970bb6da76027b85b8e3ac9619a29f7bb61176ba3e0fe19efb11f7541f",
+        "name": "RxnFlow",
+        "env_prefix": "RXNFLOW",
+        "checkout_relpath": ".external/RxnFlow",
+        "sentinel_files": [
+          "src/rxnflow/base/generator.py",
+          "src/rxnflow/envs/env.py",
+          "src/rxnflow/tasks/multi_pocket.py",
+          "src/rxnflow/appl/pocket_conditional/model.py",
+          "src/gflownet/envs/graph_building_env.py"
+        ],
+        "driver_name": "rxnflow_sample.py",
+        "selection_modules": [
+          "rxnflow"
+        ],
+        "runtime_modules": [
+          "rxnflow",
+          "gflownet",
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "omegaconf",
+          "botorch",
+          "wandb",
+          "tensorboard",
+          "git",
+          "pmnet_appl",
+          "Bio",
+          "rdkit",
+          "numpy"
+        ],
+        "weight_relpaths": [
+          "weights/qvina-unif-0-64_20250512.pt",
+          "data/envs/catalog/building_block.smi"
+        ],
+        "conda_envs": [
+          "drug-agent-rxnflow",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/SeonghwanSeo/RxnFlow",
+        "upstream_ref": "a39c7aebd45f",
+        "license": "RxnFlow MIT (LICENSE, (c) 2024 Seonghwan Seo); reaction templates and building-block catalogues carry their own terms",
+        "install_hint": "make rxnflow-install",
+        "needs_gpu": true
+      },
+      "display_name": "RxnFlow",
+      "runtime": {
+        "modules": [
+          "rxnflow",
+          "gflownet",
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "omegaconf",
+          "botorch",
+          "wandb",
+          "tensorboard",
+          "git",
+          "pmnet_appl",
+          "Bio",
+          "rdkit",
+          "numpy"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-rxnflow",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "rxnflow_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_RXNFLOW_ROOT",
+          "python": "DRUGAGENT_RXNFLOW_PYTHON",
+          "device": "DRUGAGENT_RXNFLOW_DEVICE",
+          "timeout_seconds": "DRUGAGENT_RXNFLOW_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/RxnFlow",
+        "runtime_root": "{external}/RxnFlow",
+        "source_sentinels": [
+          "src/rxnflow/base/generator.py",
+          "src/rxnflow/envs/env.py",
+          "src/rxnflow/tasks/multi_pocket.py",
+          "src/rxnflow/appl/pocket_conditional/model.py",
+          "src/gflownet/envs/graph_building_env.py"
+        ],
+        "required_artifacts": [
+          "weights/qvina-unif-0-64_20250512.pt",
+          "data/envs/catalog/building_block.smi"
+        ],
+        "additional_inputs": [
+          "The environment directory also needs matching reaction templates, building-block feature arrays bb_fp_2_1024.npy and bb_desc.npy, and a checkpoint trained against the declared reward; see the adapter for the request-specific environment selection."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "RxnFlow"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "make rxnflow-install Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make rxnflow-install Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "safc",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/safc_tool.py",
+        "source_sha256": "e6a446fa513e4f2e673fbd5490d08bcc8c8e22748e6fc0df2b35427fc8c6bcc8",
+        "name": "SAFC",
+        "env_prefix": "SAFC",
+        "checkout_relpath": ".external/safc-agent-zak",
+        "sentinel_files": [
+          "VERSION",
+          "bundle_manifest.json",
+          "SHA256SUMS",
+          "safc/scripts/05c_build_official_equiscore_inputs.py",
+          "safc/scripts/05d_extract_official_equiscore_embeddings.py",
+          "safc/scripts/07_predict_official_equiscore_tl.py",
+          "safc/third_party/EquiScore/model/equiscore.py",
+          "targets/zak/config/target.json",
+          "targets/zak/structures/conformation_manifest.csv"
+        ],
+        "driver_name": "safc_score.py",
+        "selection_modules": [
+          "dgl",
+          "torch"
+        ],
+        "runtime_modules": [
+          "dgl",
+          "torch",
+          "rdkit",
+          "pandas",
+          "numpy",
+          "sklearn",
+          "joblib"
+        ],
+        "weight_relpaths": [
+          "safc/third_party/EquiScore/workdir/official_weight/save_model_screen.pt",
+          "targets/zak/models/official_equiscore_tl/primary_model.joblib"
+        ],
+        "conda_envs": [
+          "safc-equiscore-tl"
+        ],
+        "upstream_url": "https://github.com/HimansuKumarIIITA/DrugDesignAI-Benchmark",
+        "upstream_ref": "zak-final-20260919-r2",
+        "license": "EquiScore MIT; SAFC bundle NOTICE.md",
+        "install_hint": "make safc-install",
+        "needs_gpu": false
+      },
+      "display_name": "SAFC",
+      "runtime": {
+        "modules": [
+          "dgl",
+          "torch",
+          "rdkit",
+          "pandas",
+          "numpy",
+          "sklearn",
+          "joblib"
+        ],
+        "conda_env_candidates": [
+          "safc-equiscore-tl"
+        ],
+        "binary": null,
+        "driver": "safc_score.py",
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_SAFC_ROOT",
+          "python": "DRUGAGENT_SAFC_PYTHON",
+          "device": "DRUGAGENT_SAFC_DEVICE",
+          "timeout_seconds": "DRUGAGENT_SAFC_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/safc-agent-zak",
+        "source_sentinels": [
+          "VERSION",
+          "bundle_manifest.json",
+          "SHA256SUMS",
+          "safc/scripts/05c_build_official_equiscore_inputs.py",
+          "safc/scripts/05d_extract_official_equiscore_embeddings.py",
+          "safc/scripts/07_predict_official_equiscore_tl.py",
+          "safc/third_party/EquiScore/model/equiscore.py",
+          "targets/zak/config/target.json",
+          "targets/zak/structures/conformation_manifest.csv"
+        ],
+        "required_artifacts": [
+          "safc/third_party/EquiScore/workdir/official_weight/save_model_screen.pt",
+          "targets/zak/models/official_equiscore_tl/primary_model.joblib"
+        ],
+        "additional_inputs": [
+          "targets/zak/structures/conformation_manifest.csv and the receptor PDB/PDBQT files and box centers referenced by that manifest.",
+          "Target manifest matching the supplied bundle; Vina and Open Babel executables."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "manual",
+          "unblock": "Obtain a compatible SAFC transfer bundle independently, verify its SHA256SUMS, and unpack it at the configured runtime root. The referenced public benchmark repository is not a substitute for the trained bundle."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{runtime_root}/environments/equiscore-tl.yml",
+          "environment_name": "safc-equiscore-tl",
+          "unblock": "Supply and verify the compatible bundle first; its own environment file is the dependency specification."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "make safc-install Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "shepherd",
+      "source_checkout": {
+        "name": "shepherd",
+        "url": "https://github.com/coleygroup/shepherd",
+        "revision": "1707fddc3b87"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/shepherd_tool.py",
+        "source_sha256": "283e8092e967f94ba16c371e4d4aa9c358f2aaf619149dfbbbd9b4f1d572e90d",
+        "name": "ShEPhERD",
+        "env_prefix": "SHEPHERD",
+        "checkout_relpath": ".external/shepherd",
+        "sentinel_files": [
+          "src/shepherd/model_loader.py",
+          "src/shepherd/lightning_module.py",
+          "src/shepherd/inference/sampler.py",
+          "src/shepherd/extract.py",
+          "src/shepherd/shepherd_score_utils/generate_point_cloud.py",
+          "src/shepherd/shepherd_score_utils/pharm_utils/pharmacophore.py"
+        ],
+        "driver_name": "shepherd_sample.py",
+        "selection_modules": [
+          "torch",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "e3nn",
+          "open3d",
+          "huggingface_hub",
+          "rdkit",
+          "scipy"
+        ],
+        "weight_relpaths": [
+          "data/shepherd_chkpts/x1x3x4_diffusion_mosesaq_20240824_submission.ckpt"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/coleygroup/shepherd",
+        "upstream_ref": "1707fddc3b87",
+        "license": "MIT (Coley Research Group @ MIT, 2024); weights not distributed with the code",
+        "install_hint": "conda install -n drug-agent -c conda-forge open3d e3nn huggingface_hub && hf download kabeywar/shepherd x1x3x4_diffusion_mosesaq_20240824_submission.ckpt --local-dir .external/shepherd/data/shepherd_chkpts",
+        "needs_gpu": true
+      },
+      "display_name": "ShEPhERD",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "pytorch_lightning",
+          "e3nn",
+          "open3d",
+          "huggingface_hub",
+          "rdkit",
+          "scipy"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-shepherd",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "shepherd_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_SHEPHERD_ROOT",
+          "python": "DRUGAGENT_SHEPHERD_PYTHON",
+          "device": "DRUGAGENT_SHEPHERD_DEVICE",
+          "timeout_seconds": "DRUGAGENT_SHEPHERD_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/shepherd",
+        "runtime_root": "{external}/shepherd",
+        "source_sentinels": [
+          "src/shepherd/model_loader.py",
+          "src/shepherd/lightning_module.py",
+          "src/shepherd/inference/sampler.py",
+          "src/shepherd/extract.py",
+          "src/shepherd/shepherd_score_utils/generate_point_cloud.py",
+          "src/shepherd/shepherd_score_utils/pharm_utils/pharmacophore.py"
+        ],
+        "required_artifacts": [
+          "data/shepherd_chkpts/x1x3x4_diffusion_mosesaq_20240824_submission.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "shepherd"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "drug-agent-shepherd",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "conda install -n drug-agent -c conda-forge open3d e3nn huggingface_hub && hf download kabeywar/shepherd x1x3x4_diffusion_mosesaq_20240824_submission.ckpt --local-dir .external/shepherd/data/shepherd_chkpts Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "shepherd-score",
+      "source_checkout": {
+        "name": "shepherd-score",
+        "url": "https://github.com/coleygroup/shepherd-score",
+        "revision": "20ebed761e05"
+      },
+      "integration": null,
+      "display_name": "shepherd-score",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [
+          "drug-agent-shepherd-score"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {}
+      },
+      "layout": {
+        "source_root": "{external}/shepherd-score",
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": [
+          "Auxiliary checkout used by ShEPhERD; no standalone adapter spec is declared."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "shepherd-score"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yml",
+          "environment_name": "drug-agent-shepherd-score",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "not_required",
+          "reason": "This is an auxiliary source dependency. No standalone model asset contract is declared in this repository; consult its consuming integration."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "synflownet",
+      "source_checkout": {
+        "name": "synflownet",
+        "url": "https://github.com/mirunacrt/synflownet",
+        "revision": "574f1e148f42"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/synflownet_tool.py",
+        "source_sha256": "6f44e17b60c2d86607f67049b5f55c27c95e743284c22bbf90d4c2fc6a70d864",
+        "name": "SynFlowNet",
+        "env_prefix": "SYNFLOWNET",
+        "checkout_relpath": ".external/synflownet",
+        "sentinel_files": [
+          "src/synflownet/tasks/reactions_task.py",
+          "src/synflownet/envs/synthesis_building_env.py",
+          "src/synflownet/algo/reaction_sampling.py",
+          "src/synflownet/models/graph_transformer.py",
+          "src/synflownet/models/cache/bengio2021flow_proxy.pkl.gz",
+          "src/synflownet/data/templates/hb.txt"
+        ],
+        "driver_name": "synflownet_sample.py",
+        "selection_modules": [
+          "torch_sparse",
+          "tdc"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_sparse",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "networkx",
+          "omegaconf",
+          "yaml",
+          "wandb",
+          "tensorboard",
+          "git",
+          "botorch",
+          "sklearn",
+          "tdc",
+          "meeko",
+          "gemmi"
+        ],
+        "weight_relpaths": [
+          "src/synflownet/data/building_blocks/enamine_bbs.txt",
+          "src/synflownet/data/building_blocks/precomputed_bb_masks_enamine_bbs.pkl",
+          "checkpoints/seh_reaction/model_state.pt",
+          "checkpoints/seh_reaction/train_card.json"
+        ],
+        "conda_envs": [
+          "drug-agent-synflownet",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/mirunacrt/synflownet",
+        "upstream_ref": "574f1e148f42",
+        "license": "SynFlowNet MIT (LICENSE, Recursion Pharmaceuticals). The building-block catalogue is Enamine-derived and redistributed under MIT by recursionpharma/synflownet-boltz; the sEH reward proxy is Bengio et al. 2021, vendored in the clone. Enamine's own catalogue terms apply to the compounds",
+        "install_hint": "python scripts/external/synflownet_setup.py --train",
+        "needs_gpu": true
+      },
+      "display_name": "SynFlowNet",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_sparse",
+          "rdkit",
+          "numpy",
+          "scipy",
+          "networkx",
+          "omegaconf",
+          "yaml",
+          "wandb",
+          "tensorboard",
+          "git",
+          "botorch",
+          "sklearn",
+          "tdc",
+          "meeko",
+          "gemmi"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-synflownet",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "synflownet_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_SYNFLOWNET_ROOT",
+          "python": "DRUGAGENT_SYNFLOWNET_PYTHON",
+          "device": "DRUGAGENT_SYNFLOWNET_DEVICE",
+          "timeout_seconds": "DRUGAGENT_SYNFLOWNET_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/synflownet",
+        "runtime_root": "{external}/synflownet",
+        "source_sentinels": [
+          "src/synflownet/tasks/reactions_task.py",
+          "src/synflownet/envs/synthesis_building_env.py",
+          "src/synflownet/algo/reaction_sampling.py",
+          "src/synflownet/models/graph_transformer.py",
+          "src/synflownet/models/cache/bengio2021flow_proxy.pkl.gz",
+          "src/synflownet/data/templates/hb.txt"
+        ],
+        "required_artifacts": [
+          "src/synflownet/data/building_blocks/enamine_bbs.txt",
+          "src/synflownet/data/building_blocks/precomputed_bb_masks_enamine_bbs.pkl",
+          "checkpoints/seh_reaction/model_state.pt",
+          "checkpoints/seh_reaction/train_card.json"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "synflownet"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "side-env",
+              "synflownet"
+            ],
+            [
+              "{conda}",
+              "run",
+              "--no-capture-output",
+              "-n",
+              "drug-agent-synflownet",
+              "python",
+              "-m",
+              "pip",
+              "install",
+              "--no-deps",
+              "-e",
+              "{source}"
+            ]
+          ],
+          "dependency_file": "{drug}/envs/drug-agent-synflownet.yml",
+          "environment_name": "drug-agent-synflownet"
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "The generator requires building-block masks plus a reward-specific trained policy. Review scripts/external/synflownet_setup.py and synflownet_train.py; training is not launched by this installer. Supply the declared checkpoint and training card before checking assets."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "synformer",
+      "source_checkout": {
+        "name": "synformer",
+        "url": "https://github.com/wenhao-gao/synformer",
+        "revision": "bef02bc4481a"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/synformer_tool.py",
+        "source_sha256": "fef32560f34308534c463d659e1fb629482002833216b36b1320a5bdf700386c",
+        "name": "SynFormer",
+        "env_prefix": "SYNFORMER",
+        "checkout_relpath": ".external/synformer",
+        "sentinel_files": [
+          "synformer/sampler/analog/parallel.py",
+          "synformer/sampler/analog/state_pool.py",
+          "synformer/models/synformer.py",
+          "synformer/chem/fpindex.py",
+          "synformer/chem/matrix.py",
+          "synformer/chem/mol.py",
+          "data/rxn_templates/comprehensive.txt"
+        ],
+        "driver_name": "synformer_sample.py",
+        "selection_modules": [
+          "torch",
+          "omegaconf"
+        ],
+        "runtime_modules": [
+          "torch",
+          "omegaconf",
+          "rdkit",
+          "einops",
+          "numpy",
+          "pandas",
+          "sklearn",
+          "joblib",
+          "tqdm"
+        ],
+        "weight_relpaths": [
+          "data/trained_weights/default.ckpt",
+          "data/processed/comp_2048/fpindex.pkl",
+          "data/processed/comp_2048/matrix.pkl"
+        ],
+        "conda_envs": [
+          "synformer",
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/wenhao-gao/synformer",
+        "upstream_ref": "bef02bc4481a",
+        "license": "Apache-2.0 (upstream LICENSE). The preprocessed building-block index is derived from Enamine's US Stock catalogue, which upstream states is available only on request and for research use only",
+        "install_hint": "fetch default.ckpt, fpindex.pkl and matrix.pkl from https://huggingface.co/whgao/synformer (the index needs Enamine's US Stock catalogue, obtained on request from Enamine)",
+        "needs_gpu": false
+      },
+      "display_name": "SynFormer",
+      "runtime": {
+        "modules": [
+          "torch",
+          "omegaconf",
+          "rdkit",
+          "einops",
+          "numpy",
+          "pandas",
+          "sklearn",
+          "joblib",
+          "tqdm"
+        ],
+        "conda_env_candidates": [
+          "synformer",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "synformer_sample.py",
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_SYNFORMER_ROOT",
+          "python": "DRUGAGENT_SYNFORMER_PYTHON",
+          "device": "DRUGAGENT_SYNFORMER_DEVICE",
+          "timeout_seconds": "DRUGAGENT_SYNFORMER_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/synformer",
+        "runtime_root": "{external}/synformer",
+        "source_sentinels": [
+          "synformer/sampler/analog/parallel.py",
+          "synformer/sampler/analog/state_pool.py",
+          "synformer/models/synformer.py",
+          "synformer/chem/fpindex.py",
+          "synformer/chem/matrix.py",
+          "synformer/chem/mol.py",
+          "data/rxn_templates/comprehensive.txt"
+        ],
+        "required_artifacts": [
+          "data/trained_weights/default.ckpt",
+          "data/processed/comp_2048/fpindex.pkl",
+          "data/processed/comp_2048/matrix.pkl"
+        ],
+        "additional_inputs": [
+          "The matching Enamine building-block catalogue and its derived fingerprint/reaction indices must be obtained under their upstream terms; an arbitrary catalogue cannot replace the recorded index."
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "synformer"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "fetch default.ckpt, fpindex.pkl and matrix.pkl from https://huggingface.co/whgao/synformer (the index needs Enamine's US Stock catalogue, obtained on request from Enamine) Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "fetch default.ckpt, fpindex.pkl and matrix.pkl from https://huggingface.co/whgao/synformer (the index needs Enamine's US Stock catalogue, obtained on request from Enamine) Provide the exact required artifacts listed in layout; missing files remain unavailable."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "targetdiff",
+      "source_checkout": {
+        "name": "targetdiff",
+        "url": "https://github.com/guanjq/targetdiff",
+        "revision": "142f1eb71784"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/generation/targetdiff_tool.py",
+        "source_sha256": "31f2ccd9cdd58c83cbcdf2a44c460cb15e7dd716c078f73501068445af11be7d",
+        "name": "TargetDiff",
+        "env_prefix": "TARGETDIFF",
+        "checkout_relpath": ".external/targetdiff",
+        "sentinel_files": [
+          "scripts/sample_for_pocket.py",
+          "scripts/sample_diffusion.py",
+          "models/molopt_score_model.py",
+          "utils/transforms.py",
+          "utils/reconstruct.py",
+          "datasets/pl_data.py",
+          "configs/sampling.yml"
+        ],
+        "driver_name": "targetdiff_sample.py",
+        "selection_modules": [
+          "torch",
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "rdkit",
+          "torch_scatter",
+          "lmdb",
+          "easydict",
+          "openbabel"
+        ],
+        "weight_relpaths": [
+          "pretrained_models/pretrained_diffusion.pt"
+        ],
+        "conda_envs": [
+          "drug-agent"
+        ],
+        "upstream_url": "https://github.com/guanjq/targetdiff",
+        "upstream_ref": "142f1eb71784",
+        "license": "TargetDiff MIT (LICIENCE in the checkout)",
+        "install_hint": "make targetdiff-clone, then download pretrained_diffusion.pt into .external/targetdiff/pretrained_models/ from the Google Drive folder linked under 'Trained model checkpoint' in .external/targetdiff/README.md (https://drive.google.com/drive/folders/1-ftaIrTXjWFhw3-0Twkrs5m0yX6CNarz)",
+        "needs_gpu": true
+      },
+      "display_name": "TargetDiff",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "rdkit",
+          "torch_scatter",
+          "lmdb",
+          "easydict",
+          "openbabel"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-targetdiff",
+          "drug-agent"
+        ],
+        "binary": null,
+        "driver": "targetdiff_sample.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_TARGETDIFF_ROOT",
+          "python": "DRUGAGENT_TARGETDIFF_PYTHON",
+          "device": "DRUGAGENT_TARGETDIFF_DEVICE",
+          "timeout_seconds": "DRUGAGENT_TARGETDIFF_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/targetdiff",
+        "runtime_root": "{external}/targetdiff",
+        "source_sentinels": [
+          "scripts/sample_for_pocket.py",
+          "scripts/sample_diffusion.py",
+          "models/molopt_score_model.py",
+          "utils/transforms.py",
+          "utils/reconstruct.py",
+          "datasets/pl_data.py",
+          "configs/sampling.yml"
+        ],
+        "required_artifacts": [
+          "pretrained_models/pretrained_diffusion.pt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "targetdiff"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "conda_environment",
+          "file": "{source}/environment.yaml",
+          "environment_name": "drug-agent-targetdiff",
+          "upstream_recipe": true,
+          "unblock": "Fetch the pinned source first. Upstream environment pins may need hardware-specific adaptation; failures are reported without replacing dependencies."
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_weights.py",
+              "--only",
+              "targetdiff"
+            ]
+          ],
+          "environment": {
+            "CONDA_PREFIX": ""
+          },
+          "unblock": "Existing downloader verifies size and file magic; review upstream changes if its recorded checks no longer match."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "uni-mol",
+      "source_checkout": {
+        "name": "Uni-Mol",
+        "url": "https://github.com/deepmodeling/Uni-Mol",
+        "revision": "90f52c41299a"
+      },
+      "integration": {
+        "source_file": "src/drug_agent/tools/properties/unimol_tool.py",
+        "source_sha256": "70cf28890fa9bbe1a2fec53f53349f3ecc924d66d958f467f4451af7c3d31b56",
+        "name": "Uni-Mol",
+        "env_prefix": "UNIMOL",
+        "checkout_relpath": ".external/Uni-Mol",
+        "sentinel_files": [
+          "unimol_tools/unimol_tools/predictor.py",
+          "unimol_tools/unimol_tools/models/unimol.py",
+          "unimol_tools/unimol_tools/data/conformer.py"
+        ],
+        "driver_name": "unimol_repr.py",
+        "selection_modules": [
+          "unimol_tools"
+        ],
+        "runtime_modules": [
+          "unimol_tools",
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "joblib",
+          "omegaconf",
+          "huggingface_hub"
+        ],
+        "weight_relpaths": [
+          "weights/mol_pre_all_h_220816.pt",
+          "weights/mol.dict.txt"
+        ],
+        "conda_envs": [
+          "drug-agent-unimol"
+        ],
+        "upstream_url": "https://github.com/deepmodeling/Uni-Mol",
+        "upstream_ref": "90f52c41299a",
+        "license": "Uni-Mol MIT (LICENSE at the checkout root); pretrained weights from dptech/Uni-Mol-Models and dptech/Uni-Mol2 on Hugging Face",
+        "install_hint": "create the drug-agent-unimol env with unimol_tools, then fetch the weights: python -c \"from unimol_tools.weights import weight_download as d; [d(f, '.external/Uni-Mol/weights') for f in ('mol_pre_all_h_220816.pt', 'mol.dict.txt')]\"",
+        "needs_gpu": true
+      },
+      "display_name": "Uni-Mol",
+      "runtime": {
+        "modules": [
+          "unimol_tools",
+          "torch",
+          "rdkit",
+          "numpy",
+          "pandas",
+          "joblib",
+          "omegaconf",
+          "huggingface_hub"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-unimol"
+        ],
+        "binary": null,
+        "driver": "unimol_repr.py",
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_UNIMOL_ROOT",
+          "python": "DRUGAGENT_UNIMOL_PYTHON",
+          "device": "DRUGAGENT_UNIMOL_DEVICE",
+          "timeout_seconds": "DRUGAGENT_UNIMOL_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": "{external}/Uni-Mol",
+        "runtime_root": "{external}/Uni-Mol",
+        "source_sentinels": [
+          "unimol_tools/unimol_tools/predictor.py",
+          "unimol_tools/unimol_tools/models/unimol.py",
+          "unimol_tools/unimol_tools/data/conformer.py"
+        ],
+        "required_artifacts": [
+          "weights/mol_pre_all_h_220816.pt",
+          "weights/mol.dict.txt"
+        ],
+        "additional_inputs": [
+          "Uni-Mol2 alternatives require their own size-specific checkpoint; the default fetch stage installs only the two Uni-Mol v1 files."
+        ],
+        "optional_artifacts": [
+          "weights/modelzoo/84M/checkpoint.pt"
+        ]
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "external",
+              "Uni-Mol"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "side-env",
+              "unimol"
+            ]
+          ],
+          "dependency_file": "{drug}/envs/drug-agent-unimol.yml",
+          "environment_name": "drug-agent-unimol"
+        },
+        "assets": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{runtime_python}",
+              "-c",
+              "from unimol_tools.weights import weight_download; import sys; [weight_download(f,sys.argv[1]) for f in (\"mol_pre_all_h_220816.pt\",\"mol.dict.txt\")]",
+              "{runtime_root}/weights"
+            ]
+          ]
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "vina",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/vina_tool.py",
+        "source_sha256": "c728226ed55b4c49874961d070b57a664030cad8eee37e52b9876256aa0f24d8",
+        "name": "AutoDock Vina",
+        "env_prefix": "VINA",
+        "checkout_relpath": "",
+        "sentinel_files": [],
+        "driver_name": null,
+        "selection_modules": [],
+        "runtime_modules": [],
+        "weight_relpaths": [],
+        "conda_envs": [
+          "drug-agent-vina"
+        ],
+        "binary": "vina",
+        "upstream_url": "https://github.com/ccsb-scripps/AutoDock-Vina",
+        "upstream_ref": "v1.2.7",
+        "license": "AutoDock Vina Apache-2.0",
+        "install_hint": "conda create -y -n drug-agent-vina -c conda-forge vina",
+        "needs_gpu": false
+      },
+      "display_name": "AutoDock Vina",
+      "runtime": {
+        "modules": [],
+        "conda_env_candidates": [
+          "drug-agent-vina"
+        ],
+        "binary": "vina",
+        "driver": null,
+        "gpu": false,
+        "configuration_variables": {
+          "root": "DRUGAGENT_VINA_ROOT",
+          "python": "DRUGAGENT_VINA_PYTHON",
+          "device": "DRUGAGENT_VINA_DEVICE",
+          "timeout_seconds": "DRUGAGENT_VINA_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": null,
+        "source_sentinels": [],
+        "required_artifacts": [],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "not_required",
+          "reason": "No Git checkout is required by this package-backed integration."
+        },
+        "environment": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "bash",
+              "{drug}/install.sh",
+              "side-env",
+              "vina"
+            ]
+          ],
+          "dependency_file": "{drug}/envs/drug-agent-vina.yml",
+          "environment_name": "drug-agent-vina"
+        },
+        "assets": {
+          "support": "not_required",
+          "reason": "This algorithm does not require a pretrained model checkpoint. Task-specific structures and other inputs remain caller supplied."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    },
+    {
+      "id": "vnegnn",
+      "source_checkout": null,
+      "integration": {
+        "source_file": "src/drug_agent/tools/pockets/vnegnn_tool.py",
+        "source_sha256": "82b826bc0b84a6345a441d97a5a7a77172dd8db6bebeb0c1d6c27732ae56eef1",
+        "name": "VN-EGNN",
+        "env_prefix": "VNEGNN",
+        "checkout_relpath": ".external/vnegnn",
+        "sentinel_files": [
+          "src/models/vnegnn/vnegnn.py",
+          "configs/model/vnegnn.yaml",
+          "src/eval.py",
+          "src/datasets/binding_dataset.py"
+        ],
+        "driver_name": null,
+        "selection_modules": [
+          "torch_geometric"
+        ],
+        "runtime_modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "lightning",
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "einops"
+        ],
+        "weight_relpaths": [
+          "checkpoints/vnegnn.ckpt"
+        ],
+        "conda_envs": [
+          "drug-agent-vnegnn"
+        ],
+        "binary": null,
+        "upstream_url": "https://github.com/ml-jku/vnegnn",
+        "upstream_ref": "1d1f922cb9f015d4793e7804cbc9b8b248c68498",
+        "license": "VN-EGNN MIT (Sestak et al., arXiv:2404.07194)",
+        "install_hint": "python scripts/external/fetch_pockets.py --only vnegnn",
+        "needs_gpu": true,
+        "platform_blockers": [
+          "ml-jku/vnegnn publishes no checkpoint: there is no .ckpt/.pt/.pth in the tree at 1d1f922cb9f0, configs/eval.yaml sets `ckpt_path: null` and pins `wandb_run_id: pt8wsnz9`, and src/eval.py:137 resolves the checkpoint from that private Weights & Biases run's `callbacks.model_checkpoint.dirpath` — a path on the authors' training machine, reachable only with network access and credentials for their W&B entity",
+          "upstream ships no single-structure inference entry point: src/eval.py predicts over a BindingDataset whose per-protein records include precomputed ESM-2 embeddings (src/datasets/binding_dataset.py:87 reads embeddings.npz['residue_embeddings']), so a PDB path is not an input this code accepts even with weights present"
+        ]
+      },
+      "display_name": "VN-EGNN",
+      "runtime": {
+        "modules": [
+          "torch",
+          "torch_geometric",
+          "torch_scatter",
+          "torch_cluster",
+          "lightning",
+          "hydra",
+          "omegaconf",
+          "rootutils",
+          "einops"
+        ],
+        "conda_env_candidates": [
+          "drug-agent-vnegnn"
+        ],
+        "binary": null,
+        "driver": null,
+        "gpu": true,
+        "configuration_variables": {
+          "root": "DRUGAGENT_VNEGNN_ROOT",
+          "python": "DRUGAGENT_VNEGNN_PYTHON",
+          "device": "DRUGAGENT_VNEGNN_DEVICE",
+          "timeout_seconds": "DRUGAGENT_VNEGNN_TIMEOUT_SECONDS"
+        }
+      },
+      "layout": {
+        "source_root": null,
+        "runtime_root": "{external}/vnegnn",
+        "source_sentinels": [
+          "src/models/vnegnn/vnegnn.py",
+          "configs/model/vnegnn.yaml",
+          "src/eval.py",
+          "src/datasets/binding_dataset.py"
+        ],
+        "required_artifacts": [
+          "checkpoints/vnegnn.ckpt"
+        ],
+        "additional_inputs": []
+      },
+      "stages": {
+        "source": {
+          "support": "supported",
+          "kind": "commands",
+          "commands": [
+            [
+              "{python}",
+              "{drug}/scripts/external/fetch_pockets.py",
+              "--only",
+              "vnegnn"
+            ]
+          ]
+        },
+        "environment": {
+          "support": "manual",
+          "unblock": "python scripts/external/fetch_pockets.py --only vnegnn Set the interpreter override listed in runtime.configuration_variables before use."
+        },
+        "assets": {
+          "support": "manual",
+          "unblock": "The integration records no publicly distributed VN-EGNN checkpoint. Obtain an authorized compatible checkpoint independently; the source download does not make inference available."
+        }
+      },
+      "notes": [
+        "Presence checks are not an import, GPU, ABI, license or scientific-validity certification."
+      ]
+    }
+  ]
+}

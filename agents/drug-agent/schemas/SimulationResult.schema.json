@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A molecular-dynamics / free-energy protocol result.",
+  "properties": {
+    "artifact_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Artifact Ref"
+    },
+    "candidate_id": {
+      "default": "",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "converged": {
+      "default": false,
+      "title": "Converged",
+      "type": "boolean"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "engine": {
+      "default": "mock",
+      "title": "Engine",
+      "type": "string"
+    },
+    "engine_version": {
+      "default": "0.0.0",
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "sim",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "n_steps": {
+      "default": 0,
+      "title": "N Steps",
+      "type": "integer"
+    },
+    "observables": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Observables",
+      "type": "object"
+    },
+    "protocol": {
+      "default": "mock_min",
+      "description": "Simulation protocol id.",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "qc_flags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Qc Flags",
+      "type": "array"
+    },
+    "receptor_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receptor Id"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stability_score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stability Score"
+    },
+    "trust_label": {
+      "$ref": "#/$defs/TrustLabel",
+      "default": "CALCULATED"
+    }
+  },
+  "title": "SimulationResult",
+  "type": "object"
+}

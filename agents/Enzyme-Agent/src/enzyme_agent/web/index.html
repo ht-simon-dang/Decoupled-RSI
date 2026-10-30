@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Enzyme Agent · Research Console</title><link rel="stylesheet" href="/web/styles.css"></head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="mark" aria-hidden="true">E<span>◈</span></div><div><h1>Enzyme Agent</h1><p>THERAPEUTIC ENZYME RESEARCH CONSOLE</p></div></div>
+  <nav aria-label="工作区"><button class="tab active" data-view="workspace">设计工作台</button><button class="tab" data-view="evaluation">Evaluation</button><button class="tab" data-view="feedback">实验反馈</button><button class="tab" data-view="models">Agent map</button></nav>
+  <div id="health" class="health" role="status">读取模型状态…</div>
+</header>
+<div id="notice" class="notice" role="alert" hidden></div>
+<div class="layout">
+<aside class="sidebar">
+  <div class="section-eyebrow">01 / RESEARCH BRIEF</div>
+  <h2>从疾病到催化方案</h2>
+  <div class="segmented" aria-label="输入方式"><button id="structured-mode" class="active">结构化设计</button><button id="natural-mode">Qwen 对话</button></div>
+  <div id="natural-form" hidden><label for="instruction">研究指令</label><textarea id="instruction" rows="7" placeholder="研究囊性纤维化气道环境中的 DNase I 治疗路线，并列出需要补充的证据。"></textarea><p class="hint">Qwen3.5-0.8B 将指令转成可校验的任务。科学结果由专门工具计算。</p></div>
+  <div id="structured-form">
+    <label for="template">疾病机制模板</label><select id="template"><option value="cf_dnase">囊性纤维化 · DNase I</option><option value="fabry">Fabry · α-galactosidase A</option><option value="pku">PKU · PAL 替代路径</option></select>
+    <div class="pair"><div><label for="entry">任务入口</label><select id="entry"><option value="disease">从疾病开始</option><option value="enzyme">从已知酶开始</option><option value="reaction">从反应开始</option></select></div><div><label for="action">本轮目标</label><select id="action"><option value="research">机制与证据探索</option><option value="conservative">保守工程</option><option value="family_expansion">反应类别扩展</option><option value="product">产品构型优化</option></select></div></div>
+    <label for="name">项目名称</label><input id="name" maxlength="200">
+    <label for="ec">EC 分类</label><input id="ec" placeholder="例如 3.1.21.1">
+    <label for="generator">生成路线</label><select id="generator"><option value="full">LigandMPNN + ESM3 + RFdiffusion3</option><option value="combined">LigandMPNN + ESM3</option><option value="esm3">ESM3 · 掩码补全</option><option value="ligandmpnn">LigandMPNN · 原子环境</option><option value="rfdiffusion3">RFdiffusion3 · 受约束原子重设计</option><option value="proteinmpnn">ProteinMPNN · 骨架基线</option><option value="zymctrl">ZymCTRL · EC 类别扩展</option><option value="simple">保守单点替换基线</option><option value="library">已有序列分析</option></select>
+    <label for="bottleneck">当前瓶颈</label><select id="bottleneck"><option value="stability">相关环境中的稳定性</option><option value="catalysis">催化</option><option value="selectivity">选择性</option><option value="expression">表达</option><option value="processing">加工与装配</option><option value="localization">定位与可达性</option><option value="mechanism">机制与因果链</option></select>
+    <div class="pair"><div><label for="count">生成预算</label><input id="count" type="number" min="1" max="32" value="4"></div><div><label for="fold-count">独立评估</label><input id="fold-count" type="text" value="全部候选（强制）" readonly></div></div>
+    <details><summary>成熟序列与保护区域</summary><label for="sequence">成熟蛋白序列</label><textarea id="sequence" class="mono" rows="5" spellcheck="false"></textarea><label for="protected">保护位点（成熟链，1-based）</label><input id="protected" placeholder="18, 78, 134"><label for="positions">可设计位点</label><input id="positions" placeholder="空值时从完整结构选择表面区域"><label for="pdb-input">参考 PDB</label><input id="pdb-input" type="file" accept=".pdb"><p class="hint" id="reference-note">参考记录加载中…</p></details>
+    <button id="reference-demo" class="secondary wide">加载参考酶分析</button>
+    <details><summary>完整反应规格 / JSON</summary><p class="hint">可编辑底物面板、环境、构型、证据与预设实验门槛。点击下方按钮按此 JSON 提交。</p><textarea id="brief-json" class="mono" rows="12" spellcheck="false" aria-label="完整任务 JSON"></textarea><button id="submit-json" class="secondary wide">按 JSON 提交</button></details>
+  </div>
+  <button id="launch" class="primary wide">启动 Enzyme Agent <span>↗</span></button>
+  <p class="research-note">全部候选须通过计算评估工具才可提名；催化功能仍需实验验证。系统保留未知项，生化和疾病功能分层记录。</p>
+  <div class="history-title"><span class="section-eyebrow">RECENT RUNS</span><button id="refresh-history" class="text-button">刷新</button></div><div id="history" class="history"></div>
+</aside>
+<main>
+<section id="view-workspace" class="view">
+  <div class="workspace-header"><div><div class="section-eyebrow">02 / DESIGN & EVIDENCE</div><h2 id="run-title">让每一步设计都有依据</h2><p id="run-subtitle" class="muted">选择机制模板，建立反应与环境约束，然后开始设计。</p></div><span id="run-state" class="chip">READY</span></div>
+  <div class="toolbar" id="run-actions" hidden><button id="cancel" class="secondary">取消</button><button id="resume" class="secondary">恢复任务</button><a id="download-json" class="button" href="#">JSON 档案 ↓</a><a id="download-fasta" class="button" href="#">已通过提名 FASTA ↓</a><a id="download-report" class="button" href="#">研究报告 ↓</a><a id="download-mrna" class="button" href="#">mRNA 交接 ↓</a></div>
+  <div id="stages" class="stages"><span>规划与证据</span><i>→</i><span>约束生成</span><i>→</i><span>独立评估</span><i>→</i><span>组合提名</span><i>→</i><span>实验反馈</span></div>
+  <div id="stats" class="stats"><div><strong>—</strong><span>候选</span></div><div><strong>—</strong><span>组合提名</span></div><div><strong>—</strong><span>独立折叠</span></div><div><strong>—</strong><span>工具调用</span></div></div>
+  <div id="conclusion" class="callout"><span class="callout-mark">◈</span><div><h3>先明确功能，再比较候选</h3><p>治疗方向、产物处理与作用位置共同决定研究路线。结构置信度不会被解释为催化活性。</p></div></div>
+  <div class="grid-two"><section class="panel"><div class="panel-heading"><h3>疾病机制与路线</h3><span class="eyebrow">MECHANISM</span></div><div id="mechanism" class="empty">路线与证据来源将在这里显示。</div></section><section class="panel"><div class="panel-heading"><h3>当前瓶颈与未知项</h3><span class="eyebrow">NEXT EVIDENCE</span></div><div id="gaps" class="empty">建立项目后显示需要解决的问题。</div></section></div>
+  <section class="panel"><div class="panel-heading"><h3>候选组合与谱系</h3><span class="eyebrow" id="candidate-count">NO CANDIDATES YET</span></div><div class="table-scroll"><table><thead><tr><th>候选 / 亲本</th><th>来源</th><th>变异</th><th>证据状态</th><th>组合角色</th><th>工具验证</th></tr></thead><tbody id="candidates"><tr><td colspan="6" class="empty">生成完成后可点击候选查看结构与逐项证据。</td></tr></tbody></table></div><p class="hint" id="ranking-note">多目标比较保留不同权衡，不合成为治疗成功概率。</p></section>
+  <div class="grid-two"><section class="panel structure-panel"><div class="panel-heading"><h3>独立结构预览</h3><a id="download-pdb" class="text-button" href="#" hidden>PDB ↓</a></div><canvas id="structure" width="680" height="360" aria-label="候选独立预测结构的可旋转 Cα 骨架"></canvas><p id="structure-caption" class="hint">选择已折叠候选。拖动旋转，滚轮缩放。完整坐标可下载。</p></section><section class="panel"><div class="panel-heading"><h3>候选档案</h3><span class="eyebrow">IDENTITY & PRODUCT</span></div><div id="candidate-detail" class="empty">选择一项候选以查看成熟加工、产品构型及后续测量。</div></section></div>
+  <section class="panel"><div class="panel-heading"><h3>逐底物、逐环境证据</h3><span class="eyebrow" id="evidence-count">EVIDENCE MATRIX</span></div><div class="table-scroll"><table><thead><tr><th>终点</th><th>状态</th><th>数值 / 单位</th><th>底物 / 环境</th><th>来源与适用域</th></tr></thead><tbody id="evidence"><tr><td colspan="5" class="empty">未评估项将明确显示，模型预测与实验测量保持区分。</td></tr></tbody></table></div></section>
+  <section class="panel"><div class="panel-heading"><h3>执行与证据日志</h3><button id="load-log" class="text-button">查看进程日志</button></div><div id="events" class="events empty">尚未启动任务。</div><pre id="worker-log" hidden></pre></section>
+</section>
+<section id="view-evaluation" class="view" hidden>
+  <div class="workspace-header"><div><div class="section-eyebrow">EVALUATION / SEALED RULES</div><h2>独立评估与固定基线</h2><p class="muted">生成有效率、候选多样性、分层实验分母和资源成本分别报告。</p></div><button id="refresh-evaluation" class="secondary">评估当前任务</button></div>
+  <section class="panel"><h3>当前任务指标</h3><pre id="evaluation-result">选择一个已完成的任务。</pre></section>
+  <section class="panel"><div class="panel-heading"><h3>EMA4D 工作流消融</h3><button id="run-evolution" class="secondary">比较固定策略与多样性策略</button></div><p class="hint">在相同候选池、相同提名预算和固定评价器下重放；用于评估非权重流程变化。前瞻性实测效果需要独立验证。</p><pre id="evolution-result">尚未比较。</pre></section>
+  <section class="panel"><h3>训练条件匹配的功能代理</h3><p class="muted">提供实测 CSV，明确 train / calibration / test 及家族、聚类、原始来源。测试集不会参与拟合。</p><div class="grid-two"><div><label for="calibration-id">不可覆盖的模型版本 ID</label><input id="calibration-id" placeholder="dnase-sputum-v1"><label for="split-mode">拆分问题</label><select id="split-mode"><option value="cross_family">跨家族外推</option><option value="within_family">家族内变体排序</option><option value="substrate_transfer">跨底物</option><option value="reaction_transfer">跨反应</option></select></div><div><label for="calibration-file">实测数据 CSV</label><input id="calibration-file" type="file" accept=".csv"><p class="hint">模型为组成 / 二肽特征 Ridge + split conformal，保留均值基线、误差、排序和区间覆盖率。</p><button id="train-calibration" class="primary">验证拆分并训练</button></div></div><details><summary>CSV 字段</summary><code>sequence,value,unit,endpoint,environment_id,conditions_id,substrate_id,reaction_id,family,cluster,source,split,status</code></details><pre id="calibrations">尚无本地校准模型。</pre></section>
+  <section class="panel"><div class="panel-heading"><h3>功能预测与下一批测量</h3><button id="prepare-prediction" class="secondary">载入当前候选与校准域</button></div><p class="hint">使用已有条件匹配模型。按表现候选与信息 / 多样性候选交替选择，并限制测量成本。</p><textarea id="prediction-json" class="mono" rows="8" aria-label="功能预测与主动学习请求 JSON" placeholder="先训练实测代理模型，再载入当前候选。"></textarea><button id="predict" class="primary">预测并选择下一批</button><pre id="prediction-result">没有实测校准数据时，此功能不可用。</pre></section>
+</section>
+<section id="view-feedback" class="view" hidden>
+  <div class="workspace-header"><div><div class="section-eyebrow">FEEDBACK / INNER LOOP</div><h2>让实验决定下一轮动作</h2><p class="muted">追加测量时同时保存构型、条件、批次、重复、检测限与参考对照。</p></div></div>
+  <div class="callout"><span class="callout-mark">↻</span><div><h3>失败分类保留实验含义</h3><p>表达失败、低于检测限、技术失败和催化阴性分别记录。加工或定位限制会引导下一轮优先处理对应问题。</p></div></div>
+  <section class="panel"><div class="panel-heading"><h3>导入当前候选的测量结果</h3><button id="feedback-template" class="secondary">生成空白记录模板</button></div><label for="feedback-json">实验记录 JSON</label><textarea id="feedback-json" rows="18" class="mono" spellcheck="false" placeholder='{"observations": [...]}'></textarea><div class="toolbar"><button id="submit-feedback" class="primary">校验并保存测量</button><button id="next-round" class="secondary">查看下一轮建议</button><button id="use-next-round" class="secondary" hidden>载入建议任务</button></div><pre id="feedback-result">候选身份、产品身份及实验门槛将与原项目核验。</pre></section>
+</section>
+<section id="view-models" class="view" hidden>
+  <div class="workspace-header"><div><div class="section-eyebrow">AGENT MAP / CAPABILITIES</div><h2>分层执行，证据独立</h2><p class="muted">主控规划、科学工具、固定评价与版本化记忆共同组成流水线。</p></div><span class="chip">QWEN 0.8B</span></div>
+  <div class="architecture"><div class="architecture-master"><strong>Master · Qwen3.5-0.8B</strong><span>意图 → 严格合约 → 预算与路线</span></div><div class="architecture-grid"><div><strong>疾病 / 反应证据</strong><span>模板 · UniProt · 来源档案</span></div><div><strong>生成执行</strong><span>LigandMPNN · ESM3 · RFdiffusion3 · ZymCTRL</span></div><div><strong>独立评价</strong><span>ESMFold2 · 结构审计 · ThermoMPNN</span></div><div><strong>反馈与进化</strong><span>条件匹配 · 固定评价 · 策略重放</span></div></div><div class="architecture-memory">SQLite 任务日志 + SHA-256 证据档案 + 候选 / 构型谱系</div></div>
+  <section class="panel"><div class="panel-heading"><h3>模型登记与运行状态</h3><span id="storage" class="eyebrow">STORAGE</span></div><div id="model-cards" class="model-grid"></div></section>
+</section>
+<footer><span>ENZYME AGENT / LOCAL RESEARCH SYSTEM</span><span>序列 ≠ 催化验证 ≠ 疾病功能验证</span></footer>
+</main>
+</div><script src="/web/app.js" defer></script>
+</body></html>

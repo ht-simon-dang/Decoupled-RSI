@@ -1,0 +1,8 @@
+{
+  "max_calls": 16,
+  "generation_timeout_seconds": 300,
+  "skills": {
+    "design-peptide": ["generation.pepmlm", "generation.boltzgen", "sequence.analyze", "safety.toxinpred3", "affinity.prodigy", "affinity.calibrated"],
+    "analyze-peptide": ["sequence.analyze", "structure.contacts", "safety.toxinpred3", "affinity.prodigy", "affinity.calibrated"]
+  }
+}

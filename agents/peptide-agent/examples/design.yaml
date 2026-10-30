@@ -1,0 +1,10 @@
+# Human ubiquitin used ONLY as a compact generation integration fixture.
+# This does not assert that any generated sequence binds ubiquitin.
+name: ubiquitin-generation-smoke
+source: pepmlm
+target_sequence: MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDKEGIPPDQQRLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG
+length: 10
+count: 4
+top_k: 3
+seed: 1729
+shortlist: 3

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "peptide-agent": {
+      "command": "/ABSOLUTE/PROJECT/agents/peptide-agent/.venv/bin/python",
+      "args": ["-m", "peptide_agent.mcp_server"],
+      "cwd": "/ABSOLUTE/PROJECT/agents/peptide-agent",
+      "env": {
+        "PEPTIDE_MODEL_DIR": "/ABSOLUTE/PROJECT/agents/peptide-agent/.peptide-agent/models",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1"
+      }
+    }
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "$defs": {
+    "ApplicabilityDomain": {
+      "enum": [
+        "IN_DOMAIN",
+        "BORDERLINE",
+        "OUT_OF_DOMAIN",
+        "UNKNOWN"
+      ],
+      "title": "ApplicabilityDomain",
+      "type": "string"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "description": "A lightweight pointer to a full EvidenceItem (see contracts.evidence).",
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "relation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How it relates, e.g. 'supports'.",
+          "title": "Relation"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "CURATED"
+        }
+      },
+      "required": [
+        "evidence_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Qualifier": {
+      "description": "Measurement qualifier for assay/prediction values.",
+      "enum": [
+        "=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "~",
+        "range",
+        "censored"
+      ],
+      "title": "Qualifier",
+      "type": "string"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "A scientific value with unit, qualifier, uncertainty and trust label.\n\n``original_value`` / ``original_unit`` preserve the source representation so\nunit normalization is never lossy.",
+      "properties": {
+        "ci_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ci High"
+        },
+        "ci_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ci Low"
+        },
+        "ext": {
+          "additionalProperties": true,
+          "description": "Explicit namespace for non-critical extension fields.",
+          "title": "Ext",
+          "type": "object"
+        },
+        "original_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Unit"
+        },
+        "original_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim source value.",
+          "title": "Original Value"
+        },
+        "qualifier": {
+          "$ref": "#/$defs/Qualifier",
+          "default": "="
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "description": "Contract schema version.",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "std": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Standard deviation / 1-sigma uncertainty.",
+          "title": "Std"
+        },
+        "trust_label": {
+          "$ref": "#/$defs/TrustLabel",
+          "default": "CALCULATED"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Normalized unit (UCUM-ish token).",
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Normalized numeric value.",
+          "title": "Value"
+        },
+        "value_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper bound for ranges.",
+          "title": "Value High"
+        }
+      },
+      "title": "Quantity",
+      "type": "object"
+    },
+    "TrustLabel": {
+      "description": "Epistemic provenance of a value. Every scientific number carries one.",
+      "enum": [
+        "OBSERVED",
+        "CURATED",
+        "CALCULATED",
+        "PREDICTED",
+        "INFERRED",
+        "HYPOTHESIZED",
+        "PROPOSED"
+      ],
+      "title": "TrustLabel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A single endpoint estimate for a candidate.\n\nEvery prediction is self-describing: endpoint, value+unit+uncertainty,\nthe model/tool version that produced it, and applicability. This directly\nsatisfies acceptance criterion #10.",
+  "properties": {
+    "applicability": {
+      "$ref": "#/$defs/ApplicabilityDomain",
+      "default": "UNKNOWN"
+    },
+    "applicability_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Applicability Score"
+    },
+    "calibrated": {
+      "default": false,
+      "title": "Calibrated",
+      "type": "boolean"
+    },
+    "candidate_id": {
+      "default": "",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "ISO-8601 UTC creation time.",
+      "title": "Created At",
+      "type": "string"
+    },
+    "endpoint": {
+      "description": "e.g. 'pIC50', 'logP', 'herg_block', 'sa_score'.",
+      "title": "Endpoint",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "ext": {
+      "additionalProperties": true,
+      "description": "Explicit namespace for non-critical extension fields.",
+      "title": "Ext",
+      "type": "object"
+    },
+    "extra": {
+      "additionalProperties": true,
+      "title": "Extra",
+      "type": "object"
+    },
+    "id": {
+      "default": "",
+      "description": "Stable prefixed identifier.",
+      "title": "Id",
+      "type": "string"
+    },
+    "id_prefix": {
+      "default": "pred",
+      "title": "Id Prefix",
+      "type": "string"
+    },
+    "kind": {
+      "default": "property",
+      "description": "'activity'|'property'|'safety'|'admet'.",
+      "title": "Kind",
+      "type": "string"
+    },
+    "limitation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Explicit statement when uncertainty is unavailable.",
+      "title": "Limitation"
+    },
+    "model_id": {
+      "description": "Model/tool that produced it.",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_version": {
+      "default": "0.0.0",
+      "title": "Model Version",
+      "type": "string"
+    },
+    "molecule_inchikey": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Molecule Inchikey"
+    },
+    "quantity": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "description": "Contract schema version.",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_label": {
+      "$ref": "#/$defs/TrustLabel",
+      "default": "PREDICTED"
+    }
+  },
+  "required": [
+    "endpoint",
+    "quantity",
+    "model_id"
+  ],
+  "title": "Prediction",
+  "type": "object"
+}

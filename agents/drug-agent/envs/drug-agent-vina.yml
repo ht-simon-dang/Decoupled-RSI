@@ -1,0 +1,12 @@
+# Optional Vina/OpenMM runtime. Install with: ./install.sh side-env vina
+name: drug-agent-vina
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - vina
+  - numpy
+  - rdkit
+  - openmm
+  - openmmforcefields

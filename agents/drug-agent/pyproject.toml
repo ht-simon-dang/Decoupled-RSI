@@ -1,0 +1,71 @@
+[project]
+name = "drug-agent"
+version = "1.1.0"
+description = "Decoupled RSI reference implementation: independent agent self-evolution with a drug-discovery task agent."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = { text = "Apache-2.0" }
+authors = [{ name = "drug-agent contributors" }]
+keywords = ["recursive-self-improvement", "self-evolving-agents", "multi-agent", "drug-discovery"]
+# Install runtime dependencies with environment.yml before installing this package.
+dependencies = []
+
+[project.scripts]
+drugagent = "drug_agent.cli.main:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+# This public snapshot may be staged inside another Git repository.
+ignore-vcs = true
+exclude = [
+  "**/__pycache__/**",
+  "**/*.py[cod]",
+  "**/tests/**",
+  "**/.git/**",
+  "**/.env",
+  "**/.env.local",
+  "**/.external/**",
+  "**/.drugagent*/**",
+  "**/running-history/**",
+  "**/runs/**",
+  "**/logs/**",
+  "**/.pytest_cache/**",
+  "**/.mypy_cache/**",
+  "**/.ruff_cache/**",
+  "**/.venv/**",
+  "**/dist/**",
+  "**/build/**",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/drug_agent"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"system_prompts" = "drug_agent/system_prompts"
+
+[tool.hatch.build.targets.sdist]
+# Explicit runtime-resource allowlist; never use the enclosing Git file list.
+# Other Task Agents remain independently installable projects in the repository.
+include = [
+  "/pyproject.toml",
+  "/README.md",
+  "/LICENSE",
+  "/.env.example",
+  "/install.sh",
+  "/Makefile",
+  "/environment.yml",
+  "/environment-pfm.yml",
+  "/envs/*.yml",
+  "/configs/*.yaml",
+  "/src/drug_agent/**",
+  "/system_prompts/**",
+  "/fixtures/**",
+  "/schemas/**",
+  "/scripts/*.py",
+  "/scripts/external/*.py",
+  "/scripts/external/CHECKOUTS.tsv",
+  "/scripts/research/*.py",
+]
