@@ -51,6 +51,8 @@ only-include = [
   "src/antibody_agent/web/index.html",
   "src/antibody_agent/web/structure-viewer.js",
   "src/antibody_agent/web/styles.css",
+  "src/antibody_agent/web/shared.css",
+  "src/antibody_agent/web/shared.js",
   "src/antibody_agent/workflow.py",
 ]
 
@@ -95,6 +97,8 @@ only-include = [
   "src/antibody_agent/web/index.html",
   "src/antibody_agent/web/structure-viewer.js",
   "src/antibody_agent/web/styles.css",
+  "src/antibody_agent/web/shared.css",
+  "src/antibody_agent/web/shared.js",
   "src/antibody_agent/workflow.py",
 ]
 

@@ -10,6 +10,7 @@ window.AntibodyStructure = class {
     canvas.addEventListener("pointercancel", () => {previous = null;});
     canvas.addEventListener("wheel", event => {event.preventDefault(); this.zoom = Math.max(.4,Math.min(3,this.zoom*Math.exp(-event.deltaY*.001))); this.draw();}, {passive:false});
     new ResizeObserver(() => this.draw()).observe(canvas);
+    window.addEventListener('rsi-theme-change', () => this.draw());
     this.draw();
   }
   load(pdb) {
@@ -24,7 +25,7 @@ window.AntibodyStructure = class {
     const c = this.canvas, width = c.clientWidth || 680, height = c.clientHeight || 280, ratio = window.devicePixelRatio || 1;
     c.width = width*ratio; c.height = height*ratio;
     const ctx = c.getContext("2d"); ctx.scale(ratio,ratio); ctx.clearRect(0,0,width,height);
-    if (!this.points.length) {ctx.fillStyle="#91a4ae"; ctx.font="12px system-ui"; ctx.textAlign="center"; ctx.fillText("独立预测结构将在评估通过后显示",width/2,height/2); return;}
+    if (!this.points.length) {ctx.fillStyle=getComputedStyle(c).getPropertyValue('--suite-muted').trim() || '#657a87'; ctx.font="12px system-ui"; ctx.textAlign="center"; ctx.fillText("独立预测结构将在评估通过后显示",width/2,height/2); return;}
     const radius = Math.max(1,...this.points.map(p => Math.hypot(...p.xyz)));
     const scale = Math.min(width,height)*.4/radius*this.zoom;
     const projected = this.points.map(p => {

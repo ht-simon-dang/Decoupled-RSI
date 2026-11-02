@@ -45,6 +45,8 @@ only-include = [
   "src/mrna_agent/web/index.html",
   "src/mrna_agent/web/structure-viewer.js",
   "src/mrna_agent/web/styles.css",
+  "src/mrna_agent/web/shared.css",
+  "src/mrna_agent/web/shared.js",
   "src/mrna_agent/web_worker.py",
   "src/mrna_agent/workflow.py",
 ]
@@ -123,6 +125,8 @@ only-include = [
   "src/mrna_agent/web/index.html",
   "src/mrna_agent/web/structure-viewer.js",
   "src/mrna_agent/web/styles.css",
+  "src/mrna_agent/web/shared.css",
+  "src/mrna_agent/web/shared.js",
   "src/mrna_agent/web_worker.py",
   "src/mrna_agent/workflow.py",
 ]

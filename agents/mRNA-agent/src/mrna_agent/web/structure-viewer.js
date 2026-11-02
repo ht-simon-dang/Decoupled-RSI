@@ -26,6 +26,7 @@ class StructureViewer {
     this.info=make('p','拖动旋转 · 滚轮缩放 · 点击查看位置','structure-position');container.append(this.info);
     this.caption=make('p',null,'hint structure-caption');container.append(this.caption);
     this.abort=new AbortController();const options={signal:this.abort.signal};let pointer=null;
+    window.addEventListener('rsi-theme-change',()=>this.draw(),options);
     this.canvas.addEventListener('pointerdown',e=>{pointer={id:e.pointerId,x:e.clientX,y:e.clientY};this.canvas.setPointerCapture(e.pointerId);},options);
     this.canvas.addEventListener('pointermove',e=>{if(pointer?.id===e.pointerId){this.angle+=(e.clientX-pointer.x)*.012;this.tilt+=(e.clientY-pointer.y)*.012;pointer.x=e.clientX;pointer.y=e.clientY;this.draw();}this.inspect(e);},options);
     this.canvas.addEventListener('pointerup',()=>{pointer=null;},options);
@@ -92,8 +93,9 @@ class StructureViewer {
     const rect=this.canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;
     const dpr=Math.min(devicePixelRatio||1,2),w=rect.width,h=rect.height;
     this.canvas.width=Math.round(w*dpr);this.canvas.height=Math.round(h*dpr);
-    const ctx=this.canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#f4f8f7';ctx.fillRect(0,0,w,h);
-    if(!this.points.length){ctx.fillStyle='#718383';ctx.font='13px system-ui';ctx.textAlign='center';ctx.fillText('等待结构坐标',w/2,h/2);return;}
+    const ctx=this.canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+    const caption=getComputedStyle(this.canvas).getPropertyValue('--suite-muted').trim() || '#718383';
+    if(!this.points.length){ctx.fillStyle=caption;ctx.font='13px system-ui';ctx.textAlign='center';ctx.fillText('等待结构坐标',w/2,h/2);return;}
     const scale=Math.min(w,h)*.44/this.extent*this.zoom,ca=Math.cos(this.angle),sa=Math.sin(this.angle),ct=Math.cos(this.tilt),st=Math.sin(this.tilt);
     this.projected=this.points.map(([x,y,z])=>{const rx=x*ca+z*sa,rz=-x*sa+z*ca;return [w/2+rx*scale,h/2+(y*ct-rz*st)*scale,y*st+rz*ct];});
     const line=(a,b,color,width)=>{const p=this.projected[a],q=this.projected[b];ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();};
@@ -103,7 +105,7 @@ class StructureViewer {
     for(const i of this.points.map((_,i)=>i).sort((a,b)=>this.projected[a][2]-this.projected[b][2])){
       const p=this.projected[i];ctx.fillStyle=this.color(i);ctx.beginPath();ctx.arc(p[0],p[1],this.kind==='protein'?2.3:1.5,0,Math.PI*2);ctx.fill();
     }
-    ctx.fillStyle='#375858';ctx.font='11px system-ui';
+    ctx.fillStyle=caption;ctx.font='11px system-ui';
     for(const [i,label]of [[0,this.kind==='rna'?"5′":'N'],[this.points.length-1,this.kind==='rna'?"3′":'C']]){const p=this.projected[i];ctx.fillText(label,p[0]+6,p[1]-6);}
     this.canvas.dataset.camera=[this.angle,this.tilt,this.zoom].map(v=>v.toFixed(3)).join(',');
   }

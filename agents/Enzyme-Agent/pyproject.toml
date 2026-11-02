@@ -46,6 +46,8 @@ only-include = [
   "src/enzyme_agent/web/app.js",
   "src/enzyme_agent/web/index.html",
   "src/enzyme_agent/web/styles.css",
+  "src/enzyme_agent/web/shared.css",
+  "src/enzyme_agent/web/shared.js",
   "src/enzyme_agent/web_worker.py",
   "src/enzyme_agent/workflow.py",
 ]
@@ -99,6 +101,8 @@ only-include = [
   "src/enzyme_agent/web/app.js",
   "src/enzyme_agent/web/index.html",
   "src/enzyme_agent/web/styles.css",
+  "src/enzyme_agent/web/shared.css",
+  "src/enzyme_agent/web/shared.js",
   "src/enzyme_agent/web_worker.py",
   "src/enzyme_agent/workflow.py",
 ]

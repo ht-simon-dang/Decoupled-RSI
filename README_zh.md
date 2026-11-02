@@ -149,6 +149,21 @@ Drug Master Agent 尚不是调度全部四个项目的通用控制器。其他 T
 
 本节命令假定工作目录为公开仓库独立 checkout 的根目录，例如 `decoupled-rsi-agent`。
 
+**启动全部 Agent 的统一入口：**
+
+```bash
+python app.py
+# 或自动打开浏览器：python app.py --open
+```
+
+访问 `http://127.0.0.1:8080/`（也支持 `/index.php`）。首页包含 Drug、Peptide、mRNA、Enzyme、Antibody、Self-Evolve 和 Drug Dashboard，显示服务状态并在点击时启动对应工作台。Self-Evolve 直接进入 Drug Console 的进化面板。全部 WebView 共用视觉样式、深浅主题和返回入口导航；各服务保留原有 API、下载和实时事件流。
+
+入口本身只需要 Python 3.10+ 标准库；各 Agent 仍需安装自己的运行依赖。启动器优先使用 `DRUGAGENT_PYTHON`、`PEPTIDE_PYTHON`、`MRNA_PYTHON`、`ENZYME_PYTHON`、`ANTIBODY_PYTHON` 指定的解释器，再查找项目 `.venv`、已安装的本地环境和当前 Python。模型与数据环境变量由子进程继承；已有机器配置请先在当前终端载入。
+
+默认 Agent 端口为 Dashboard `2000`、Drug / Self-Evolve `2001`、Peptide `2004`、mRNA `2005`、Enzyme `2006`、Antibody `2007`。可用 `--port 8088` 修改入口端口，或用 `--port-offset 10000` 整体调整 Agent 端口。已运行且匹配的服务会被复用；退出入口只停止由它启动的服务。需要独立预览数据时使用 `--data-dir /path/to/preview-stores`。
+
+`--data-dir` 预览模式要求使用空闲 Agent 端口，不复用其他进程的数据目录。共享样式和导航源文件位于 `web/shared.css`、`web/shared.js`。修改后运行 `python scripts/sync_web_theme.py`，将资源同步到各 Agent 的独立安装包；`--check` 可检查是否同步。入口回归检查：`python scripts/check_web_hub.py`。
+
 **无需安装科学依赖，回放已记录示例：**
 
 ```bash

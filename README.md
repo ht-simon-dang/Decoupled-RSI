@@ -147,6 +147,21 @@ A new domain needs four explicit interfaces: **execution evidence, editable surf
 
 ## Quickstart
 
+**Open the unified Agent index from the repository root:**
+
+```bash
+python app.py
+# Or open your browser automatically: python app.py --open
+```
+
+Visit `http://127.0.0.1:8080/` (also available at `/index.php`). The index shows live service status and starts Drug, Peptide, mRNA, Enzyme, Antibody, Self-Evolve, and Drug Dashboard on demand. Self-Evolve opens the existing evolution panel in Drug Console. All WebViews share visual styles, light/dark themes, and navigation back to the index while retaining their native APIs, downloads, and event streams.
+
+The index requires only Python 3.10+ and its standard library. Install each Agent's runtime separately. The launcher first honors `DRUGAGENT_PYTHON`, `PEPTIDE_PYTHON`, `MRNA_PYTHON`, `ENZYME_PYTHON`, and `ANTIBODY_PYTHON`, then searches project virtual environments, installed local environments, and the current Python. Child processes inherit model/data environment settings; load any existing machine configuration in your terminal first.
+
+Default Agent ports are Dashboard `2000`, Drug / Self-Evolve `2001`, Peptide `2004`, mRNA `2005`, Enzyme `2006`, and Antibody `2007`. Use `--port 8088` for a different index port or `--port-offset 10000` to shift all Agent ports. Matching running services are reused. Closing the index stops only services it started. Use `--data-dir /path/to/preview-stores` for separate preview run stores.
+
+Preview mode with `--data-dir` requires unused Agent ports and does not reuse external services' data directories. The canonical visual assets are `web/shared.css` and `web/shared.js`. After editing them, run `python scripts/sync_web_theme.py` to update the assets bundled in each standalone Agent. Use `--check` to verify synchronization. Run index regression checks with `python scripts/check_web_hub.py`.
+
 Commands in this section assume the public repository root in a standalone checkout such as `decoupled-rsi-agent`.
 
 **Replay the recorded example without installing scientific dependencies:**

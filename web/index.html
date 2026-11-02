@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decoupled RSI · Agent Workspace</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23236dba'/%3E%3Ctext x='10' y='29' fill='white' font-size='26'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="stylesheet" href="/hub.css">
+  <script src="/shared.js" defer></script>
+  <script src="/hub.js" defer></script>
+</head>
+<body data-agent-view="hub">
+  <main class="hub-main">
+    <header class="hub-heading">
+      <div><p class="eyebrow">DECOUPLED RECURSIVE SELF-IMPROVEMENT</p><h1>一个入口，连接每一步研究。</h1><p class="hub-intro">选择研究领域，进入专属工作台。从任务执行到独立评价，让每一步都有据可循。</p></div>
+      <div class="hub-local"><span class="hub-dot"></span> LOCAL WORKSPACE</div>
+    </header>
+    <section class="hub-overview" aria-label="工作区概况">
+      <div><span>研究 Agent</span><strong>05 <small>研究领域</small></strong></div>
+      <div><span>独立进化</span><strong>01 <small>改进生命周期</small></strong></div>
+      <div><span>服务状态</span><strong id="running-count">— <small>运行中 / 6 个服务</small></strong></div>
+      <div class="hub-flow"><span>RESEARCH WORKFLOW</span><p>提出目标 <i>→</i> 生成候选 <i>→</i> 独立评价 <i>→</i> 积累经验</p></div>
+    </section>
+    <div class="hub-section-head"><div><p class="eyebrow">YOUR AGENTS</p><h2>研究工作台</h2></div><button id="refresh" type="button">↻ 刷新状态</button></div>
+    <div id="hub-notice" role="status" hidden></div>
+    <section id="agent-grid" class="agent-grid" aria-label="研究 Agent" aria-busy="true"><p class="hub-loading">正在读取本机服务状态…</p></section>
+    <div class="hub-section-head secondary-heading"><div><p class="eyebrow">LEARN & REVIEW</p><h2>进化与结果总览</h2></div><p>将执行证据连接到下一次改进</p></div>
+    <section id="support-grid" class="support-grid" aria-label="进化与结果"></section>
+    <noscript><p>请启用 JavaScript，以查看服务状态和启动 Agent。</p></noscript>
+    <footer class="hub-footer"><span>DECOUPLED RSI <span class="footer-divider">/</span> LOCAL RESEARCH ENVIRONMENT</span><span>任务执行 · 独立评价 · 持续改进</span></footer>
+  </main>
+</body>
+</html>

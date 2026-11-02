@@ -204,6 +204,7 @@ const CAP_DOMAINS = {
   target: "Target evidence",
   chem: "Chemistry",
   model: "Activity model",
+  activity: "Activity scoring",
   molecule: "De-novo generation",
   pocket: "Binding-site detection",
   structure: "Structure",

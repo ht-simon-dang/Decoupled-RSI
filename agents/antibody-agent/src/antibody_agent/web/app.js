@@ -29,16 +29,16 @@ function collect(){
   return b;
 }
 action("sync-json",()=>{$("brief-json").value=pretty(collect());});
-async function launch(payload){const r=await api("/api/runs",payload);showView("workspace");await openRun(r.id);await history();}
+async function launch(payload){const r=await api("/api/runs",payload);showView("workspace");await openRun(r.id);await loadHistory();}
 action("launch",()=>launch(state.mode==="natural"?{instruction:$("instruction").value}:{brief:collect()}));
 action("submit-json",()=>launch({brief:JSON.parse($("brief-json").value)}));
-async function history(){const runs=await api("/api/runs");$("history").replaceChildren();if(!runs.length)$("history").textContent="暂无任务";for(const r of runs){const b=node("button",r.name);b.append(node("span",r.state+" · "+new Date(r.created*1000).toLocaleString()));b.classList.toggle("active",state.run?.id===r.id);b.addEventListener("click",()=>openRun(r.id).catch(showError));$("history").append(b);}}
-action("refresh-history",history);
+async function loadHistory(){const runs=await api("/api/runs");$("history").replaceChildren();if(!runs.length)$("history").textContent="暂无任务";for(const r of runs){const b=node("button",r.name);b.append(node("span",r.state+" · "+new Date(r.created*1000).toLocaleString()));b.classList.toggle("active",state.run?.id===r.id);b.addEventListener("click",()=>openRun(r.id).catch(showError));$("history").append(b);}}
+action("refresh-history",loadHistory);
 async function openRun(id){clearTimeout(state.timer);state.run={id};state.selected=null;viewer.load("");$("candidate-detail").textContent="选择已评估候选查看 dossier。";$("download-pdb").hidden=true;$("submit-review").disabled=true;$("review-result").textContent="尚未选择已评估候选。";$("feedback-result").textContent="读取当前项目反馈后显示。";localStorage.setItem("antibody:last-run",id);await refresh(id);}
 async function refresh(id){
   const r=await api("/api/runs/"+id);if(state.run?.id!==id)return;state.run=r;render(r);
   if(!terminal.has(r.state))state.timer=setTimeout(()=>refresh(id).catch(showError),1500);
-  else await history();
+  else await loadHistory();
 }
 function render(r){
   if(state.selected&&!r.candidates.some(c=>c.id===state.selected)){state.selected=null;viewer.load("");$("candidate-detail").textContent="该候选已不符合当前交付条件。";$("submit-review").disabled=true;$("download-pdb").hidden=true;}
@@ -77,7 +77,7 @@ action("submit-feedback",async()=>{$("feedback-result").textContent=pretty(await
 action("refresh-feedback",async()=>{$("feedback-result").textContent=pretty(await api(`/api/runs/${requireRun()}/feedback`));});
 async function models(){const data=await api("/api/capabilities");$("health").textContent="Qwen 0.8B · "+data.planner.status;const cards=$("model-cards");cards.replaceChildren();for(const model of data.models){const card=node("div",undefined,"model-card");card.append(node("h3",model.id),node("div",model.status,"model-status"),node("p",model.scope),node("p",model.role+" · "+(model.native_adapter?"原生适配器":"模型桥接")),node("p","代码: "+(model.version||"未配置")+" / 权重: "+(model.weights_version||"未配置")));const link=node("a","官方来源 ↗");link.href=model.source;link.target="_blank";link.rel="noopener noreferrer";card.append(link);cards.append(card);}}
 action("refresh-models",models);
-(async()=>{await Promise.all([loadTemplate(),history(),models()]);const last=localStorage.getItem("antibody:last-run");if(last&&/^[a-f0-9]{32}$/.test(last)){try{await openRun(last);}catch{localStorage.removeItem("antibody:last-run");}}})().catch(showError);
+(async()=>{await Promise.all([loadTemplate(),loadHistory(),models()]);const last=localStorage.getItem("antibody:last-run");if(last&&/^[a-f0-9]{32}$/.test(last)){try{await openRun(last);}catch{localStorage.removeItem("antibody:last-run");}}})().catch(showError);
 
 action("train-property",async()=>{$("training-result").textContent=pretty(await api("/api/property-models",JSON.parse($("training-json").value)));});
 action("next-batch",async()=>{$("prediction-result").textContent=pretty(await api(`/api/runs/${requireRun()}/next-batch`,JSON.parse($("prediction-json").value)));});
