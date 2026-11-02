@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+runtime.env
+*.local.env
 *.pem
 *.key
 
@@ -10,6 +12,10 @@
 .research/
 .drugagent*/
 .peptide-agent/
+.antibody-agent/
+.mrna-agent/
+.enzyme-agent/
+.work/
 running-history/
 runs/
 logs/
@@ -19,6 +25,16 @@ models/
 *.sqlite
 *.sqlite3
 *.db
+# SQLite write-ahead logs, shared-memory files, and rollback journals
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+*.db-wal
+*.db-shm
+*.db-journal
 *.pt
 *.pth
 *.ckpt
@@ -32,6 +48,9 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
+.tox/
+.nox/
 htmlcov/
 coverage.xml
 .venv/
@@ -45,12 +64,28 @@ dist/
 .vscode/
 .DS_Store
 
+# Browser test reports and local preview artifacts
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Editor backups and temporary process files
+.tmp/
+*.tmp
+*.swp
+*.swo
+*~
+*.pid
+*.pid.lock
+
 # Generated distribution and manuscript files
 *.zip
 *.tar.gz
 *.docx
 *.pptx
 *.log
+*.log.*
 
 # Local development integration: private source backups, data, and environments
 /.local/
